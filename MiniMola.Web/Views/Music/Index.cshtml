@@ -1,0 +1,316 @@
+@model MiniMola.Web.Models.MusicViewModel
+
+@{
+    ViewData["Title"] = "Müzik ve Podcast";
+
+    var connection = Model.Connection;
+    var profileInitial = string.IsNullOrWhiteSpace(connection.DisplayName)
+        ? "S"
+        : connection.DisplayName[..1].ToUpperInvariant();
+}
+
+<link rel="stylesheet"
+      href="~/css/music.css"
+      asp-append-version="true" />
+
+<section class="music-page">
+    <header class="music-hero">
+        <div class="music-hero-copy">
+            <span class="music-eyebrow">MÜZİK MOLASI</span>
+            <h1>Molanın ritmini<br />sen seç.</h1>
+            <p>
+                Sevdiğin şarkıları ara, çalma listelerini getir ve
+                odağını kaybetmeden MiniMola içinde dinle.
+            </p>
+
+            <div class="music-hero-pills" aria-label="Spotify özellikleri">
+                <span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 18a8 8 0 1 1 5.3-14M21 3l-8 8m4-8h4v4" /></svg>
+                    Kendi hesabın
+                </span>
+                <span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></svg>
+                    Hızlı arama
+                </span>
+                <span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14M5 12h14M5 19h9" /></svg>
+                    Listelerin
+                </span>
+            </div>
+        </div>
+
+        <div class="music-visual" aria-hidden="true">
+            <span class="music-disc-ring"></span>
+            <span class="music-disc-center">
+                <svg viewBox="0 0 24 24"><path d="M9 18V5l10-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="16" cy="16" r="3" /></svg>
+            </span>
+            <span class="music-wave music-wave-one"></span>
+            <span class="music-wave music-wave-two"></span>
+        </div>
+    </header>
+
+    @if (TempData["SpotifySuccess"] is string successMessage)
+    {
+        <div class="music-alert music-alert--success" role="status">
+            @successMessage
+        </div>
+    }
+
+    @if (TempData["SpotifyError"] is string errorMessage)
+    {
+        <div class="music-alert music-alert--error" role="alert">
+            @errorMessage
+        </div>
+    }
+
+    @if (connection.IsConnected)
+    {
+        <section class="spotify-account-strip">
+            <div class="spotify-profile">
+                @if (!string.IsNullOrWhiteSpace(connection.ProfileImageUrl))
+                {
+                    <img src="@connection.ProfileImageUrl"
+                         alt=""
+                         class="spotify-profile-image" />
+                }
+                else
+                {
+                    <div class="spotify-profile-placeholder" aria-hidden="true">
+                        @profileInitial
+                    </div>
+                }
+
+                <div class="spotify-profile-copy">
+                    <span class="spotify-connection-label">
+                        <i aria-hidden="true"></i> Spotify bağlı
+                    </span>
+                    <strong>@connection.DisplayName</strong>
+                    <small>Kütüphanen ve oynatıcın kullanıma hazır</small>
+                </div>
+            </div>
+
+            <form asp-controller="Music"
+                  asp-action="Disconnect"
+                  method="post">
+                <button type="submit" class="spotify-disconnect-button">
+                    Bağlantıyı kaldır
+                </button>
+            </form>
+        </section>
+
+        @if (!string.IsNullOrWhiteSpace(Model.PlaybackError))
+        {
+            <div class="music-alert music-alert--error" role="alert">
+                @Model.PlaybackError
+            </div>
+        }
+
+        <div class="music-dashboard">
+            <aside class="music-player-column">
+                <section id="spotify-web-player"
+                         class="web-player-card compact-player">
+                    <div class="web-player-header">
+                        <div>
+                            <span class="spotify-connection-label">ŞİMDİ ÇALAN</span>
+                            <h2>MiniMola Player</h2>
+                        </div>
+                        <span class="player-live-dot" aria-hidden="true"></span>
+                    </div>
+
+                    <div id="spotify-player-content"
+                         class="web-player-content"
+                         hidden>
+                        <div class="web-player-cover">
+                            <img id="spotify-player-cover" alt="" hidden />
+                            <span id="spotify-player-cover-placeholder" aria-hidden="true">
+                                <svg viewBox="0 0 24 24"><path d="M9 18V5l10-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="16" cy="16" r="3" /></svg>
+                            </span>
+                        </div>
+
+                        <div class="web-player-details">
+                            <span id="spotify-player-type" class="now-playing-type">Spotify</span>
+                            <h3 id="spotify-player-title">Henüz bir içerik seçilmedi</h3>
+                            <p id="spotify-player-artist">Spotify</p>
+                        </div>
+                    </div>
+
+                    <p id="spotify-player-status"
+                       class="web-player-status"
+                       role="status"
+                       aria-live="polite">
+                        Spotify oynatıcısı hazırlanıyor...
+                    </p>
+
+                    <div class="web-player-controls">
+                        <button id="spotify-previous-button"
+                                type="button"
+                                aria-label="Önceki içerik"
+                                disabled>
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M18 6l-8 6 8 6V6Z" /></svg>
+                        </button>
+
+                        <button id="spotify-play-button"
+                                class="player-main-button"
+                                type="button"
+                                aria-label="Oynat veya duraklat"
+                                disabled>
+                            <svg class="play-symbol" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7V5Z" /></svg>
+                            <svg class="pause-symbol" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5v14M15 5v14" /></svg>
+                        </button>
+
+                        <button id="spotify-next-button"
+                                type="button"
+                                aria-label="Sonraki içerik"
+                                disabled>
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 5v14M6 6l8 6-8 6V6Z" /></svg>
+                        </button>
+                    </div>
+
+                    <label class="web-player-volume">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Zm4.5 4.5a4 4 0 0 1 0 5M18 7a7 7 0 0 1 0 10" /></svg>
+                        <span class="visually-hidden">Ses</span>
+                        <input id="spotify-volume"
+                               type="range"
+                               min="0"
+                               max="100"
+                               value="50"
+                               disabled />
+                    </label>
+
+                    <button id="spotify-activate-button"
+                            class="spotify-activate-button"
+                            type="button"
+                            disabled>
+                        Oynatıcı hazırlanıyor
+                    </button>
+                </section>
+
+                <p class="player-premium-note">
+                    Tarayıcıda tam oynatma için Spotify Premium gerekir.
+                </p>
+            </aside>
+
+            <section class="spotify-library-card">
+                <div class="spotify-library-heading">
+                    <div>
+                        <span class="music-section-eyebrow">KÜTÜPHANEN</span>
+                        <h2>Ne dinlemek istersin?</h2>
+                    </div>
+                </div>
+
+                <div class="spotify-library-tabs"
+                     role="tablist"
+                     aria-label="Spotify içerikleri">
+                    <button type="button"
+                            class="spotify-tab is-active"
+                            data-spotify-tab="search"
+                            role="tab"
+                            aria-selected="true">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></svg>
+                        Şarkı ara
+                    </button>
+
+                    <button type="button"
+                            class="spotify-tab"
+                            data-spotify-tab="playlists"
+                            role="tab"
+                            aria-selected="false">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 12h14M5 18h9" /></svg>
+                        Çalma listelerim
+                    </button>
+                </div>
+
+                <div id="spotify-search-panel"
+                     class="spotify-library-panel"
+                     role="tabpanel">
+                    <form id="spotify-search-form" class="spotify-search-form">
+                        <div class="spotify-search-field">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></svg>
+                            <input id="spotify-search-input"
+                                   type="search"
+                                   minlength="2"
+                                   maxlength="100"
+                                   autocomplete="off"
+                                   placeholder="Şarkı veya sanatçı ara..."
+                                   aria-label="Spotify’da şarkı ara" />
+                        </div>
+                        <button type="submit">Ara</button>
+                    </form>
+
+                    <p id="spotify-search-status"
+                       class="spotify-browser-status"
+                       role="status"
+                       aria-live="polite">
+                        Dinlemek istediğin şarkıyı ara.
+                    </p>
+
+                    <div id="spotify-search-results" class="spotify-result-list"></div>
+                </div>
+
+                <div id="spotify-playlists-panel"
+                     class="spotify-library-panel"
+                     role="tabpanel"
+                     hidden>
+                    <div class="spotify-panel-heading">
+                        <div>
+                            <h2>Çalma listelerim</h2>
+                            <p>Spotify hesabındaki ilk 20 liste.</p>
+                        </div>
+                        <button id="spotify-refresh-playlists"
+                                type="button"
+                                class="spotify-small-button">
+                            Yenile
+                        </button>
+                    </div>
+
+                    <p id="spotify-playlists-status"
+                       class="spotify-browser-status"
+                       role="status"
+                       aria-live="polite">
+                        Listeler henüz yüklenmedi.
+                    </p>
+
+                    <div id="spotify-playlists-list" class="spotify-result-grid"></div>
+                </div>
+
+                <p class="spotify-attribution">
+                    İçerikler Spotify tarafından sağlanır.
+                </p>
+            </section>
+        </div>
+    }
+    else
+    {
+        <section class="spotify-connect-card">
+            <div class="spotify-connect-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M5 8.3c4.8-1.4 10.8-.9 14.3 1.2M6.2 12c4-1.1 9.1-.7 12.1 1M7.2 15.5c3.2-.8 7-.5 9.6.8" /></svg>
+            </div>
+            <div class="spotify-connect-content">
+                <div>
+                    <span class="spotify-connection-label">SPOTIFY BAĞLANTISI</span>
+                    <h2>Kendi hesabınla devam et</h2>
+                    <p>
+                        MiniMola Spotify şifreni görmez. Bağlantı Spotify’ın
+                        güvenli izin ekranında yapılır ve istediğin zaman kaldırılabilir.
+                    </p>
+                </div>
+            </div>
+
+            <form asp-controller="Music" asp-action="Connect" method="post">
+                <button type="submit" class="spotify-connect-button">
+                    Spotify hesabımı bağla
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+                </button>
+            </form>
+        </section>
+    }
+</section>
+
+@section Scripts {
+    @if (Model.Connection.IsConnected)
+    {
+        <script src="~/js/music-player.bundle.js"
+                asp-append-version="true"></script>
+        <script src="https://sdk.scdn.co/spotify-player.js"></script>
+    }
+}

@@ -1,0 +1,514 @@
+﻿:root {
+    --bubble-deep: #063653;
+    --bubble-blue: #087da7;
+    --bubble-turquoise: #18aaa5;
+    --bubble-light: #c9fff8;
+    --bubble-coral: #ff806d;
+}
+
+.bubble-game-page {
+    width: 100%;
+    max-width: 1080px;
+    margin: 1.5rem auto 3rem;
+    color: var(--bubble-deep);
+}
+
+.bubble-game-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+    .bubble-game-header h1 {
+        margin: 0.25rem 0;
+        font-size: clamp(2rem, 5vw, 3.2rem);
+        font-weight: 900;
+        letter-spacing: -0.05em;
+    }
+
+    .bubble-game-header p {
+        margin: 0;
+        color: #5d7785;
+    }
+
+.bubble-game-eyebrow,
+.overlay-label {
+    color: var(--bubble-turquoise);
+    font-size: 0.76rem;
+    font-weight: 900;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.bubble-reward-badge {
+    display: flex;
+    min-width: 160px;
+    padding: 0.85rem 1.1rem;
+    flex-direction: column;
+    color: white;
+    background: linear-gradient( 135deg, var(--bubble-blue), var(--bubble-turquoise));
+    border-radius: 18px;
+    box-shadow: 0 12px 28px rgba(8, 125, 167, 0.2);
+}
+
+    .bubble-reward-badge span {
+        font-size: 0.72rem;
+        font-weight: 700;
+        opacity: 0.82;
+        text-transform: uppercase;
+    }
+
+    .bubble-reward-badge strong {
+        font-size: 1.1rem;
+    }
+
+.bubble-game-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 0.9rem;
+}
+
+.bubble-stat {
+    display: flex;
+    min-height: 72px;
+    padding: 0.8rem 1rem;
+    flex-direction: column;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(8, 125, 167, 0.14);
+    border-radius: 17px;
+    box-shadow: 0 9px 22px rgba(6, 54, 83, 0.06);
+}
+
+    .bubble-stat span {
+        color: #708793;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    .bubble-stat strong {
+        color: var(--bubble-deep);
+        font-size: 1.25rem;
+    }
+
+.bubble-game-board {
+    position: relative;
+    width: 100%;
+    min-height: 540px;
+    overflow: hidden;
+    isolation: isolate;
+    background: radial-gradient( circle at 22% 8%, rgba(201, 255, 248, 0.7), transparent 24%), linear-gradient( 180deg, #26b9d0 0%, #087da7 48%, #064967 100%);
+    border: 9px solid rgba(255, 255, 255, 0.85);
+    border-radius: 28px;
+    box-shadow: 0 25px 60px rgba(6, 54, 83, 0.2), inset 0 0 45px rgba(2, 36, 58, 0.16);
+}
+
+    .bubble-game-board::after {
+        position: absolute;
+        z-index: 1;
+        inset: 0;
+        content: "";
+        pointer-events: none;
+        background: linear-gradient( 110deg, rgba(255, 255, 255, 0.15), transparent 24%, transparent 70%, rgba(31, 190, 182, 0.08));
+    }
+
+.bubble-light-ray {
+    position: absolute;
+    z-index: 0;
+    top: -10%;
+    height: 85%;
+    pointer-events: none;
+    background: rgba(226, 255, 252, 0.1);
+    filter: blur(2px);
+    transform: rotate(-14deg);
+}
+
+.bubble-light-ray-one {
+    left: 14%;
+    width: 11%;
+}
+
+.bubble-light-ray-two {
+    left: 33%;
+    width: 6%;
+    opacity: 0.7;
+}
+
+.bubble-seabed {
+    position: absolute;
+    z-index: 2;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 74px;
+    pointer-events: none;
+    background: radial-gradient( ellipse at 30% 10%, #eadcae, transparent 35%), linear-gradient( 180deg, #d7c28d, #bca66e);
+    border-radius: 45% 50% 0 0;
+}
+
+.bubble-plant {
+    position: absolute;
+    bottom: 34px;
+    display: block;
+    width: 13px;
+    height: 95px;
+    background: #28a87c;
+    border-radius: 80% 20% 60% 20%;
+    transform-origin: bottom;
+}
+
+    .bubble-plant::before,
+    .bubble-plant::after {
+        position: absolute;
+        bottom: 0;
+        width: 11px;
+        content: "";
+        background: #40c394;
+        border-radius: 80% 20% 60% 20%;
+        transform-origin: bottom;
+    }
+
+    .bubble-plant::before {
+        left: -18px;
+        height: 68px;
+        transform: rotate(-25deg);
+    }
+
+    .bubble-plant::after {
+        right: -18px;
+        height: 78px;
+        transform: rotate(25deg);
+    }
+
+.bubble-plant-one {
+    left: 8%;
+    transform: rotate(-8deg);
+}
+
+.bubble-plant-two {
+    right: 12%;
+    height: 120px;
+    transform: rotate(9deg);
+}
+
+.bubble-plant-three {
+    right: 25%;
+    height: 75px;
+    opacity: 0.82;
+    transform: rotate(-7deg) scale(0.8);
+}
+
+.bubble-game-overlay {
+    position: absolute;
+    z-index: 20;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 2rem;
+    text-align: center;
+    background: rgba(4, 48, 72, 0.55);
+    backdrop-filter: blur(7px);
+    transition: opacity 180ms ease, visibility 180ms ease;
+}
+
+    .bubble-game-overlay.is-hidden {
+        pointer-events: none;
+        visibility: hidden;
+        opacity: 0;
+    }
+
+    .bubble-game-overlay h2 {
+        margin: 0.35rem 0 0.55rem;
+        color: white;
+        font-size: clamp(2rem, 5vw, 3.4rem);
+        font-weight: 900;
+        letter-spacing: -0.04em;
+    }
+
+    .bubble-game-overlay p {
+        max-width: 520px;
+        margin: 0 0 1.25rem;
+        color: rgba(255, 255, 255, 0.85);
+        line-height: 1.6;
+    }
+
+.bubble-start-button {
+    min-width: 190px;
+    padding: 0.9rem 1.3rem;
+    color: var(--bubble-deep);
+    font-weight: 900;
+    background: white;
+    border: 0;
+    border-radius: 15px;
+    box-shadow: 0 12px 30px rgba(3, 39, 61, 0.22);
+    transition: transform 150ms ease, opacity 150ms ease;
+}
+
+    .bubble-start-button:not(:disabled):hover {
+        transform: translateY(-2px) scale(1.02);
+    }
+
+    .bubble-start-button:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+.game-bubble {
+    position: absolute;
+    z-index: 5;
+    bottom: -110px;
+    left: var(--bubble-left);
+    width: var(--bubble-size);
+    height: var(--bubble-size);
+    padding: 0;
+    cursor: pointer;
+    background: radial-gradient( circle at 32% 27%, rgba(255, 255, 255, 0.9) 0 7%, rgba(255, 255, 255, 0.32) 9%, rgba(89, 228, 222, 0.22) 42%, rgba(5, 99, 137, 0.12) 70%);
+    border: 2px solid rgba(225, 255, 252, 0.72);
+    border-radius: 50%;
+    box-shadow: inset -8px -10px 18px rgba(3, 73, 104, 0.17), 0 8px 18px rgba(3, 46, 69, 0.12);
+    animation: bubble-rise var(--bubble-duration) linear forwards;
+    touch-action: manipulation;
+}
+
+    .game-bubble::after {
+        position: absolute;
+        top: 17%;
+        left: 21%;
+        width: 23%;
+        height: 13%;
+        content: "";
+        background: rgba(255, 255, 255, 0.74);
+        border-radius: 50%;
+        transform: rotate(-32deg);
+    }
+
+    .game-bubble:hover {
+        border-color: white;
+        filter: brightness(1.08);
+    }
+
+    .game-bubble.is-popped {
+        pointer-events: none;
+        animation: bubble-pop 170ms ease-out forwards;
+    }
+
+.bubble-game-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 62px;
+    margin-top: 0.9rem;
+    padding: 0.8rem 1rem;
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(8, 125, 167, 0.13);
+    border-radius: 17px;
+}
+
+    .bubble-game-footer p {
+        margin: 0;
+        color: #607985;
+    }
+
+        .bubble-game-footer p.is-success {
+            color: #078064;
+            font-weight: 800;
+        }
+
+        .bubble-game-footer p.is-error {
+            color: #b34e40;
+            font-weight: 800;
+        }
+
+    .bubble-game-footer a {
+        flex: 0 0 auto;
+        color: var(--bubble-blue);
+        font-weight: 800;
+        text-decoration: none;
+    }
+
+@keyframes bubble-rise {
+    0% {
+        transform: translateY(0) translateX(0) scale(0.85);
+    }
+
+    35% {
+        transform: translateY(-230px) translateX(14px) scale(1);
+    }
+
+    70% {
+        transform: translateY(-470px) translateX(-12px) scale(1.04);
+    }
+
+    100% {
+        transform: translateY(-720px) translateX(8px) scale(1.08);
+    }
+}
+
+@keyframes bubble-pop {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(1.55);
+    }
+}
+
+@media (max-width: 700px) {
+    .bubble-game-page {
+        margin-top: 0.75rem;
+    }
+
+    .bubble-game-header {
+        align-items: flex-start;
+    }
+
+    .bubble-reward-badge {
+        min-width: auto;
+    }
+
+    .bubble-game-stats {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .bubble-game-board {
+        min-height: 510px;
+        border-width: 6px;
+    }
+
+    .bubble-game-footer {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 460px) {
+    .bubble-game-header {
+        flex-direction: column;
+    }
+
+    .bubble-reward-badge {
+        width: 100%;
+    }
+}
+
+/* MiniMola V2 görünüm uyarlaması */
+.bubble-game-page {
+    width: min(100%, 1040px);
+    margin: 0 auto;
+}
+
+.bubble-game-header {
+    min-height: 176px;
+    margin-bottom: 12px;
+    padding: clamp(1.45rem, 4vw, 2.2rem);
+    color: white;
+    background:
+        radial-gradient(circle at 84% 0, rgba(114, 236, 221, 0.28), transparent 15rem),
+        linear-gradient(135deg, #0b3544, #075f74 56%, #079993);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 27px;
+    box-shadow: var(--mm-shadow);
+}
+
+.bubble-game-header h1 {
+    margin: 0.3rem 0 0.25rem;
+    color: white;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 820;
+    letter-spacing: -0.055em;
+}
+
+.bubble-game-header p {
+    color: rgba(255, 255, 255, 0.72);
+}
+
+.bubble-game-eyebrow {
+    color: #8be9dc;
+    font-size: 0.7rem;
+}
+
+.bubble-reward-badge {
+    min-width: 140px;
+    background: rgba(255, 255, 255, 0.11);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 16px;
+    box-shadow: none;
+    backdrop-filter: blur(8px);
+}
+
+.bubble-game-stats {
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.bubble-stat {
+    min-height: 70px;
+    background: rgba(255, 255, 255, 0.86);
+    border: 1px solid rgba(255, 255, 255, 0.92);
+    border-radius: 16px;
+    box-shadow: var(--mm-shadow-sm);
+}
+
+.bubble-stat span {
+    color: var(--mm-muted);
+    font-size: 0.67rem;
+}
+
+.bubble-stat strong {
+    color: var(--mm-ink);
+}
+
+.bubble-game-board {
+    min-height: 520px;
+    border: 8px solid rgba(255, 255, 255, 0.9);
+    border-radius: 27px;
+    box-shadow: var(--mm-shadow-lg);
+}
+
+.bubble-game-overlay {
+    background: rgba(5, 43, 58, 0.58);
+}
+
+.bubble-start-button {
+    min-height: 50px;
+    color: var(--mm-ink);
+    border-radius: 14px;
+}
+
+.bubble-game-footer {
+    min-height: 60px;
+    background: rgba(255, 255, 255, 0.8);
+    border-color: rgba(255, 255, 255, 0.9);
+    border-radius: 16px;
+    box-shadow: var(--mm-shadow-sm);
+}
+
+.bubble-game-footer a {
+    color: var(--mm-teal-dark);
+}
+
+@media (max-width: 700px) {
+    .bubble-game-page {
+        margin-top: 0;
+    }
+
+    .bubble-game-header {
+        min-height: 155px;
+        padding: 1.3rem;
+    }
+
+    .bubble-game-board {
+        min-height: 500px;
+    }
+}

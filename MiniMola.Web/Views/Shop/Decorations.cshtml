@@ -1,0 +1,115 @@
+﻿@{
+    ViewData["Title"] = "Dekorasyon Mağazası";
+}
+
+<link rel="stylesheet"
+      href="~/css/shop.css"
+      asp-append-version="true" />
+
+<link rel="stylesheet"
+      href="~/css/decoration-shop.css"
+      asp-append-version="true" />
+
+<section id="decoration-shop"
+         class="fish-shop decoration-shop"
+         data-api-url="@Url.Content("~/api/shop/decorations")">
+
+    <form id="decoration-antiforgery-form"
+          class="d-none">
+        @Html.AntiForgeryToken()
+    </form>
+
+    <nav class="shop-category-navigation"
+         aria-label="Mağaza kategorileri">
+
+        <a asp-controller="Shop"
+           asp-action="Index">
+            Balıklar
+        </a>
+
+        <a asp-controller="Shop"
+           asp-action="Decorations"
+           class="is-active"
+           aria-current="page">
+            Dekorasyonlar
+        </a>
+    </nav>
+
+    <header class="shop-header decoration-shop-header">
+        <div>
+            <span class="shop-eyebrow">
+                MiniMola Mağaza
+            </span>
+
+            <h1>Akvaryumuna karakter kat</h1>
+
+            <p>
+                Bitkiler, mercanlar ve özel süslerle
+                akvaryumunu kendine özgü hale getir.
+            </p>
+        </div>
+
+        <div class="shop-balance">
+            <svg viewBox="0 0 28 36"
+                 width="25"
+                 height="32"
+                 aria-hidden="true">
+                <path d="M14 2 C14 2 3 17 3 24
+                         C3 31 8 35 14 35
+                         C20 35 25 31 25 24
+                         C25 17 14 2 14 2 Z"
+                      fill="currentColor" />
+            </svg>
+
+            <div>
+                <small>Bakiyen</small>
+                <strong id="decoration-point-balance">
+                    0
+                </strong>
+            </div>
+        </div>
+    </header>
+
+    <div class="shop-summary">
+        <div>
+            <span>Akvaryum seviyesi</span>
+            <strong id="decoration-aquarium-level">
+                1
+            </strong>
+        </div>
+
+        <div>
+            <span>Yerleştirilen dekorasyon</span>
+            <strong id="decoration-placed-count">
+                0
+            </strong>
+        </div>
+
+        <a asp-controller="Aquarium"
+           asp-action="Index"
+           class="shop-aquarium-link">
+            Akvaryumuma dön
+        </a>
+    </div>
+
+    <div id="decoration-shop-message"
+         class="shop-message"
+         role="status"
+         aria-live="polite"
+         hidden>
+    </div>
+
+    <div id="decoration-shop-grid"
+         class="decoration-shop-grid">
+
+        <div class="shop-loading">
+            Dekorasyonlar hazırlanıyor...
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script type="module"
+            src="~/js/decoration-shop.bundle.js"
+            asp-append-version="true"></script>
+}

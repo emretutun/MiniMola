@@ -1,0 +1,134 @@
+﻿@{
+    ViewData["Title"] = "Hafıza Kartları";
+}
+
+<link rel="stylesheet"
+      href="~/css/memory-game.css"
+      asp-append-version="true" />
+
+<section id="memory-game-page"
+         class="memory-game-page"
+         data-status-url="@Url.Content("~/api/games/memory")"
+         data-complete-url="@Url.Content("~/api/games/memory/complete")">
+
+    @Html.AntiForgeryToken()
+
+    <nav class="mini-game-nav" aria-label="Mini oyunlar">
+        <a asp-controller="Games" asp-action="Word">
+            Günün Kelimesi
+        </a>
+        <a asp-controller="Games" asp-action="Bubble">
+            Baloncuk Patlat
+        </a>
+        <a asp-controller="Games"
+           asp-action="Memory"
+           class="is-active"
+           aria-current="page">
+            Hafıza Kartları
+        </a>
+    </nav>
+
+    <header class="memory-game-header">
+        <div>
+            <span class="memory-eyebrow">
+                Günlük mini oyun
+            </span>
+
+            <h1>Hafıza Kartları</h1>
+
+            <p>
+                Kartları çevir, aynı deniz canlılarını
+                eşleştir ve hafızanı tazele.
+            </p>
+        </div>
+
+        <div class="memory-reward-badge">
+            <span>Günlük ödül</span>
+            <strong>
+                +<span id="memory-reward-points">0</span>
+                Damla
+            </strong>
+        </div>
+    </header>
+
+    <div class="memory-stats">
+        <div class="memory-stat">
+            <span>Hamle</span>
+            <strong id="memory-move-count">0</strong>
+        </div>
+
+        <div class="memory-stat">
+            <span>Eşleşme</span>
+            <strong>
+                <span id="memory-match-count">0</span>
+                /
+                <span id="memory-pair-count">6</span>
+            </strong>
+        </div>
+
+        <div class="memory-stat">
+            <span>Süre</span>
+            <strong>
+                <span id="memory-elapsed-time">0</span>
+                sn
+            </strong>
+        </div>
+
+        <div class="memory-stat">
+            <span>Bakiyen</span>
+            <strong>
+                <span id="memory-point-balance">0</span>
+                Damla
+            </strong>
+        </div>
+    </div>
+
+    <div class="memory-game-shell">
+        <div id="memory-board"
+             class="memory-board"
+             aria-label="Hafıza kartları oyun alanı">
+        </div>
+
+        <div id="memory-game-overlay"
+             class="memory-game-overlay">
+
+            <span class="memory-overlay-label">
+                Kısa bir zihin molası
+            </span>
+
+            <h2 id="memory-overlay-title">
+                Kartlar hazırlanıyor
+            </h2>
+
+            <p id="memory-overlay-message">
+                Oyun bilgileri yükleniyor...
+            </p>
+
+            <button id="memory-start-button"
+                    class="memory-start-button"
+                    type="button"
+                    disabled>
+                Oyunu başlat
+            </button>
+        </div>
+    </div>
+
+    <footer class="memory-game-footer">
+        <p id="memory-game-message"
+           role="status"
+           aria-live="polite">
+            Aynı simgeye sahip kartları eşleştir.
+        </p>
+
+        <a asp-controller="Aquarium"
+           asp-action="Index">
+            Akvaryumuma dön
+        </a>
+    </footer>
+</section>
+
+@section Scripts {
+    <script type="module"
+            src="~/js/memory-game.bundle.js"
+            asp-append-version="true"></script>
+}

@@ -1,0 +1,118 @@
+﻿@{
+    ViewData["Title"] = "Balık Mağazası";
+}
+
+<link rel="stylesheet"
+      href="~/css/shop.css"
+      asp-append-version="true" />
+
+<link rel="stylesheet"
+      href="~/css/decoration-shop.css"
+      asp-append-version="true" />
+
+<section id="fish-shop"
+         class="fish-shop"
+         data-api-url="@Url.Content("~/api/shop/fish")">
+
+    <form id="antiforgery-form"
+          class="d-none">
+        @Html.AntiForgeryToken()
+    </form>
+
+    <nav class="shop-category-navigation"
+         aria-label="Mağaza kategorileri">
+
+        <a asp-controller="Shop"
+           asp-action="Index"
+           class="is-active"
+           aria-current="page">
+            Balıklar
+        </a>
+
+        <a asp-controller="Shop"
+           asp-action="Decorations">
+            Dekorasyonlar
+        </a>
+    </nav>
+
+    <header class="shop-header">
+        <div>
+            <span class="shop-eyebrow">
+                MiniMola Mağaza
+            </span>
+
+            <h1>Yeni bir arkadaş seç</h1>
+
+            <p>
+                Oyunlardan kazandığın Damlalarla
+                akvaryumuna yeni balıklar ekle.
+            </p>
+        </div>
+
+        <div class="shop-balance">
+            <svg viewBox="0 0 28 36"
+                 width="25"
+                 height="32"
+                 aria-hidden="true">
+                <path d="M14 2 C14 2 3 17 3 24
+                         C3 31 8 35 14 35
+                         C20 35 25 31 25 24
+                         C25 17 14 2 14 2 Z"
+                      fill="currentColor" />
+            </svg>
+
+            <div>
+                <small>Bakiyen</small>
+                <strong id="shop-point-balance">
+                    0
+                </strong>
+            </div>
+        </div>
+    </header>
+
+    <div class="shop-summary">
+        <div>
+            <span>Akvaryum seviyesi</span>
+            <strong id="shop-aquarium-level">
+                1
+            </strong>
+        </div>
+
+        <div>
+            <span>Kullanılan kapasite</span>
+
+            <strong>
+                <span id="shop-placed-count">0</span>
+                /
+                <span id="shop-capacity">5</span>
+            </strong>
+        </div>
+
+        <a asp-controller="Aquarium"
+           asp-action="Index"
+           class="shop-aquarium-link">
+            Akvaryumuma dön
+        </a>
+    </div>
+
+    <div id="shop-message"
+         class="shop-message"
+         role="status"
+         aria-live="polite"
+         hidden>
+    </div>
+
+    <div id="fish-shop-grid"
+         class="fish-shop-grid">
+
+        <div class="shop-loading">
+            Balıklar hazırlanıyor...
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script type="module"
+            src="~/js/shop.bundle.js"
+            asp-append-version="true"></script>
+}

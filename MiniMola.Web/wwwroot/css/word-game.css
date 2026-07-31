@@ -1,0 +1,395 @@
+:root {
+    --word-correct: #2f9b70;
+    --word-present: #d6a23a;
+    --word-absent: #718087;
+}
+
+.word-game {
+    width: min(100%, 900px);
+    margin: 0 auto;
+}
+
+.word-game-header {
+    position: relative;
+    display: flex;
+    min-height: 176px;
+    overflow: hidden;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: clamp(1.45rem, 4vw, 2.2rem);
+    color: white;
+    background:
+        radial-gradient(circle at 86% 2%, rgba(97, 222, 204, 0.28), transparent 14rem),
+        linear-gradient(135deg, #0b3544, #0a5e70 58%, #0b8e89);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 27px;
+    box-shadow: var(--mm-shadow);
+}
+
+.word-game-header::after {
+    position: absolute;
+    right: 17%;
+    bottom: -80px;
+    width: 180px;
+    height: 180px;
+    content: "";
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    box-shadow: 0 0 0 32px rgba(255, 255, 255, 0.04);
+}
+
+.word-game-header > div {
+    position: relative;
+    z-index: 1;
+}
+
+.word-game-header h1 {
+    margin: 0.3rem 0 0.25rem;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 820;
+    letter-spacing: -0.055em;
+}
+
+.word-game-header p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.72);
+}
+
+.word-game-eyebrow {
+    color: #8be9dc;
+    font-size: 0.7rem;
+    font-weight: 850;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.word-game-reward {
+    display: flex;
+    min-width: 120px;
+    padding: 0.9rem 1rem;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.11);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 16px;
+    backdrop-filter: blur(8px);
+}
+
+.word-game-reward > span {
+    color: rgba(255, 255, 255, 0.62);
+    font-size: 0.68rem;
+    font-weight: 750;
+    text-transform: uppercase;
+}
+
+.word-game-reward strong,
+.word-game-toolbar strong {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.word-game-reward strong {
+    margin-top: 3px;
+    font-size: 1.25rem;
+}
+
+.word-game-reward svg,
+.word-game-toolbar svg {
+    width: 14px;
+    height: 19px;
+    color: #78dfd1;
+}
+
+.word-game-toolbar {
+    display: grid;
+    grid-template-columns: 1fr minmax(170px, auto);
+    gap: 10px;
+    margin: 12px 0 16px;
+}
+
+.word-game-toolbar > div {
+    display: flex;
+    min-height: 70px;
+    padding: 0.85rem 1rem;
+    flex-direction: column;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.86);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 16px;
+    box-shadow: var(--mm-shadow-sm);
+}
+
+.word-game-toolbar > div > span {
+    color: var(--mm-muted);
+    font-size: 0.67rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.word-game-toolbar strong {
+    margin-top: 3px;
+    color: var(--mm-ink);
+    font-size: 0.9rem;
+}
+
+.word-game-message {
+    margin-bottom: 13px;
+    padding: 0.8rem 1rem;
+    text-align: center;
+    border-radius: 13px;
+    font-size: 0.83rem;
+    font-weight: 760;
+}
+
+.word-game-message.success {
+    color: #176044;
+    background: #ddf7ea;
+    border: 1px solid #a9e3c8;
+}
+
+.word-game-message.info {
+    color: #155b76;
+    background: #e2f5fa;
+    border: 1px solid #b8e1eb;
+}
+
+.word-game-message.error {
+    color: #8a3a32;
+    background: #fff0ed;
+    border: 1px solid #f3c2b9;
+}
+
+.word-game-board {
+    display: grid;
+    width: min(100%, 378px);
+    grid-template-columns: repeat(5, 1fr);
+    gap: 7px;
+    margin: 1.5rem auto 1.35rem;
+    padding: 13px;
+    background: rgba(255, 255, 255, 0.48);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    border-radius: 20px;
+}
+
+.word-tile {
+    display: grid;
+    aspect-ratio: 1;
+    place-items: center;
+    color: var(--mm-ink);
+    font-size: clamp(1.2rem, 5vw, 1.75rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    background: white;
+    border: 1.5px solid rgba(9, 62, 78, 0.14);
+    border-radius: 11px;
+    box-shadow: 0 5px 12px rgba(7, 59, 87, 0.05);
+}
+
+.word-tile.filled {
+    border-color: #70a9b5;
+    animation: word-tile-pop 130ms ease-out;
+}
+
+.word-tile.correct,
+.word-tile.present,
+.word-tile.absent {
+    color: white;
+    border-color: transparent;
+    animation: word-tile-flip 420ms ease-out both;
+}
+
+.word-tile.correct { background: var(--word-correct); }
+.word-tile.present { background: var(--word-present); }
+.word-tile.absent { background: var(--word-absent); }
+
+.word-guess-form {
+    width: min(100%, 510px);
+    margin: 1rem auto;
+}
+
+.word-guess-form label {
+    display: block;
+    margin-bottom: 0.4rem;
+    color: var(--mm-ink-soft);
+    font-size: 0.73rem;
+    font-weight: 800;
+}
+
+.word-guess-controls {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 7px;
+    padding: 6px;
+    background: white;
+    border: 1px solid var(--mm-line);
+    border-radius: 16px;
+    box-shadow: var(--mm-shadow-sm);
+}
+
+.word-guess-controls input {
+    min-width: 0;
+    min-height: 48px;
+    padding: 0 0.8rem;
+    color: var(--mm-ink);
+    font-size: 1.05rem;
+    font-weight: 850;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    background: transparent;
+    border: 0;
+    outline: none;
+}
+
+.word-guess-controls button {
+    min-height: 48px;
+    padding: 0 1.15rem;
+    color: white;
+    font-size: 0.81rem;
+    font-weight: 850;
+    background: var(--mm-ink);
+    border: 0;
+    border-radius: 11px;
+}
+
+.word-guess-controls button:hover:not(:disabled) {
+    background: #10495b;
+}
+
+.word-guess-controls button:disabled,
+.word-guess-controls input:disabled {
+    cursor: not-allowed;
+    opacity: 0.52;
+}
+
+.word-keyboard {
+    display: flex;
+    width: min(100%, 660px);
+    flex-direction: column;
+    gap: 5px;
+    margin: 1.35rem auto;
+}
+
+.keyboard-row {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+}
+
+.keyboard-key {
+    display: grid;
+    min-width: 35px;
+    height: 44px;
+    padding: 0 0.4rem;
+    place-items: center;
+    color: var(--mm-ink);
+    font-size: 0.79rem;
+    font-weight: 850;
+    background: #dfe8e7;
+    border: 0;
+    border-radius: 8px;
+    box-shadow: inset 0 -2px 0 rgba(9, 47, 61, 0.07);
+    transition: transform 100ms ease, filter 100ms ease;
+}
+
+.keyboard-key:hover:not(:disabled) {
+    filter: brightness(0.97);
+    transform: translateY(-1px);
+}
+
+.keyboard-key.wide {
+    min-width: 64px;
+    font-size: 0.68rem;
+}
+
+.keyboard-key.correct { color: white; background: var(--word-correct); }
+.keyboard-key.present { color: white; background: var(--word-present); }
+.keyboard-key.absent { color: white; background: var(--word-absent); }
+
+.word-game-legend {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.1rem;
+    color: var(--mm-muted);
+    font-size: 0.74rem;
+}
+
+.word-game-legend span {
+    display: flex;
+    align-items: center;
+    gap: 0.38rem;
+}
+
+.legend-box {
+    width: 13px;
+    height: 13px;
+    border-radius: 4px;
+}
+
+.legend-box.correct { background: var(--word-correct); }
+.legend-box.present { background: var(--word-present); }
+.legend-box.absent { background: var(--word-absent); }
+
+.word-game-footer {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 1.5rem;
+}
+
+.word-game-footer a {
+    padding: 0.62rem 0.9rem;
+    color: var(--mm-ink-soft);
+    font-size: 0.75rem;
+    font-weight: 750;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    border-radius: 999px;
+}
+
+@keyframes word-tile-pop {
+    50% { transform: scale(1.08); }
+}
+
+@keyframes word-tile-flip {
+    0% { transform: rotateX(0); }
+    50% { transform: rotateX(90deg); }
+    100% { transform: rotateX(0); }
+}
+
+@media (max-width: 600px) {
+    .word-game-header {
+        min-height: 154px;
+        align-items: flex-start;
+        padding: 1.3rem;
+    }
+
+    .word-game-toolbar {
+        grid-template-columns: 1fr;
+    }
+
+    .word-game-board {
+        width: min(100%, 340px);
+        padding: 10px;
+    }
+
+    .keyboard-key {
+        min-width: 27px;
+        height: 40px;
+        padding: 0 0.22rem;
+        font-size: 0.68rem;
+    }
+
+    .keyboard-key.wide {
+        min-width: 47px;
+    }
+
+    .word-game-footer {
+        align-items: stretch;
+        flex-direction: column;
+        text-align: center;
+    }
+}

@@ -1,0 +1,182 @@
+﻿@{
+    ViewData["Title"] = "Akvaryumum";
+}
+
+<link rel="stylesheet"
+      href="~/css/aquarium.css"
+      asp-append-version="true" />
+
+<section id="aquarium-page"
+         class="aquarium-page"
+         data-api-url="@Url.Content("~/api/aquarium")"
+         data-upgrade-url="@Url.Content("~/api/aquarium/upgrade")">
+
+    @Html.AntiForgeryToken()
+
+    <header class="aquarium-header">
+        <div>
+            <span class="aquarium-eyebrow">MiniMola</span>
+            <h1 id="aquarium-name">Akvaryumum</h1>
+            <p>
+                Merhaba
+                <strong id="aquarium-user-name">...</strong>
+            </p>
+        </div>
+
+        <div class="point-badge"
+             title="Kullanılabilir puanın">
+            <span class="point-icon">
+                <svg viewBox="0 0 18 24" aria-hidden="true">
+                    <path d="M9 1S2 11 2 16c0 4 3 7 7 7s7-3 7-7C16 11 9 1 9 1Z"
+                          fill="currentColor" />
+                </svg>
+            </span>
+            <strong id="aquarium-point-balance">0</strong>
+            <span>Damla</span>
+        </div>
+    </header>
+
+    <div class="aquarium-frame">
+        <div class="aquarium-frame-tip">
+            <span class="tip-dot"></span>
+            Dekorasyonları sürükleyerek yerini değiştirebilirsin
+        </div>
+
+        <div id="aquarium-canvas-host"
+             class="aquarium-canvas-host"
+             role="img"
+             aria-label="Kişisel sanal akvaryumun">
+
+            <div id="aquarium-loading"
+                 class="aquarium-loading">
+                <div class="loading-bubble"></div>
+                <span>Akvaryum hazırlanıyor...</span>
+            </div>
+        </div>
+    </div>
+
+    <footer class="aquarium-status">
+        <div class="status-item">
+            <span>Seviye</span>
+            <strong id="aquarium-level">1</strong>
+        </div>
+
+        <div class="status-item">
+            <span>Balıklar</span>
+            <strong>
+                <span id="aquarium-fish-count">0</span>
+                /
+                <span id="aquarium-capacity">5</span>
+            </strong>
+        </div>
+
+        <div class="status-message">
+            Balığına tıklayarak onunla etkileşime geçebilirsin.
+        </div>
+    </footer>
+
+    <div class="aquarium-quick-actions">
+        <div class="aquarium-quick-copy">
+            <span>Biraz değişiklik iyi gelir</span>
+            <strong>Akvaryumunu kendi zevkine göre düzenle.</strong>
+        </div>
+
+        <div class="aquarium-quick-links">
+            <a asp-controller="Shop"
+               asp-action="Index">
+                Yeni balık seç
+            </a>
+
+            <a asp-controller="Shop"
+               asp-action="Decorations"
+               class="is-primary">
+                Dekorasyon ekle
+            </a>
+        </div>
+    </div>
+
+    <aside class="aquarium-upgrade-panel"
+           aria-labelledby="aquarium-upgrade-title">
+
+        <div class="upgrade-copy">
+            <span class="aquarium-eyebrow">
+                Akvaryum gelişimi
+            </span>
+
+            <h2 id="aquarium-upgrade-title">
+                Akvaryumunu büyüt
+            </h2>
+
+            <p>
+                Seviyeni yükselterek daha fazla balık için
+                yer açabilir ve yeni türlerin kilidini
+                kaldırabilirsin.
+            </p>
+        </div>
+
+        <div class="upgrade-levels">
+            <div class="upgrade-value">
+                <span>Mevcut seviye</span>
+                <strong id="upgrade-current-level">-</strong>
+            </div>
+
+            <span class="upgrade-arrow"
+                  aria-hidden="true">→</span>
+
+            <div class="upgrade-value upgrade-value-next">
+                <span>Yeni seviye</span>
+                <strong id="upgrade-next-level">-</strong>
+            </div>
+        </div>
+
+        <div class="upgrade-capacity">
+            <span>Kapasite</span>
+
+            <strong>
+                <span id="upgrade-current-capacity">-</span>
+                <span aria-hidden="true">→</span>
+                <span id="upgrade-next-capacity">-</span>
+            </strong>
+        </div>
+
+        <div class="upgrade-action">
+            <div class="upgrade-price">
+                <span>Yükseltme bedeli</span>
+
+                <strong>
+                    <svg viewBox="0 0 18 24" aria-hidden="true">
+                        <path d="M9 1S2 11 2 16c0 4 3 7 7 7s7-3 7-7C16 11 9 1 9 1Z"
+                              fill="currentColor" />
+                    </svg>
+                    <span id="upgrade-cost">-</span>
+                    Damla
+                </strong>
+            </div>
+
+            <button id="aquarium-upgrade-button"
+                    class="aquarium-upgrade-button"
+                    type="button"
+                    disabled>
+                Akvaryumu yükselt
+            </button>
+        </div>
+
+        <p id="aquarium-upgrade-message"
+           class="aquarium-upgrade-message"
+           role="status"
+           aria-live="polite">
+            Yükseltme bilgileri hazırlanıyor...
+        </p>
+    </aside>
+
+    <noscript>
+        Akvaryumu görüntülemek için JavaScript’i
+        etkinleştirmelisin.
+    </noscript>
+</section>
+
+@section Scripts {
+    <script type="module"
+            src="~/js/aquarium.bundle.js"
+            asp-append-version="true"></script>
+}

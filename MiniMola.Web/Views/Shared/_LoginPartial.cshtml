@@ -1,0 +1,80 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+@{
+    var accountName = User.Identity?.Name ?? "MiniMola kullanıcısı";
+    var shortName = accountName.Split('@')[0];
+    var initial = string.IsNullOrWhiteSpace(shortName)
+        ? "M"
+        : shortName[..1].ToUpperInvariant();
+}
+
+<ul class="navbar-nav user-nav">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="nav-item dropdown user-menu-item">
+            <button class="user-menu-toggle"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                <span class="user-avatar" aria-hidden="true">
+                    @initial
+                </span>
+
+                <span class="user-menu-copy">
+                    <small>Hoş geldin</small>
+                    <strong>@shortName</strong>
+                </span>
+
+                <svg viewBox="0 0 12 8"
+                     aria-hidden="true">
+                    <path d="M1 1.5 6 6.5l5-5"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="1.7" />
+                </svg>
+            </button>
+
+            <div class="dropdown-menu dropdown-menu-end user-dropdown-menu">
+                <a class="user-dropdown-link"
+                   asp-area="Identity"
+                   asp-page="/Account/Manage/Index">
+                    <span>Hesabım</span>
+                    <small>Profil ve giriş bilgileri</small>
+                </a>
+
+                <div class="user-dropdown-divider"></div>
+
+                <form asp-area="Identity"
+                      asp-page="/Account/Logout"
+                      asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                    <button type="submit"
+                            class="user-logout-button">
+                        Çıkış yap
+                    </button>
+                </form>
+            </div>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="auth-login-link"
+               asp-area="Identity"
+               asp-page="/Account/Login">
+                Giriş yap
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="auth-register-link"
+               asp-area="Identity"
+               asp-page="/Account/Register">
+                Ücretsiz başla
+            </a>
+        </li>
+    }
+</ul>

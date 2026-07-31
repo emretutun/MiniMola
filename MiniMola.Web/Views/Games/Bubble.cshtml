@@ -1,0 +1,137 @@
+﻿@{
+    ViewData["Title"] = "Baloncuk Patlat";
+}
+
+<link rel="stylesheet"
+      href="~/css/bubble-game.css"
+      asp-append-version="true" />
+
+<section id="bubble-game-page"
+         class="bubble-game-page"
+         data-status-url="@Url.Content("~/api/games/bubble")"
+         data-complete-url="@Url.Content("~/api/games/bubble/complete")">
+
+    @Html.AntiForgeryToken()
+
+    <nav class="mini-game-nav" aria-label="Mini oyunlar">
+        <a asp-controller="Games" asp-action="Word">
+            Günün Kelimesi
+        </a>
+        <a asp-controller="Games"
+           asp-action="Bubble"
+           class="is-active"
+           aria-current="page">
+            Baloncuk Patlat
+        </a>
+        <a asp-controller="Games" asp-action="Memory">
+            Hafıza Kartları
+        </a>
+    </nav>
+
+    <header class="bubble-game-header">
+        <div>
+            <span class="bubble-game-eyebrow">
+                Günlük mini oyun
+            </span>
+
+            <h1>Baloncuk Patlat</h1>
+
+            <p>
+                Süre dolmadan hedefe ulaş,
+                günlük Damla ödülünü kazan.
+            </p>
+        </div>
+
+        <div class="bubble-reward-badge">
+            <span>Günlük ödül</span>
+            <strong>
+                +<span id="bubble-reward-points">0</span>
+                Damla
+            </strong>
+        </div>
+    </header>
+
+    <div class="bubble-game-stats">
+        <div class="bubble-stat">
+            <span>Kalan süre</span>
+            <strong>
+                <span id="bubble-time">--</span>
+                sn
+            </strong>
+        </div>
+
+        <div class="bubble-stat">
+            <span>Skor</span>
+            <strong id="bubble-score">0</strong>
+        </div>
+
+        <div class="bubble-stat">
+            <span>Hedef</span>
+            <strong id="bubble-target">--</strong>
+        </div>
+
+        <div class="bubble-stat">
+            <span>Bakiyen</span>
+            <strong>
+                <span id="bubble-point-balance">0</span>
+                Damla
+            </strong>
+        </div>
+    </div>
+
+    <div id="bubble-game-board"
+         class="bubble-game-board"
+         aria-label="Baloncuk Patlat oyun alanı">
+
+        <div class="bubble-light-ray bubble-light-ray-one"></div>
+        <div class="bubble-light-ray bubble-light-ray-two"></div>
+
+        <div class="bubble-seabed">
+            <span class="bubble-plant bubble-plant-one"></span>
+            <span class="bubble-plant bubble-plant-two"></span>
+            <span class="bubble-plant bubble-plant-three"></span>
+        </div>
+
+        <div id="bubble-game-overlay"
+             class="bubble-game-overlay">
+
+            <span class="overlay-label">
+                45 saniyelik mola
+            </span>
+
+            <h2 id="bubble-overlay-title">
+                Hazır mısın?
+            </h2>
+
+            <p id="bubble-overlay-message">
+                Oyun bilgileri hazırlanıyor...
+            </p>
+
+            <button id="bubble-start-button"
+                    class="bubble-start-button"
+                    type="button"
+                    disabled>
+                Oyunu başlat
+            </button>
+        </div>
+    </div>
+
+    <footer class="bubble-game-footer">
+        <p id="bubble-game-message"
+           role="status"
+           aria-live="polite">
+            Baloncuklara tıklayarak skor kazan.
+        </p>
+
+        <a asp-controller="Aquarium"
+           asp-action="Index">
+            Akvaryumuma dön
+        </a>
+    </footer>
+</section>
+
+@section Scripts {
+    <script type="module"
+            src="~/js/bubble-game.bundle.js"
+            asp-append-version="true"></script>
+}

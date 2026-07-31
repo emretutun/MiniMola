@@ -1,0 +1,153 @@
+﻿@{
+    ViewData["Title"] = "Günün Kelimesi";
+}
+
+<link rel="stylesheet"
+      href="~/css/word-game.css"
+      asp-append-version="true" />
+
+<section id="word-game"
+         class="word-game"
+         data-api-url="@Url.Content("~/api/games/word")">
+
+    <form id="word-antiforgery-form" class="d-none">
+        @Html.AntiForgeryToken()
+    </form>
+
+    <nav class="mini-game-nav" aria-label="Mini oyunlar">
+        <a asp-controller="Games"
+           asp-action="Word"
+           class="is-active"
+           aria-current="page">
+            Günün Kelimesi
+        </a>
+        <a asp-controller="Games" asp-action="Bubble">
+            Baloncuk Patlat
+        </a>
+        <a asp-controller="Games" asp-action="Memory">
+            Hafıza Kartları
+        </a>
+    </nav>
+
+    <header class="word-game-header">
+        <div>
+            <span class="word-game-eyebrow">
+                Günlük MiniMola
+            </span>
+
+            <h1>Günün Kelimesi</h1>
+
+            <p>
+                Beş harfli kelimeyi altı tahminde bul.
+            </p>
+        </div>
+
+        <div class="word-game-reward">
+            <span>Ödül</span>
+            <strong>
+                <svg viewBox="0 0 18 24" aria-hidden="true">
+                    <path d="M9 1S2 11 2 16c0 4 3 7 7 7s7-3 7-7C16 11 9 1 9 1Z"
+                          fill="currentColor" />
+                </svg>
+                <span id="word-game-reward">30</span>
+            </strong>
+        </div>
+    </header>
+
+    <div class="word-game-toolbar">
+        <div>
+            <span>İpucu</span>
+            <strong id="word-game-hint">
+                Günlük kelime hazırlanıyor...
+            </strong>
+        </div>
+
+        <div>
+            <span>Bakiyen</span>
+            <strong>
+                <svg viewBox="0 0 18 24" aria-hidden="true">
+                    <path d="M9 1S2 11 2 16c0 4 3 7 7 7s7-3 7-7C16 11 9 1 9 1Z"
+                          fill="currentColor" />
+                </svg>
+                <span id="word-game-balance">0</span>
+            </strong>
+        </div>
+    </div>
+
+    <div id="word-game-message"
+         class="word-game-message"
+         role="status"
+         aria-live="polite"
+         hidden>
+    </div>
+
+    <div id="word-game-board"
+         class="word-game-board"
+         aria-label="Kelime tahminleri">
+    </div>
+
+    <form id="word-guess-form"
+          class="word-guess-form"
+          autocomplete="off">
+
+        <label for="word-guess-input">
+            Tahminin
+        </label>
+
+        <div class="word-guess-controls">
+            <input id="word-guess-input"
+                   name="guess"
+                   type="text"
+                   maxlength="5"
+                   inputmode="text"
+                   spellcheck="false"
+                   autocomplete="off"
+                   placeholder="5 harf" />
+
+            <button id="word-guess-button"
+                    type="submit">
+                Tahmin et
+            </button>
+        </div>
+    </form>
+
+    <div id="word-keyboard"
+         class="word-keyboard"
+         aria-label="Türkçe sanal klavye">
+    </div>
+
+    <div class="word-game-legend">
+        <span>
+            <i class="legend-box correct"></i>
+            Doğru yerde
+        </span>
+
+        <span>
+            <i class="legend-box present"></i>
+            Yanlış yerde
+        </span>
+
+        <span>
+            <i class="legend-box absent"></i>
+            Kelimede yok
+        </span>
+    </div>
+
+    <div class="word-game-footer">
+        <a asp-controller="Aquarium"
+           asp-action="Index">
+            Akvaryumuma dön
+        </a>
+
+        <a asp-controller="Shop"
+           asp-action="Index">
+            Balık mağazasına git
+        </a>
+    </div>
+</section>
+
+@section Scripts {
+    <script type="module"
+            src="~/js/word-game.bundle.js"
+            asp-append-version="true"></script>
+}

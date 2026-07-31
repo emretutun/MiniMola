@@ -1,0 +1,20 @@
+{
+  "name": "minimola.web",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build:js": "esbuild ClientApp/aquarium.js ClientApp/shop.js ClientApp/word-game.js ClientApp/news.js ClientApp/music-player.js ClientApp/bubble-game.js ClientApp/memory-game.js ClientApp/decoration-shop.js --bundle --minify --sourcemap --outdir=wwwroot/js --entry-names=[name].bundle",
+    "watch:js": "esbuild ClientApp/aquarium.js ClientApp/shop.js ClientApp/word-game.js ClientApp/news.js ClientApp/music-player.js ClientApp/bubble-game.js ClientApp/memory-game.js ClientApp/decoration-shop.js --bundle --sourcemap --outdir=wwwroot/js --entry-names=[name].bundle --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "pixi.js": "^8.19.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.1"
+  }
+}

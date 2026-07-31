@@ -1,0 +1,26 @@
+@model ErrorViewModel
+@{
+    ViewData["Title"] = "Bir sorun oluştu";
+}
+
+<section class="error-page">
+    <div class="error-page-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+            <path d="M12 3a9 9 0 1 0 9 9" />
+            <path d="M12 8v5M12 17h.01M16 4l4 4M20 4l-4 4" />
+        </svg>
+    </div>
+    <span class="simple-page-eyebrow">KISA BİR AKSAKLIK</span>
+    <h1>Bir şeyler yolunda gitmedi.</h1>
+    <p>
+        İstek işlenirken beklenmeyen bir sorun oluştu. Ana sayfaya dönüp
+        tekrar deneyebilirsin.
+    </p>
+    @if (Model.ShowRequestId)
+    {
+        <code>İstek kodu: @Model.RequestId</code>
+    }
+    <a asp-controller="Home" asp-action="Index" class="error-home-link">
+        Ana sayfaya dön
+    </a>
+</section>

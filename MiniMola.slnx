@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="MiniMola.Application/MiniMola.Application.csproj" />
+  <Project Path="MiniMola.Domain/MiniMola.Domain.csproj" />
+  <Project Path="MiniMola.Infrastructure/MiniMola.Infrastructure.csproj" />
+  <Project Path="MiniMola.Web/MiniMola.Web.csproj" />
+</Solution>

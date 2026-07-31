@@ -1,0 +1,626 @@
+.home-page {
+    width: 100%;
+}
+
+.home-hero {
+    position: relative;
+    display: grid;
+    min-height: 520px;
+    overflow: hidden;
+    grid-template-columns: minmax(0, 1.05fr) minmax(390px, 0.85fr);
+    align-items: center;
+    gap: clamp(2.5rem, 6vw, 6.5rem);
+    padding: clamp(2rem, 5vw, 4.6rem);
+    background:
+        radial-gradient(circle at 8% 12%, rgba(255, 255, 255, 0.9), transparent 22rem),
+        linear-gradient(135deg, #eaf6f2 0%, #f9f7f0 52%, #f7ede9 100%);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    border-radius: 34px;
+    box-shadow: var(--mm-shadow);
+}
+
+.home-hero::after {
+    position: absolute;
+    top: -140px;
+    right: 26%;
+    width: 360px;
+    height: 360px;
+    content: "";
+    pointer-events: none;
+    border: 1px solid rgba(10, 163, 154, 0.09);
+    border-radius: 50%;
+    box-shadow:
+        0 0 0 45px rgba(255, 255, 255, 0.12),
+        0 0 0 90px rgba(255, 255, 255, 0.08);
+}
+
+.home-hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 640px;
+}
+
+.home-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--mm-teal-dark);
+    font-size: 0.73rem;
+    font-weight: 850;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+.home-eyebrow > span {
+    width: 8px;
+    height: 8px;
+    background: var(--mm-coral);
+    border-radius: 50%;
+    box-shadow: 0 0 0 5px rgba(244, 125, 107, 0.12);
+}
+
+.home-hero h1 {
+    max-width: 680px;
+    margin: 1rem 0 1.1rem;
+    color: var(--mm-ink);
+    font-size: clamp(2.65rem, 5.5vw, 5rem);
+    font-weight: 820;
+    letter-spacing: -0.065em;
+    line-height: 0.98;
+}
+
+.home-hero h1 em {
+    display: block;
+    color: var(--mm-teal-dark);
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 500;
+    letter-spacing: -0.05em;
+}
+
+.home-hero-content > p {
+    max-width: 580px;
+    margin: 0;
+    color: var(--mm-ink-soft);
+    font-size: clamp(1rem, 1.6vw, 1.14rem);
+    line-height: 1.75;
+}
+
+.home-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 1.7rem;
+}
+
+.home-primary-button,
+.home-secondary-button {
+    display: inline-flex;
+    min-height: 50px;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 0 20px;
+    font-size: 0.88rem;
+    font-weight: 800;
+    text-decoration: none;
+    border-radius: 14px;
+    transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.home-primary-button {
+    color: white;
+    background: var(--mm-ink);
+    box-shadow: 0 13px 26px rgba(9, 47, 61, 0.18);
+}
+
+.home-primary-button svg {
+    width: 18px;
+    height: 18px;
+}
+
+.home-primary-button:hover {
+    color: white;
+    background: #10495b;
+    box-shadow: 0 16px 31px rgba(9, 47, 61, 0.23);
+    transform: translateY(-2px);
+}
+
+.home-secondary-button {
+    color: var(--mm-ink);
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(9, 62, 78, 0.09);
+}
+
+.home-secondary-button:hover {
+    color: var(--mm-ink);
+    background: white;
+    transform: translateY(-2px);
+}
+
+.home-hero-notes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 1.5rem;
+    color: var(--mm-muted);
+    font-size: 0.75rem;
+    font-weight: 680;
+}
+
+.home-hero-notes span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.home-hero-notes i {
+    width: 6px;
+    height: 6px;
+    background: var(--mm-teal);
+    border-radius: 50%;
+}
+
+.home-aquarium-card {
+    position: relative;
+    z-index: 3;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.9);
+    border: 8px solid rgba(255, 255, 255, 0.7);
+    border-radius: 27px;
+    box-shadow: 0 28px 70px rgba(8, 62, 78, 0.19);
+    transform: rotate(1.4deg);
+}
+
+.home-aquarium-topline,
+.home-aquarium-footer {
+    display: flex;
+    min-height: 58px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 16px;
+}
+
+.home-aquarium-topline span {
+    color: var(--mm-ink-soft);
+    font-size: 0.74rem;
+    font-weight: 750;
+}
+
+.home-aquarium-topline strong {
+    padding: 4px 8px;
+    color: var(--mm-success);
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    background: #e2f6ef;
+    border-radius: 999px;
+}
+
+.home-water-scene {
+    position: relative;
+    min-height: 300px;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 25% 8%, rgba(195, 255, 244, 0.66), transparent 26%),
+        linear-gradient(180deg, #42bfd0 0%, #0b83a8 52%, #07516e 100%);
+}
+
+.home-light-ray {
+    position: absolute;
+    top: -40px;
+    left: 20%;
+    width: 34%;
+    height: 115%;
+    background: rgba(255, 255, 255, 0.09);
+    clip-path: polygon(18% 0, 72% 0, 100% 100%, 0 100%);
+    transform: rotate(-8deg);
+}
+
+.scene-bubble {
+    position: absolute;
+    width: 11px;
+    height: 11px;
+    border: 1.5px solid rgba(255, 255, 255, 0.66);
+    border-radius: 50%;
+    animation: home-bubble-rise 5s ease-in-out infinite;
+}
+
+.scene-bubble.b1 { top: 42%; left: 14%; }
+.scene-bubble.b2 { top: 24%; left: 20%; width: 7px; height: 7px; animation-delay: -2s; }
+.scene-bubble.b3 { top: 58%; right: 15%; width: 9px; height: 9px; animation-delay: -3.3s; }
+.scene-bubble.b4 { top: 28%; right: 21%; width: 6px; height: 6px; animation-delay: -1s; }
+
+.home-fish {
+    position: absolute;
+    z-index: 3;
+    width: 118px;
+    height: 70px;
+    animation: home-fish-float 3.4s ease-in-out infinite;
+}
+
+.fish-main {
+    top: 36%;
+    left: 31%;
+}
+
+.fish-small {
+    top: 61%;
+    right: 12%;
+    width: 72px;
+    height: 44px;
+    opacity: 0.84;
+    transform: scaleX(-1);
+    animation-delay: -1.4s;
+}
+
+.home-fish-body {
+    position: absolute;
+    z-index: 2;
+    top: 9px;
+    left: 24px;
+    width: 78px;
+    height: 50px;
+    background: linear-gradient(145deg, #ffd263, #f39b3f);
+    border-radius: 54% 46% 48% 52%;
+    box-shadow: inset 0 -9px 14px rgba(183, 94, 32, 0.13);
+}
+
+.fish-small .home-fish-body {
+    top: 6px;
+    left: 17px;
+    width: 48px;
+    height: 31px;
+    background: linear-gradient(145deg, #59dbcd, #1da8b0);
+}
+
+.home-fish-tail {
+    position: absolute;
+    z-index: 1;
+    top: 12px;
+    left: 0;
+    width: 39px;
+    height: 46px;
+    background: #f47d6b;
+    clip-path: polygon(100% 50%, 0 0, 18% 50%, 0 100%);
+}
+
+.fish-small .home-fish-tail {
+    top: 8px;
+    width: 25px;
+    height: 29px;
+    background: #56c7bd;
+}
+
+.home-fish-fin {
+    position: absolute;
+    z-index: 3;
+    top: 48px;
+    left: 55px;
+    width: 28px;
+    height: 18px;
+    background: #e88835;
+    clip-path: polygon(0 0, 100% 0, 45% 100%);
+}
+
+.home-fish-eye {
+    position: absolute;
+    z-index: 4;
+    top: 23px;
+    right: 18px;
+    width: 10px;
+    height: 10px;
+    background: white;
+    border: 3px solid #123b48;
+    border-radius: 50%;
+}
+
+.fish-small .home-fish-eye {
+    top: 14px;
+    right: 9px;
+    width: 7px;
+    height: 7px;
+    border-width: 2px;
+}
+
+.home-seabed {
+    position: absolute;
+    right: -5%;
+    bottom: -20px;
+    left: -5%;
+    height: 82px;
+    background: linear-gradient(180deg, #e4d19c, #c1aa70);
+    border-radius: 50% 48% 0 0;
+}
+
+.home-plant {
+    position: absolute;
+    z-index: 2;
+    bottom: 39px;
+    width: 11px;
+    height: 90px;
+    background: #27a77a;
+    border-radius: 100% 20% 80% 10%;
+    transform-origin: bottom;
+}
+
+.home-plant::before,
+.home-plant::after {
+    position: absolute;
+    bottom: 0;
+    width: 9px;
+    content: "";
+    background: #46c397;
+    border-radius: inherit;
+    transform-origin: bottom;
+}
+
+.home-plant::before { left: -15px; height: 65px; transform: rotate(-24deg); }
+.home-plant::after { right: -15px; height: 72px; transform: rotate(25deg); }
+.plant-left { left: 10%; transform: rotate(-8deg); }
+.plant-right { right: 9%; height: 110px; transform: rotate(7deg); }
+
+.home-aquarium-footer div {
+    display: flex;
+    flex-direction: column;
+}
+
+.home-aquarium-footer span {
+    color: var(--mm-muted);
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.home-aquarium-footer strong {
+    margin-top: 2px;
+    font-size: 0.82rem;
+}
+
+.home-aquarium-footer a {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    place-items: center;
+    color: white;
+    background: var(--mm-ink);
+    border-radius: 12px;
+}
+
+.home-aquarium-footer svg {
+    width: 20px;
+    height: 20px;
+}
+
+.home-section-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    margin: 3.7rem 0 1.25rem;
+    padding-inline: 4px;
+}
+
+.home-section-heading span {
+    color: var(--mm-teal-dark);
+    font-size: 0.69rem;
+    font-weight: 850;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.home-section-heading h2 {
+    margin: 0.25rem 0 0;
+    font-size: clamp(1.75rem, 3vw, 2.45rem);
+    font-weight: 820;
+    letter-spacing: -0.045em;
+}
+
+.home-section-heading > p {
+    margin: 0 0 5px;
+    color: var(--mm-muted);
+    font-size: 0.86rem;
+}
+
+.home-feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.home-feature-card {
+    --feature-color: var(--mm-teal-dark);
+    --feature-soft: var(--mm-teal-soft);
+    position: relative;
+    display: flex;
+    min-height: 300px;
+    overflow: hidden;
+    flex-direction: column;
+    padding: 1.45rem;
+    color: var(--mm-ink);
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.92);
+    border-radius: 23px;
+    box-shadow: var(--mm-shadow-sm);
+    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.home-feature-card::after {
+    position: absolute;
+    right: -55px;
+    bottom: -65px;
+    width: 170px;
+    height: 170px;
+    content: "";
+    pointer-events: none;
+    background: var(--feature-soft);
+    border-radius: 50%;
+    opacity: 0.72;
+}
+
+.home-feature-card:hover {
+    color: var(--mm-ink);
+    border-color: rgba(10, 163, 154, 0.17);
+    box-shadow: var(--mm-shadow);
+    transform: translateY(-5px);
+}
+
+.home-feature-card.is-wide {
+    grid-column: span 2;
+}
+
+.feature-index {
+    position: absolute;
+    top: 17px;
+    right: 19px;
+    color: rgba(9, 47, 61, 0.24);
+    font-size: 0.68rem;
+    font-weight: 850;
+    letter-spacing: 0.12em;
+}
+
+.feature-icon {
+    display: grid;
+    width: 54px;
+    height: 54px;
+    margin-bottom: 1.25rem;
+    place-items: center;
+    color: var(--feature-color);
+    background: var(--feature-soft);
+    border-radius: 16px;
+}
+
+.feature-icon svg {
+    width: 31px;
+    height: 31px;
+}
+
+.feature-label {
+    color: var(--feature-color);
+    font-size: 0.67rem;
+    font-weight: 850;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.home-feature-card h3 {
+    margin: 0.45rem 0 0.45rem;
+    font-size: 1.34rem;
+    font-weight: 820;
+    letter-spacing: -0.035em;
+}
+
+.home-feature-card p {
+    max-width: 530px;
+    flex: 1;
+    margin: 0;
+    color: var(--mm-muted);
+    font-size: 0.87rem;
+    line-height: 1.65;
+}
+
+.home-feature-card > strong {
+    position: relative;
+    z-index: 1;
+    margin-top: 1.3rem;
+    color: var(--feature-color);
+    font-size: 0.79rem;
+    font-weight: 850;
+}
+
+.home-feature-card > strong span {
+    display: inline-block;
+    margin-left: 4px;
+    transition: transform 160ms ease;
+}
+
+.home-feature-card:hover > strong span {
+    transform: translateX(4px);
+}
+
+.aquarium-card { --feature-color: #087ca7; --feature-soft: #e2f3f8; }
+.word-card { --feature-color: #9c6a1d; --feature-soft: #fff2d8; }
+.bubble-card { --feature-color: #087d79; --feature-soft: #dff5f1; }
+.memory-card-home { --feature-color: #6d55ae; --feature-soft: #eee9fc; }
+.shop-card { --feature-color: #b15345; --feature-soft: #ffebe6; }
+.headlines-card { --feature-color: #345c89; --feature-soft: #e8f0fa; }
+.music-card { --feature-color: #167a44; --feature-soft: #e1f4e8; }
+
+.public-hero {
+    min-height: 620px;
+}
+
+@keyframes home-fish-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-9px); }
+}
+
+@keyframes home-bubble-rise {
+    0%, 100% { transform: translateY(12px); opacity: 0.5; }
+    50% { transform: translateY(-12px); opacity: 1; }
+}
+
+@media (max-width: 980px) {
+    .home-hero {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+    }
+
+    .home-hero-content {
+        max-width: 720px;
+    }
+
+    .home-aquarium-card {
+        width: min(100%, 650px);
+        justify-self: center;
+        transform: none;
+    }
+
+    .home-feature-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 650px) {
+    .home-hero {
+        min-height: auto;
+        padding: 1.55rem;
+        border-radius: 25px;
+    }
+
+    .home-hero h1 {
+        font-size: clamp(2.35rem, 13vw, 3.5rem);
+    }
+
+    .home-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .home-primary-button,
+    .home-secondary-button {
+        width: 100%;
+    }
+
+    .home-water-scene {
+        min-height: 240px;
+    }
+
+    .home-section-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        margin-top: 2.5rem;
+    }
+
+    .home-feature-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .home-feature-card.is-wide {
+        grid-column: auto;
+    }
+
+    .home-feature-card {
+        min-height: 270px;
+    }
+}
