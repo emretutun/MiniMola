@@ -19,6 +19,10 @@ public sealed class UserFish : BaseEntity
 
     public DateTime AcquiredAtUtc { get; set; } = DateTime.UtcNow;
 
+    public DateTime? LastFedAtUtc { get; set; }
+
+    public int TotalFeedings { get; set; }
+
     public UserProfile UserProfile { get; set; } = null!;
 
     public FishSpecies FishSpecies { get; set; } = null!;

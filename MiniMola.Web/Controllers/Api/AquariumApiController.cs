@@ -2,6 +2,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MiniMola.Application.Aquariums;
+using System.Diagnostics;
+using FluentValidation;
+using Microsoft.AspNetCore.RateLimiting;
+using MiniMola.Web.RateLimiting;
 
 namespace MiniMola.Web.Controllers.Api;
 
@@ -9,7 +13,9 @@ namespace MiniMola.Web.Controllers.Api;
 [Authorize]
 [Route("api/aquarium")]
 public sealed class AquariumApiController(
-    IAquariumService aquariumService)
+    IAquariumService aquariumService,
+    IValidator<UpdateFishNicknameRequest>
+        fishNicknameValidator)
     : ControllerBase
 {
     [HttpGet]
@@ -65,6 +71,8 @@ public sealed class AquariumApiController(
 
     [HttpPost("upgrade")]
     [ValidateAntiForgeryToken]
+    [EnableRateLimiting(
+    RateLimitingServiceExtensions.AquariumWritePolicy)]
     public async Task<ActionResult<AquariumUpgradeDto>> Upgrade(
         CancellationToken cancellationToken)
     {
@@ -136,4 +144,97 @@ public sealed class AquariumApiController(
 
         return Ok(result);
     }
+
+    [HttpPost("fish/{userFishId:int}/feed")]
+    [ValidateAntiForgeryToken]
+    [EnableRateLimiting(
+    RateLimitingServiceExtensions.AquariumWritePolicy)]
+    public async Task<ActionResult<FeedFishResultDto>>
+    FeedFish(
+        int userFishId,
+        CancellationToken cancellationToken)
+    {
+        var identityUserId = User.FindFirstValue(
+            ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrWhiteSpace(identityUserId))
+        {
+            return Unauthorized();
+        }
+
+        var result =
+            await aquariumService.FeedFishAsync(
+                identityUserId,
+                userFishId,
+                cancellationToken);
+
+        if (!result.Success)
+        {
+            if (result.NextFeedAtUtc.HasValue)
+            {
+                return Conflict(result);
+            }
+
+            return BadRequest(result);
+        }
+
+        return Ok(result);
+    }
+
+
+    [HttpPut("fish/{userFishId:int}/nickname")]
+    [ValidateAntiForgeryToken]
+    [EnableRateLimiting(
+    RateLimitingServiceExtensions.AquariumWritePolicy)]
+    public async Task<ActionResult<UpdateFishNicknameResultDto>>
+    UpdateFishNickname(
+        int userFishId,
+        [FromBody] UpdateFishNicknameRequest request,
+        CancellationToken cancellationToken)
+    {
+        var identityUserId = User.FindFirstValue(
+            ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrWhiteSpace(identityUserId))
+        {
+            return Unauthorized();
+        }
+        var validationResult =
+        await fishNicknameValidator.ValidateAsync(
+        request,
+        cancellationToken);
+
+        if (!validationResult.IsValid)
+        {
+            var problemDetails =
+                new ValidationProblemDetails(
+                    validationResult.ToDictionary())
+                {
+                    Title = "Gönderilen bilgiler doğrulanamadı.",
+                    Status = StatusCodes.Status400BadRequest,
+                    Instance = Request.Path
+                };
+
+            problemDetails.Extensions["traceId"] =
+                Activity.Current?.Id
+                ?? HttpContext.TraceIdentifier;
+
+            return BadRequest(problemDetails);
+        }
+
+        var result =
+            await aquariumService.UpdateFishNicknameAsync(
+                identityUserId,
+                userFishId,
+                request.Nickname,
+                cancellationToken);
+
+        if (!result.Success)
+        {
+            return BadRequest(result);
+        }
+
+        return Ok(result);
+    }
+
 }

@@ -216,211 +216,215 @@
     .status-message {
         grid-column: 1 / -1;
     }
+}
 
-    .aquarium-upgrade-panel {
-        display: grid;
-        grid-template-areas:
-            "copy levels action"
-            "copy capacity message";
-        grid-template-columns: minmax(0, 1.3fr) minmax(230px, 0.8fr) minmax(240px, 0.9fr);
-        gap: 1rem 1.5rem;
-        align-items: center;
-        margin-top: 1rem;
-        padding: 1.4rem;
-        overflow: hidden;
-        background: radial-gradient( circle at 100% 0, rgba(101, 214, 208, 0.18), transparent 35% ), rgba(255, 255, 255, 0.92);
-        border: 1px solid rgba(8, 124, 167, 0.15);
-        border-radius: 22px;
-        box-shadow: 0 16px 38px rgba(5, 43, 67, 0.09);
+/* ========================================
+   AKVARYUM SEVİYE PANELİ
+======================================== */
+
+.aquarium-upgrade-panel {
+    display: grid;
+    grid-template-areas:
+        "copy levels action"
+        "copy capacity message";
+    grid-template-columns: minmax(0, 1.3fr) minmax(230px, 0.8fr) minmax(240px, 0.9fr);
+    gap: 1rem 1.5rem;
+    align-items: center;
+    margin-top: 1rem;
+    padding: 1.4rem;
+    overflow: hidden;
+    background: radial-gradient( circle at 100% 0, rgba(101, 214, 208, 0.18), transparent 35%), rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(8, 124, 167, 0.15);
+    border-radius: 22px;
+    box-shadow: 0 16px 38px rgba(5, 43, 67, 0.09);
+}
+
+.upgrade-copy {
+    grid-area: copy;
+}
+
+    .upgrade-copy h2 {
+        margin: 0.3rem 0 0.45rem;
+        color: var(--aqua-deep);
+        font-size: 1.45rem;
+        font-weight: 800;
+        letter-spacing: -0.025em;
     }
 
-    .upgrade-copy {
-        grid-area: copy;
+    .upgrade-copy p {
+        max-width: 480px;
+        margin: 0;
+        color: #607986;
+        line-height: 1.6;
     }
 
-        .upgrade-copy h2 {
-            margin: 0.3rem 0 0.45rem;
-            color: var(--aqua-deep);
-            font-size: 1.45rem;
-            font-weight: 800;
-            letter-spacing: -0.025em;
-        }
+.upgrade-levels {
+    grid-area: levels;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
+}
 
-        .upgrade-copy p {
-            max-width: 480px;
-            margin: 0;
-            color: #607986;
-            line-height: 1.6;
-        }
+.upgrade-value {
+    display: flex;
+    min-width: 92px;
+    padding: 0.7rem;
+    flex-direction: column;
+    align-items: center;
+    background: #f1f8f8;
+    border: 1px solid rgba(8, 124, 167, 0.12);
+    border-radius: 15px;
+}
 
-    .upgrade-levels {
-        grid-area: levels;
+    .upgrade-value span,
+    .upgrade-capacity > span,
+    .upgrade-price > span {
+        color: #6a828e;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    .upgrade-value strong {
+        color: var(--aqua-deep);
+        font-size: 1.45rem;
+    }
+
+.upgrade-value-next {
+    background: rgba(101, 214, 208, 0.17);
+    border-color: rgba(20, 170, 164, 0.25);
+}
+
+    .upgrade-value-next strong {
+        color: #07857f;
+    }
+
+.upgrade-arrow {
+    color: var(--aqua-blue);
+    font-size: 1.35rem;
+    font-weight: 800;
+}
+
+.upgrade-capacity {
+    grid-area: capacity;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.8rem 1rem;
+    background: rgba(233, 255, 253, 0.7);
+    border-radius: 14px;
+}
+
+    .upgrade-capacity strong {
         display: flex;
         align-items: center;
-        justify-content: center;
-        gap: 0.7rem;
+        gap: 0.55rem;
+        color: var(--aqua-deep);
+    }
+
+.upgrade-action {
+    grid-area: action;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.upgrade-price {
+    display: flex;
+    flex-direction: column;
+}
+
+    .upgrade-price strong {
+        margin-top: 0.15rem;
+        color: var(--aqua-deep);
+        font-size: 1.05rem;
+    }
+
+.aquarium-upgrade-button {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    color: white;
+    font-weight: 800;
+    background: linear-gradient(135deg, #087ca7, #14aaa4);
+    border: 0;
+    border-radius: 14px;
+    box-shadow: 0 10px 22px rgba(8, 124, 167, 0.22);
+    transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+}
+
+    .aquarium-upgrade-button:not(:disabled):hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 28px rgba(8, 124, 167, 0.28);
+    }
+
+    .aquarium-upgrade-button:disabled {
+        cursor: not-allowed;
+        opacity: 0.48;
+        box-shadow: none;
+    }
+
+    .aquarium-upgrade-button.is-loading {
+        cursor: wait;
+        opacity: 0.72;
+    }
+
+.aquarium-upgrade-message {
+    grid-area: message;
+    margin: 0;
+    color: #617b88;
+    font-size: 0.86rem;
+    line-height: 1.45;
+}
+
+    .aquarium-upgrade-message.is-success {
+        color: #078064;
+        font-weight: 700;
+    }
+
+    .aquarium-upgrade-message.is-error {
+        color: #b14d3f;
+        font-weight: 700;
+    }
+
+@media (max-width: 900px) {
+    .aquarium-upgrade-panel {
+        grid-template-areas:
+            "copy copy"
+            "levels capacity"
+            "action action"
+            "message message";
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 560px) {
+    .aquarium-upgrade-panel {
+        grid-template-areas:
+            "copy"
+            "levels"
+            "capacity"
+            "action"
+            "message";
+        grid-template-columns: 1fr;
+        padding: 1.1rem;
+    }
+
+    .upgrade-levels {
+        justify-content: space-between;
     }
 
     .upgrade-value {
-        display: flex;
-        min-width: 92px;
-        padding: 0.7rem;
-        flex-direction: column;
-        align-items: center;
-        background: #f1f8f8;
-        border: 1px solid rgba(8, 124, 167, 0.12);
-        border-radius: 15px;
+        flex: 1;
     }
-
-        .upgrade-value span,
-        .upgrade-capacity > span,
-        .upgrade-price > span {
-            color: #6a828e;
-            font-size: 0.72rem;
-            font-weight: 700;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-        }
-
-        .upgrade-value strong {
-            color: var(--aqua-deep);
-            font-size: 1.45rem;
-        }
-
-    .upgrade-value-next {
-        background: rgba(101, 214, 208, 0.17);
-        border-color: rgba(20, 170, 164, 0.25);
-    }
-
-        .upgrade-value-next strong {
-            color: #07857f;
-        }
-
-    .upgrade-arrow {
-        color: var(--aqua-blue);
-        font-size: 1.35rem;
-        font-weight: 800;
-    }
-
-    .upgrade-capacity {
-        grid-area: capacity;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-        padding: 0.8rem 1rem;
-        background: rgba(233, 255, 253, 0.7);
-        border-radius: 14px;
-    }
-
-        .upgrade-capacity strong {
-            display: flex;
-            align-items: center;
-            gap: 0.55rem;
-            color: var(--aqua-deep);
-        }
-
-    .upgrade-action {
-        grid-area: action;
-        display: flex;
-        flex-direction: column;
-        gap: 0.8rem;
-    }
-
-    .upgrade-price {
-        display: flex;
-        flex-direction: column;
-    }
-
-        .upgrade-price strong {
-            margin-top: 0.15rem;
-            color: var(--aqua-deep);
-            font-size: 1.05rem;
-        }
-
-    .aquarium-upgrade-button {
-        width: 100%;
-        padding: 0.8rem 1rem;
-        color: white;
-        font-weight: 800;
-        background: linear-gradient(135deg, #087ca7, #14aaa4);
-        border: 0;
-        border-radius: 14px;
-        box-shadow: 0 10px 22px rgba(8, 124, 167, 0.22);
-        transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
-    }
-
-        .aquarium-upgrade-button:not(:disabled):hover {
-            transform: translateY(-2px);
-            box-shadow: 0 14px 28px rgba(8, 124, 167, 0.28);
-        }
-
-        .aquarium-upgrade-button:disabled {
-            cursor: not-allowed;
-            opacity: 0.48;
-            box-shadow: none;
-        }
-
-        .aquarium-upgrade-button.is-loading {
-            cursor: wait;
-            opacity: 0.72;
-        }
-
-    .aquarium-upgrade-message {
-        grid-area: message;
-        margin: 0;
-        color: #617b88;
-        font-size: 0.86rem;
-        line-height: 1.45;
-    }
-
-        .aquarium-upgrade-message.is-success {
-            color: #078064;
-            font-weight: 700;
-        }
-
-        .aquarium-upgrade-message.is-error {
-            color: #b14d3f;
-            font-weight: 700;
-        }
-
-    @media (max-width: 900px) {
-        .aquarium-upgrade-panel {
-            grid-template-areas:
-                "copy copy"
-                "levels capacity"
-                "action action"
-                "message message";
-            grid-template-columns: 1fr 1fr;
-        }
-    }
-
-@media (max-width: 560px) {
-        .aquarium-upgrade-panel {
-            grid-template-areas:
-                "copy"
-                "levels"
-                "capacity"
-                "action"
-                "message";
-            grid-template-columns: 1fr;
-            padding: 1.1rem;
-        }
-
-        .upgrade-levels {
-            justify-content: space-between;
-        }
-
-        .upgrade-value {
-            flex: 1;
-        }
-    }
-
-
-
 }
 
-/* MiniMola V2 görünüm uyarlaması */
+/* ========================================
+   MINIMOLA V2 GÖRÜNÜMÜ
+======================================== */
+
 .aquarium-page {
     width: min(100%, 1180px);
     margin: 0 auto;
@@ -432,16 +436,16 @@
     padding: 7px 5px;
 }
 
-.aquarium-header h1 {
-    color: var(--mm-ink);
-    font-size: clamp(2.15rem, 5vw, 3.5rem);
-    font-weight: 820;
-    letter-spacing: -0.06em;
-}
+    .aquarium-header h1 {
+        color: var(--mm-ink);
+        font-size: clamp(2.15rem, 5vw, 3.5rem);
+        font-weight: 820;
+        letter-spacing: -0.06em;
+    }
 
-.aquarium-header p {
-    color: var(--mm-muted);
-}
+    .aquarium-header p {
+        color: var(--mm-muted);
+    }
 
 .aquarium-eyebrow {
     color: var(--mm-teal-dark);
@@ -464,14 +468,14 @@
     height: 30px;
     place-items: center;
     color: white;
-    background: linear-gradient(145deg, var(--mm-teal), var(--mm-blue));
+    background: linear-gradient( 145deg, var(--mm-teal), var(--mm-blue));
     border-radius: 9px;
 }
 
-.point-icon svg {
-    width: 13px;
-    height: 18px;
-}
+    .point-icon svg {
+        width: 13px;
+        height: 18px;
+    }
 
 .point-badge strong {
     font-size: 1.05rem;
@@ -537,14 +541,14 @@
     box-shadow: var(--mm-shadow-sm);
 }
 
-.status-item span {
-    color: var(--mm-muted);
-    font-size: 0.67rem;
-}
+    .status-item span {
+        color: var(--mm-muted);
+        font-size: 0.67rem;
+    }
 
-.status-item strong {
-    color: var(--mm-ink);
-}
+    .status-item strong {
+        color: var(--mm-ink);
+    }
 
 .status-message {
     color: var(--mm-ink-soft);
@@ -568,49 +572,47 @@
     flex-direction: column;
 }
 
-.aquarium-quick-copy span {
-    color: var(--mm-teal-dark);
-    font-size: 0.66rem;
-    font-weight: 850;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-}
+    .aquarium-quick-copy span {
+        color: var(--mm-teal-dark);
+        font-size: 0.66rem;
+        font-weight: 850;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+    }
 
-.aquarium-quick-copy strong {
-    margin-top: 3px;
-    font-size: 0.88rem;
-}
+    .aquarium-quick-copy strong {
+        margin-top: 3px;
+        font-size: 0.88rem;
+    }
 
 .aquarium-quick-links {
     display: flex;
     gap: 7px;
 }
 
-.aquarium-quick-links a {
-    display: inline-flex;
-    min-height: 42px;
-    align-items: center;
-    padding: 0 14px;
-    color: var(--mm-ink-soft);
-    font-size: 0.75rem;
-    font-weight: 800;
-    text-decoration: none;
-    background: rgba(255, 255, 255, 0.78);
-    border: 1px solid rgba(9, 62, 78, 0.08);
-    border-radius: 12px;
-}
+    .aquarium-quick-links a {
+        display: inline-flex;
+        min-height: 42px;
+        align-items: center;
+        padding: 0 14px;
+        color: var(--mm-ink-soft);
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-decoration: none;
+        background: rgba(255, 255, 255, 0.78);
+        border: 1px solid rgba(9, 62, 78, 0.08);
+        border-radius: 12px;
+    }
 
-.aquarium-quick-links a.is-primary {
-    color: white;
-    background: var(--mm-ink);
-    border-color: var(--mm-ink);
-}
+        .aquarium-quick-links a.is-primary {
+            color: white;
+            background: var(--mm-ink);
+            border-color: var(--mm-ink);
+        }
 
 .aquarium-upgrade-panel {
     margin-top: 12px;
-    background:
-        radial-gradient(circle at 100% 0, rgba(101, 214, 208, 0.16), transparent 34%),
-        rgba(255, 255, 255, 0.86);
+    background: radial-gradient( circle at 100% 0, rgba(101, 214, 208, 0.16), transparent 34%), rgba(255, 255, 255, 0.86);
     border-color: rgba(255, 255, 255, 0.92);
     border-radius: 22px;
     box-shadow: var(--mm-shadow-sm);
@@ -648,10 +650,10 @@
     box-shadow: 0 10px 22px rgba(9, 47, 61, 0.16);
 }
 
-.aquarium-upgrade-button:not(:disabled):hover {
-    background: #10495b;
-    box-shadow: 0 13px 26px rgba(9, 47, 61, 0.2);
-}
+    .aquarium-upgrade-button:not(:disabled):hover {
+        background: #10495b;
+        box-shadow: 0 13px 26px rgba(9, 47, 61, 0.2);
+    }
 
 @media (max-width: 720px) {
     .aquarium-page {
@@ -683,5 +685,457 @@
 @media (max-width: 520px) {
     .aquarium-quick-links {
         flex-direction: column;
+    }
+}
+
+/* ========================================
+   BALIK DETAY PENCERESİ
+======================================== */
+
+.fish-detail-dialog {
+    width: min(92vw, 540px);
+    max-width: 540px;
+    padding: 0;
+    border: 0;
+    border-radius: 28px;
+    color: #123047;
+    background: transparent;
+    box-shadow: 0 30px 80px rgba(7, 42, 63, 0.28), 0 8px 24px rgba(7, 42, 63, 0.16);
+    overflow: visible;
+}
+
+    .fish-detail-dialog[open] {
+        animation: fish-dialog-open 220ms ease-out;
+    }
+
+    .fish-detail-dialog::backdrop {
+        background: rgba(5, 28, 44, 0.62);
+        backdrop-filter: blur(7px);
+        animation: fish-backdrop-open 180ms ease-out;
+    }
+
+.fish-detail-card {
+    position: relative;
+    overflow: hidden;
+    padding: 34px;
+    border: 1px solid rgba(72, 190, 203, 0.24);
+    border-radius: 28px;
+    background: radial-gradient( circle at 100% 0%, rgba(72, 211, 188, 0.22), transparent 35%), linear-gradient( 145deg, #ffffff 0%, #f2fbfa 100%);
+}
+
+    .fish-detail-card::before {
+        content: "";
+        position: absolute;
+        top: -45px;
+        left: -40px;
+        width: 145px;
+        height: 145px;
+        border-radius: 50%;
+        background: rgba(55, 190, 211, 0.08);
+        pointer-events: none;
+    }
+
+.fish-detail-close {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    z-index: 2;
+    display: grid;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    place-items: center;
+    border: 1px solid #d9e9e8;
+    border-radius: 50%;
+    color: #456477;
+    background: rgba(255, 255, 255, 0.9);
+    cursor: pointer;
+    transition: transform 160ms ease, color 160ms ease, background-color 160ms ease;
+}
+
+    .fish-detail-close:hover {
+        color: #ffffff;
+        background: #123c4c;
+        transform: rotate(8deg);
+    }
+
+    .fish-detail-close svg {
+        width: 19px;
+        height: 19px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+    }
+
+.fish-detail-visual {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 35px 22px;
+    text-align: center;
+}
+
+.fish-detail-avatar {
+    --fish-body: #36a9e1;
+    --fish-tail: #ffd34e;
+    display: grid;
+    width: 112px;
+    height: 112px;
+    margin-bottom: 17px;
+    place-items: center;
+    border: 1px solid rgba(67, 180, 193, 0.25);
+    border-radius: 34px;
+    background: radial-gradient( circle at 35% 25%, rgba(255, 255, 255, 0.95), transparent 28%), linear-gradient( 145deg, #e3f9f6, #cceef2);
+    box-shadow: 0 14px 28px rgba(31, 129, 148, 0.16);
+}
+
+    .fish-detail-avatar svg {
+        width: 82px;
+        height: 58px;
+        overflow: visible;
+        filter: drop-shadow(0 6px 5px rgba(8, 74, 99, 0.18));
+    }
+
+.fish-avatar-body {
+    fill: var(--fish-body);
+}
+
+.fish-avatar-tail {
+    fill: var(--fish-tail);
+}
+
+.fish-avatar-eye-white {
+    fill: #ffffff;
+}
+
+.fish-avatar-eye {
+    fill: #123047;
+}
+
+.fish-detail-avatar[data-fish="blue-tang"] {
+    --fish-body: #278de0;
+    --fish-tail: #f7d43d;
+}
+
+.fish-detail-avatar[data-fish="clown-fish"] {
+    --fish-body: #f58232;
+    --fish-tail: #ffffff;
+}
+
+.fish-detail-avatar[data-fish="neon-tetra"] {
+    --fish-body: #20c6d4;
+    --fish-tail: #ef4f67;
+}
+
+.fish-detail-avatar[data-fish="betta-fish"] {
+    --fish-body: #9467e8;
+    --fish-tail: #e05cc9;
+}
+
+.fish-detail-avatar[data-fish="goldfish"] {
+    --fish-body: #f5a623;
+    --fish-tail: #ffd164;
+}
+
+.fish-detail-eyebrow {
+    margin-bottom: 6px;
+    color: #139d91;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+}
+
+.fish-detail-visual h2 {
+    margin: 0;
+    color: #0b2c40;
+    font-size: clamp(1.7rem, 4vw, 2.15rem);
+    font-weight: 850;
+}
+
+.fish-detail-visual p {
+    max-width: 390px;
+    margin: 9px 0 0;
+    color: #617989;
+    font-size: 0.94rem;
+    line-height: 1.6;
+}
+
+.fish-detail-properties {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin: 0 0 24px;
+}
+
+    .fish-detail-properties div {
+        padding: 14px 16px;
+        border: 1px solid #dcebea;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.72);
+    }
+
+        .fish-detail-properties div:last-child {
+            grid-column: 1 / -1;
+        }
+
+    .fish-detail-properties dt {
+        margin-bottom: 3px;
+        color: #79909e;
+        font-size: 0.72rem;
+        font-weight: 700;
+    }
+
+    .fish-detail-properties dd {
+        margin: 0;
+        color: #173a4f;
+        font-size: 0.91rem;
+        font-weight: 800;
+    }
+
+.fish-nickname-form {
+    padding: 19px;
+    border: 1px solid rgba(50, 175, 163, 0.23);
+    border-radius: 20px;
+    background: #eaf8f5;
+}
+
+    .fish-nickname-form label {
+        display: block;
+        margin-bottom: 9px;
+        color: #173a4f;
+        font-size: 0.84rem;
+        font-weight: 800;
+    }
+
+.fish-nickname-controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 9px;
+}
+
+    .fish-nickname-controls input {
+        min-width: 0;
+        height: 46px;
+        padding: 0 14px;
+        border: 1px solid #c5dddc;
+        border-radius: 13px;
+        outline: none;
+        color: #173a4f;
+        background: #ffffff;
+        transition: border-color 160ms ease, box-shadow 160ms ease;
+    }
+
+        .fish-nickname-controls input:focus {
+            border-color: #19aa9c;
+            box-shadow: 0 0 0 4px rgba(25, 170, 156, 0.13);
+        }
+
+    .fish-nickname-controls button {
+        height: 46px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 13px;
+        color: #ffffff;
+        background: linear-gradient(135deg, #159c91, #137b8e);
+        font-size: 0.84rem;
+        font-weight: 800;
+        cursor: pointer;
+        box-shadow: 0 8px 16px rgba(19, 123, 142, 0.18);
+        transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+    }
+
+        .fish-nickname-controls button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 11px 20px rgba(19, 123, 142, 0.24);
+        }
+
+        .fish-nickname-controls button:disabled {
+            opacity: 0.58;
+            cursor: wait;
+            transform: none;
+        }
+
+.fish-nickname-form small {
+    display: block;
+    margin-top: 7px;
+    color: #718a97;
+    font-size: 0.72rem;
+}
+
+.fish-detail-message {
+    min-height: 20px;
+    margin: 7px 0 0;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+    .fish-detail-message.is-success {
+        color: #087f64;
+    }
+
+    .fish-detail-message.is-error {
+        color: #c53d4c;
+    }
+
+@keyframes fish-dialog-open {
+    from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes fish-backdrop-open {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@media (max-width: 575px) {
+    .fish-detail-dialog {
+        width: calc(100vw - 24px);
+    }
+
+    .fish-detail-card {
+        padding: 27px 18px 20px;
+        border-radius: 23px;
+    }
+
+    .fish-detail-visual {
+        padding-right: 24px;
+        padding-left: 24px;
+    }
+
+    .fish-detail-properties {
+        grid-template-columns: 1fr;
+    }
+
+        .fish-detail-properties div:last-child {
+            grid-column: auto;
+        }
+
+    .fish-nickname-controls {
+        grid-template-columns: 1fr;
+    }
+
+        .fish-nickname-controls button {
+            width: 100%;
+        }
+}
+
+/* ========================================
+   BALIK BAKIM PANELİ
+======================================== */
+
+.fish-care-panel {
+    position: relative;
+    z-index: 1;
+    margin: 18px 0;
+    padding: 18px;
+    border: 1px solid rgba(52, 184, 172, 0.22);
+    border-radius: 18px;
+    background: linear-gradient( 135deg, rgba(225, 249, 244, 0.92), rgba(236, 248, 252, 0.92));
+}
+
+.fish-care-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+    .fish-care-header > div {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+.fish-care-status {
+    width: fit-content;
+    padding: 4px 9px;
+    border-radius: 999px;
+    color: #087f64;
+    background: rgba(25, 194, 145, 0.13);
+    font-size: 0.68rem;
+    font-weight: 850;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+#fish-happiness-value {
+    color: #123047;
+    font-size: 1rem;
+    font-weight: 850;
+}
+
+#fish-feed-button {
+    min-width: 126px;
+    height: 43px;
+    padding: 0 17px;
+    border: 0;
+    border-radius: 13px;
+    color: #ffffff;
+    background: linear-gradient(135deg, #17b88d, #12849a);
+    font-size: 0.8rem;
+    font-weight: 850;
+    cursor: pointer;
+    box-shadow: 0 8px 17px rgba(18, 132, 154, 0.2);
+    transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+}
+
+    #fish-feed-button:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 11px 22px rgba(18, 132, 154, 0.27);
+    }
+
+    #fish-feed-button:disabled {
+        opacity: 0.52;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
+.fish-happiness-track {
+    height: 9px;
+    margin-top: 15px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(18, 63, 77, 0.12);
+}
+
+    .fish-happiness-track span {
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #f0b84c, #21c895);
+        transition: width 300ms ease;
+    }
+
+#fish-feeding-info {
+    display: block;
+    margin-top: 9px;
+    color: #617989;
+    font-size: 0.72rem;
+    line-height: 1.4;
+}
+
+@media (max-width: 575px) {
+    .fish-care-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    #fish-feed-button {
+        width: 100%;
     }
 }

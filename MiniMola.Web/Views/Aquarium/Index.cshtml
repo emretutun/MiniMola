@@ -54,6 +54,147 @@
             </div>
         </div>
     </div>
+        <dialog id="fish-detail-dialog"
+            class="fish-detail-dialog"
+            aria-labelledby="fish-detail-name">
+
+        <div class="fish-detail-card">
+            <button id="fish-detail-close"
+                    class="fish-detail-close"
+                    type="button"
+                    aria-label="Balık detaylarını kapat">
+                <svg viewBox="0 0 24 24"
+                     aria-hidden="true">
+                    <path d="M6 6l12 12M18 6 6 18" />
+                </svg>
+            </button>
+
+            <div class="fish-detail-visual">
+                <div id="fish-detail-avatar"
+                     class="fish-detail-avatar"
+                     aria-hidden="true">
+                    <svg viewBox="0 0 80 52">
+                        <path class="fish-avatar-tail"
+                              d="M22 26 4 10v32l18-16Z" />
+
+                        <ellipse class="fish-avatar-body"
+                                 cx="46"
+                                 cy="26"
+                                 rx="28"
+                                 ry="18" />
+
+                        <circle class="fish-avatar-eye-white"
+                                cx="61"
+                                cy="20"
+                                r="5" />
+
+                        <circle class="fish-avatar-eye"
+                                cx="62"
+                                cy="20"
+                                r="2" />
+                    </svg>
+                </div>
+
+                <span class="fish-detail-eyebrow">
+                    BALIK PROFİLİ
+                </span>
+
+                <h2 id="fish-detail-name">
+                    Balığım
+                </h2>
+
+                <p id="fish-detail-description">
+                    Balık bilgileri hazırlanıyor...
+                </p>
+            </div>
+
+            <dl class="fish-detail-properties">
+                <div>
+                    <dt>Tür</dt>
+                    <dd id="fish-detail-species">-</dd>
+                </div>
+
+                <div>
+                    <dt>Nadirlik</dt>
+                    <dd id="fish-detail-rarity">-</dd>
+                </div>
+
+                <div>
+                    <dt>Aramıza katıldığı tarih</dt>
+                    <dd id="fish-detail-acquired">-</dd>
+                </div>
+            </dl>
+
+                    <div class="fish-care-panel">
+            <div class="fish-care-header">
+                <div>
+                    <span id="fish-care-status"
+                          class="fish-care-status">
+                        Acıkmış
+                    </span>
+
+                    <strong id="fish-happiness-value">
+                        %35 mutluluk
+                    </strong>
+                </div>
+
+                <button id="fish-feed-button"
+                        type="button">
+                    Balığı besle
+                </button>
+            </div>
+
+            <div class="fish-happiness-track"
+                 role="progressbar"
+                 aria-label="Balığın mutluluk oranı"
+                 aria-valuemin="0"
+                 aria-valuemax="100"
+                 aria-valuenow="35">
+
+                <span id="fish-happiness-bar"
+                      style="width: 35%">
+                </span>
+            </div>
+
+            <small id="fish-feeding-info">
+                Bu balık henüz beslenmedi.
+            </small>
+        </div>
+
+            <form id="fish-nickname-form"
+                  class="fish-nickname-form">
+
+                <label for="fish-nickname-input">
+                    Balığının adı
+                </label>
+
+                <div class="fish-nickname-controls">
+                    <input id="fish-nickname-input"
+                           name="nickname"
+                           type="text"
+                           minlength="1"
+                           maxlength="20"
+                           autocomplete="off"
+                           required />
+
+                    <button id="fish-nickname-submit"
+                            type="submit">
+                        Adı kaydet
+                    </button>
+                </div>
+
+                <small>
+                    En fazla 20 karakter kullanabilirsin.
+                </small>
+
+                <p id="fish-detail-message"
+                   class="fish-detail-message"
+                   role="status"
+                   aria-live="polite">
+                </p>
+            </form>
+        </div>
+    </dialog>
 
     <footer class="aquarium-status">
         <div class="status-item">

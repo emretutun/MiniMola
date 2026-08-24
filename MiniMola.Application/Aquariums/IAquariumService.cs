@@ -18,6 +18,13 @@ public interface IAquariumService
         string identityUserId,
         CancellationToken cancellationToken = default);
 
+    Task<UpdateFishNicknameResultDto>
+    UpdateFishNicknameAsync(
+        string identityUserId,
+        int userFishId,
+        string nickname,
+        CancellationToken cancellationToken = default);
+
     Task<UpdateDecorationPositionResultDto>
     UpdateDecorationPositionAsync(
         string identityUserId,
@@ -25,5 +32,10 @@ public interface IAquariumService
         float positionX,
         float positionY,
         CancellationToken cancellationToken = default);
+
+    Task<FeedFishResultDto> FeedFishAsync(
+    string identityUserId,
+    int userFishId,
+    CancellationToken cancellationToken = default);
 
 }

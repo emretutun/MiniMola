@@ -28,6 +28,9 @@ public sealed class ApplicationDbContext(
     public DbSet<DailyWordPuzzle> DailyWordPuzzles
     => Set<DailyWordPuzzle>();
 
+    public DbSet<WordPoolItem> WordPoolItems
+    => Set<WordPoolItem>();
+
     public DbSet<WordGameSession> WordGameSessions
         => Set<WordGameSession>();
 

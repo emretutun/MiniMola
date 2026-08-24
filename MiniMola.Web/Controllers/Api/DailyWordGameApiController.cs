@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MiniMola.Application.WordGames;
+using Microsoft.AspNetCore.RateLimiting;
+using MiniMola.Web.RateLimiting;
 
 namespace MiniMola.Web.Controllers.Api;
 
@@ -42,6 +44,8 @@ public sealed class DailyWordGameApiController(
 
     [HttpPost("guess")]
     [ValidateAntiForgeryToken]
+    [EnableRateLimiting(
+    RateLimitingServiceExtensions.GameSubmitPolicy)]
     public async Task<ActionResult<SubmitWordGuessResultDto>> SubmitGuess(
         [FromBody] SubmitWordGuessRequestDto request,
         CancellationToken cancellationToken)

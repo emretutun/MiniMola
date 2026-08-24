@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using MiniMola.Application.MemoryGames;
+using Microsoft.AspNetCore.RateLimiting;
+using MiniMola.Web.RateLimiting;
 
 namespace MiniMola.Web.Controllers.Api;
 
@@ -39,6 +41,8 @@ public sealed class MemoryGameApiController(
 
     [HttpPost("complete")]
     [ValidateAntiForgeryToken]
+    [EnableRateLimiting(
+    RateLimitingServiceExtensions.GameSubmitPolicy)]
     public async Task<ActionResult<MemoryGameResultDto>> Complete(
         [FromBody] CompleteMemoryGameRequest request,
         CancellationToken cancellationToken)

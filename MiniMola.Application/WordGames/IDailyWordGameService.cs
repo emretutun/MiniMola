@@ -14,4 +14,6 @@ public interface IDailyWordGameService
         string identityUserId,
         string guess,
         CancellationToken cancellationToken = default);
+    Task EnsureTodayPuzzleAsync(
+    CancellationToken cancellationToken = default);
 }

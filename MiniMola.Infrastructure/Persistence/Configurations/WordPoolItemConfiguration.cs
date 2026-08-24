@@ -1,30 +1,33 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MiniMola.Domain.Entities;
 using MiniMola.Infrastructure.Persistence.Seed;
 
 namespace MiniMola.Infrastructure.Persistence.Configurations;
 
-public sealed class DailyWordPuzzleConfiguration
-    : IEntityTypeConfiguration<DailyWordPuzzle>
+public sealed class WordPoolItemConfiguration
+    : IEntityTypeConfiguration<WordPoolItem>
 {
     public void Configure(
-        EntityTypeBuilder<DailyWordPuzzle> builder)
+        EntityTypeBuilder<WordPoolItem> builder)
     {
         builder.ToTable(
-            "DailyWordPuzzles",
+            "WordPoolItems",
             table =>
             {
                 table.HasCheckConstraint(
-                    "CK_DailyWordPuzzles_Word_Length",
+                    "CK_WordPoolItems_Word_Length",
                     "LEN([Word]) = 5");
 
                 table.HasCheckConstraint(
-                    "CK_DailyWordPuzzles_Reward_Positive",
+                    "CK_WordPoolItems_Reward_Positive",
                     "[RewardPoints] > 0");
 
                 table.HasCheckConstraint(
-                    "CK_DailyWordPuzzles_MaxAttempts_Range",
+                    "CK_WordPoolItems_MaxAttempts_Range",
                     "[MaxAttempts] >= 1 AND [MaxAttempts] <= 10");
             });
 
@@ -47,16 +50,8 @@ public sealed class DailyWordPuzzleConfiguration
         builder.Property(x => x.IsActive)
             .HasDefaultValue(true);
 
-        builder.HasIndex(x => x.PuzzleDate)
+        builder.HasIndex(x => x.Word)
             .IsUnique();
-
-        builder.HasOne(x => x.WordPoolItem)
-            .WithMany()
-            .HasForeignKey(x => x.WordPoolItemId)
-            .OnDelete(DeleteBehavior.SetNull);
-
-        builder.HasIndex(x => x.WordPoolItemId);
-
-        builder.HasData(DailyWordPuzzleSeed.GetItems());
+        builder.HasData(WordPoolItemSeed.GetItems());
     }
 }

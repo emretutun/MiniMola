@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MiniMola.Application.BubbleGames;
+using Microsoft.AspNetCore.RateLimiting;
+using MiniMola.Web.RateLimiting;
 
 namespace MiniMola.Web.Controllers.Api;
 
@@ -38,6 +40,8 @@ public sealed class BubbleGameApiController(
 
     [HttpPost("complete")]
     [ValidateAntiForgeryToken]
+    [EnableRateLimiting(
+    RateLimitingServiceExtensions.GameSubmitPolicy)]
     public async Task<ActionResult<BubbleGameResultDto>> Complete(
         [FromBody] CompleteBubbleGameRequest request,
         CancellationToken cancellationToken)

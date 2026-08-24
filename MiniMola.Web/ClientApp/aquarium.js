@@ -5,6 +5,7 @@
 } from "pixi.js";
 
 const page = document.getElementById("aquarium-page");
+let selectedFish = null;
 
 if (page) {
     startAquarium().catch(showError);
@@ -28,6 +29,7 @@ async function startAquarium() {
     const aquarium = await response.json();
 
     updatePageInformation(aquarium);
+    initializeFishDetailDialog();
     initializeUpgradePanel().catch(showUpgradeError);
 
     const host = document.getElementById("aquarium-canvas-host");
@@ -1176,6 +1178,8 @@ function createFish(
     container.cursor = "pointer";
 
     container.on("pointertap", () => {
+        openFishDetail(fish);
+
         const message =
             document.querySelector(".status-message");
 
@@ -1302,3 +1306,448 @@ function showError(error) {
             "Akvaryum yüklenirken bir sorun oluştu.";
     }
 }
+function initializeFishDetailDialog() {
+    const dialog =
+        document.getElementById("fish-detail-dialog");
+
+    const closeButton =
+        document.getElementById("fish-detail-close");
+
+    const form =
+        document.getElementById("fish-nickname-form");
+    const feedButton =
+        document.getElementById("fish-feed-button");
+
+    if (!dialog || !closeButton || !form) {
+        return;
+    }
+
+    closeButton.addEventListener("click", () => {
+        dialog.close();
+    });
+
+    dialog.addEventListener("click", event => {
+        if (event.target === dialog) {
+            dialog.close();
+        }
+    });
+
+    dialog.addEventListener("close", () => {
+        selectedFish = null;
+        showFishDetailMessage("", null);
+    });
+    feedButton?.addEventListener(
+        "click",
+        feedSelectedFish);
+
+    form.addEventListener(
+        "submit",
+        updateSelectedFishNickname);
+}
+
+function openFishDetail(fish) {
+    const dialog =
+        document.getElementById("fish-detail-dialog");
+
+    if (!dialog) {
+        return;
+    }
+
+    selectedFish = fish;
+
+    const nickname =
+        fish.nickname?.trim() || fish.speciesName;
+
+    setText("fish-detail-name", nickname);
+    setText("fish-detail-species", fish.speciesName);
+
+    setText(
+        "fish-detail-description",
+        fish.speciesDescription
+        || "Akvaryumunun sevimli sakinlerinden biri.");
+
+    setText(
+        "fish-detail-rarity",
+        getFishRarityText(fish.rarity));
+
+    setText(
+        "fish-detail-acquired",
+        formatFishAcquiredDate(fish.acquiredAtUtc));
+    updateFishCarePanel(fish);
+
+    const nicknameInput =
+        document.getElementById("fish-nickname-input");
+
+    if (nicknameInput) {
+        nicknameInput.value = nickname;
+    }
+
+    const avatar =
+        document.getElementById("fish-detail-avatar");
+
+    if (avatar) {
+        avatar.dataset.fish = fish.assetKey || "";
+    }
+
+    showFishDetailMessage("", null);
+
+    if (!dialog.open) {
+        dialog.showModal();
+    }
+
+    window.setTimeout(() => {
+        nicknameInput?.focus();
+        nicknameInput?.select();
+    }, 100);
+}
+function updateFishCarePanel(fish) {
+    const happinessPercent = Math.max(
+        0,
+        Math.min(
+            100,
+            Number(fish.happinessPercent) || 0));
+
+    setText(
+        "fish-care-status",
+        fish.careStatus || "Bilinmiyor");
+
+    setText(
+        "fish-happiness-value",
+        `%${happinessPercent} mutluluk`);
+
+    const happinessBar =
+        document.getElementById(
+            "fish-happiness-bar");
+
+    if (happinessBar) {
+        happinessBar.style.width =
+            `${happinessPercent}%`;
+    }
+
+    const happinessTrack =
+        document.querySelector(
+            ".fish-happiness-track");
+
+    happinessTrack?.setAttribute(
+        "aria-valuenow",
+        happinessPercent.toString());
+
+    const feedButton =
+        document.getElementById(
+            "fish-feed-button");
+
+    if (feedButton) {
+        feedButton.disabled = !fish.canFeed;
+
+        feedButton.textContent =
+            fish.canFeed
+                ? "Balığı besle"
+                : "Balık tok";
+    }
+
+    const totalFeedings =
+        Number(fish.totalFeedings) || 0;
+
+    let feedingMessage =
+        `Toplam ${totalFeedings} kez beslendi.`;
+
+    if (!fish.lastFedAtUtc) {
+        feedingMessage =
+            "Bu balık henüz beslenmedi.";
+    }
+    else if (fish.canFeed) {
+        feedingMessage +=
+            " Yeniden beslenmeye hazır.";
+    }
+    else if (fish.nextFeedAtUtc) {
+        const nextFeedDate =
+            new Date(fish.nextFeedAtUtc);
+
+        if (!Number.isNaN(nextFeedDate.getTime())) {
+            const formattedDate =
+                nextFeedDate.toLocaleString(
+                    "tr-TR",
+                    {
+                        dateStyle: "short",
+                        timeStyle: "short"
+                    });
+
+            feedingMessage +=
+                ` ${formattedDate} tarihinde `
+                + "yeniden beslenebilir.";
+        }
+    }
+
+    setText(
+        "fish-feeding-info",
+        feedingMessage);
+}
+
+
+async function feedSelectedFish() {
+    if (!selectedFish) {
+        return;
+    }
+
+    const feedButton =
+        document.getElementById(
+            "fish-feed-button");
+
+    const tokenInput =
+        document.querySelector(
+            'input[name="__RequestVerificationToken"]');
+
+    if (!tokenInput?.value) {
+        showFishDetailMessage(
+            "Güvenlik anahtarı bulunamadı. "
+            + "Sayfayı yenileyip tekrar dene.",
+            false);
+
+        return;
+    }
+
+    if (feedButton) {
+        feedButton.disabled = true;
+        feedButton.textContent = "Besleniyor...";
+    }
+
+    try {
+        const response = await fetch(
+            `${page.dataset.apiUrl}/fish/`
+            + `${selectedFish.id}/feed`,
+            {
+                method: "POST",
+                credentials: "same-origin",
+                headers: {
+                    Accept: "application/json",
+                    "X-CSRF-TOKEN": tokenInput.value
+                }
+            });
+
+        const result = await response
+            .json()
+            .catch(() => null);
+
+        if (!response.ok || !result?.success) {
+            throw new Error(
+                result?.message
+                || result?.detail
+                || "Balık beslenemedi.");
+        }
+
+        selectedFish.lastFedAtUtc =
+            result.lastFedAtUtc;
+
+        selectedFish.totalFeedings =
+            result.totalFeedings;
+
+        selectedFish.happinessPercent =
+            result.happinessPercent;
+
+        selectedFish.careStatus =
+            result.careStatus;
+
+        selectedFish.canFeed =
+            result.canFeed;
+
+        selectedFish.nextFeedAtUtc =
+            result.nextFeedAtUtc;
+
+        updateFishCarePanel(selectedFish);
+
+        showFishDetailMessage(
+            result.message,
+            true);
+
+        const statusMessage =
+            document.querySelector(
+                ".status-message");
+
+        if (statusMessage) {
+            statusMessage.textContent =
+                `${selectedFish.nickname} `
+                + "yemeğini afiyetle yedi!";
+        }
+    }
+    catch (error) {
+        showFishDetailMessage(
+            error instanceof Error
+                ? error.message
+                : "Balık beslenemedi.",
+            false);
+    }
+    finally {
+        updateFishCarePanel(selectedFish);
+    }
+}
+
+
+async function updateSelectedFishNickname(event) {
+    event.preventDefault();
+
+    if (!selectedFish) {
+        return;
+    }
+
+    const input =
+        document.getElementById("fish-nickname-input");
+
+    const button =
+        document.getElementById("fish-nickname-submit");
+
+    const tokenInput =
+        document.querySelector(
+            'input[name="__RequestVerificationToken"]');
+
+    const nickname = input?.value.trim() ?? "";
+
+    if (!nickname) {
+        showFishDetailMessage(
+            "Balığının adı boş bırakılamaz.",
+            false);
+
+        input?.focus();
+        return;
+    }
+
+    if (!tokenInput?.value) {
+        showFishDetailMessage(
+            "Güvenlik anahtarı bulunamadı. Sayfayı yenile.",
+            false);
+
+        return;
+    }
+
+    if (button) {
+        button.disabled = true;
+        button.textContent = "Kaydediliyor...";
+    }
+
+    try {
+        const response = await fetch(
+            `${page.dataset.apiUrl}/fish/${selectedFish.id}/nickname`,
+            {
+                method: "PUT",
+                credentials: "same-origin",
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": tokenInput.value
+                },
+                body: JSON.stringify({
+                    nickname
+                })
+            });
+
+        const result = await response
+            .json()
+            .catch(() => null);
+
+        if (!response.ok || !result?.success) {
+            const validationMessage =
+                result?.errors
+                    ? Object.values(result.errors)
+                        .flat()
+                        .find(message =>
+                            typeof message === "string"
+                            && message.trim().length > 0)
+                    : null;
+
+            throw new Error(
+                validationMessage
+                || result?.message
+                || result?.detail
+                || "Balığının adı değiştirilemedi.");
+        }
+
+        selectedFish.nickname = result.nickname;
+
+        setText(
+            "fish-detail-name",
+            result.nickname);
+
+        if (input) {
+            input.value = result.nickname;
+        }
+
+        const statusMessage =
+            document.querySelector(".status-message");
+
+        if (statusMessage) {
+            statusMessage.textContent =
+                `${result.nickname} yeni adını çok sevdi!`;
+        }
+
+        showFishDetailMessage(
+            result.message,
+            true);
+    }
+    catch (error) {
+        showFishDetailMessage(
+            error instanceof Error
+                ? error.message
+                : "Balığının adı değiştirilemedi.",
+            false);
+    }
+    finally {
+        if (button) {
+            button.disabled = false;
+            button.textContent = "Adı kaydet";
+        }
+    }
+}
+
+function showFishDetailMessage(message, success) {
+    const element =
+        document.getElementById("fish-detail-message");
+
+    if (!element) {
+        return;
+    }
+
+    element.textContent = message;
+    element.classList.remove(
+        "is-success",
+        "is-error");
+
+    if (success === true) {
+        element.classList.add("is-success");
+    }
+
+    if (success === false) {
+        element.classList.add("is-error");
+    }
+}
+
+function getFishRarityText(rarity) {
+    const values = {
+        Common: "Yaygın",
+        Uncommon: "Nadir olmayan",
+        Rare: "Nadir",
+        Epic: "Destansı",
+        Legendary: "Efsanevi"
+    };
+
+    return values[rarity] || rarity || "-";
+}
+
+function formatFishAcquiredDate(value) {
+    if (!value) {
+        return "-";
+    }
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return "-";
+    }
+
+    return new Intl.DateTimeFormat(
+        "tr-TR",
+        {
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        })
+        .format(date);
+} 

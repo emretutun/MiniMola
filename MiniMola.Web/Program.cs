@@ -1,13 +1,23 @@
-using Microsoft.AspNetCore.Identity;
-using MiniMola.Infrastructure;
-using MiniMola.Infrastructure.Persistence;
-using MiniMola.Web.Middleware;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.AspNetCore.Identity;
+using MiniMola.Infrastructure;
+using MiniMola.Infrastructure.Persistence;
 using MiniMola.Infrastructure.Spotify;
+using MiniMola.Web.ErrorHandling;
+using MiniMola.Web.Middleware;
+using FluentValidation;
+using MiniMola.Application.Aquariums;
+using MiniMola.Application.Aquariums.Validators;
+using MiniMola.Web.RateLimiting;
+using Hangfire;
+using Hangfire.SqlServer;
+using MiniMola.Application.WordGames;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +30,37 @@ var connectionString =
 // Infrastructure servisleri: EF Core ve SQL Server
 builder.Services.AddInfrastructure(connectionString);
 
+builder.Services.AddHangfire(configuration =>
+    configuration
+        .SetDataCompatibilityLevel(
+            CompatibilityLevel.Version_180)
+        .UseSimpleAssemblyNameTypeSerializer()
+        .UseRecommendedSerializerSettings()
+        .UseSqlServerStorage(
+            connectionString,
+            new SqlServerStorageOptions
+            {
+                CommandBatchMaxTimeout =
+                    TimeSpan.FromMinutes(5),
+
+                SlidingInvisibilityTimeout =
+                    TimeSpan.FromMinutes(5),
+
+                QueuePollInterval =
+                    TimeSpan.FromSeconds(15),
+
+                UseRecommendedIsolationLevel = true,
+                DisableGlobalLocks = true,
+                PrepareSchemaIfNecessary = true
+            }));
+
+builder.Services.AddHangfireServer(options =>
+{
+    options.WorkerCount = 2;
+    options.ServerName =
+        $"MiniMola-{Environment.MachineName}";
+});
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 // Identity
@@ -30,6 +71,8 @@ builder.Services
         options.SignIn.RequireConfirmedAccount = false;
     })
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+// Spotify yapılandırması
 var spotifyClientId =
     builder.Configuration["Spotify:ClientId"]
     ?? throw new InvalidOperationException(
@@ -39,15 +82,16 @@ var spotifyClientSecret =
     builder.Configuration["Spotify:ClientSecret"]
     ?? throw new InvalidOperationException(
         "Spotify Client Secret, User Secrets içinde bulunamadı.");
+
 builder.Services.Configure<SpotifyOptions>(
     builder.Configuration.GetSection("Spotify"));
-
 
 builder.Services
     .AddAuthentication()
     .AddOAuth("Spotify", options =>
     {
-        options.SignInScheme = IdentityConstants.ExternalScheme;
+        options.SignInScheme =
+            IdentityConstants.ExternalScheme;
 
         options.ClientId = spotifyClientId;
         options.ClientSecret = spotifyClientSecret;
@@ -92,9 +136,10 @@ builder.Services
         {
             OnCreatingTicket = async context =>
             {
-                using var request = new HttpRequestMessage(
-                    HttpMethod.Get,
-                    context.Options.UserInformationEndpoint);
+                using var request =
+                    new HttpRequestMessage(
+                        HttpMethod.Get,
+                        context.Options.UserInformationEndpoint);
 
                 request.Headers.Authorization =
                     new AuthenticationHeaderValue(
@@ -115,23 +160,67 @@ builder.Services
                     await response.Content.ReadAsStringAsync(
                         context.HttpContext.RequestAborted);
 
-                using var userDocument = JsonDocument.Parse(json);
+                using var userDocument =
+                    JsonDocument.Parse(json);
 
-                context.RunClaimActions(userDocument.RootElement);
+                context.RunClaimActions(
+                    userDocument.RootElement);
             }
         };
     });
 
+// Veri koruma
 builder.Services.AddDataProtection();
 
+// CSRF koruması
 builder.Services.AddAntiforgery(options =>
 {
     options.HeaderName = "X-CSRF-TOKEN";
 });
 
+// MVC ve API
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddScoped<
+    IValidator<UpdateFishNicknameRequest>,
+    UpdateFishNicknameRequestValidator>();
+// Standart API hata cevapları
+builder.Services.AddProblemDetails();
+
+// Global API exception handler
+builder.Services
+    .AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddMiniMolaRateLimiting();
+
 var app = builder.Build();
+
+var recurringJobManager =
+    app.Services.GetRequiredService<
+        IRecurringJobManager>();
+
+recurringJobManager.AddOrUpdate<
+    IDailyWordGameService>(
+        "prepare-daily-word-puzzle",
+        service =>
+            service.EnsureTodayPuzzleAsync(
+                CancellationToken.None),
+        "5 0 * * *",
+        new RecurringJobOptions
+        {
+            TimeZone = TimeZoneInfo.Local
+        });
+
+app.UseMiddleware<RequestLogScopeMiddleware>();
+
+// Yalnızca /api istekleri için JSON hata yönetimi
+app.UseWhen(
+    context =>
+        context.Request.Path.StartsWithSegments("/api"),
+    apiApplication =>
+    {
+        apiApplication.UseExceptionHandler();
+        apiApplication.UseStatusCodePages();
+    });
 
 // HTTP istek hattı
 if (app.Environment.IsDevelopment())
@@ -140,7 +229,9 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
+    // Normal MVC sayfaları için kullanıcı dostu hata sayfası
     app.UseExceptionHandler("/Home/Error");
+
     app.UseHsts();
     app.UseHttpsRedirection();
 }
@@ -149,9 +240,18 @@ app.UseRouting();
 
 app.UseAuthentication();
 
+// Authentication'dan sonra çalışmalı;
+// böylece sayaç kullanıcı kimliğine göre tutulabilir.
+app.UseRateLimiter();
+
 app.UseMiddleware<UserProfileProvisioningMiddleware>();
 
 app.UseAuthorization();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseHangfireDashboard("/hangfire");
+}
 
 app.MapStaticAssets();
 
@@ -162,5 +262,6 @@ app.MapControllerRoute(
 
 app.MapRazorPages()
     .WithStaticAssets();
+
 
 app.Run();

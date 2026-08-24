@@ -20,6 +20,9 @@ public sealed class UserFishConfiguration
         builder.Property(x => x.ColorVariantKey)
             .HasMaxLength(100);
 
+        builder.Property(x => x.TotalFeedings)
+            .HasDefaultValue(0);
+
         builder.HasIndex(x => x.UserProfileId);
 
         builder.HasIndex(x => x.FishSpeciesId);

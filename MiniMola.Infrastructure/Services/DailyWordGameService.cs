@@ -8,11 +8,13 @@ using MiniMola.Application.WordGames;
 using MiniMola.Domain.Entities;
 using MiniMola.Domain.Enums;
 using MiniMola.Infrastructure.Persistence;
+using Microsoft.Extensions.Logging;
 
 namespace MiniMola.Infrastructure.Services;
 
 public sealed class DailyWordGameService(
-    ApplicationDbContext dbContext)
+    ApplicationDbContext dbContext,
+    ILogger<DailyWordGameService> logger)
     : IDailyWordGameService
 {
     private const string TurkishAlphabet =
@@ -30,10 +32,9 @@ public sealed class DailyWordGameService(
     {
         var today = GetTurkeyToday();
 
-        var puzzle = await dbContext.DailyWordPuzzles
-            .AsNoTracking()
-            .SingleOrDefaultAsync(
-                x => x.PuzzleDate == today && x.IsActive,
+        var puzzle =
+            await GetOrCreateDailyPuzzleAsync(
+                today,
                 cancellationToken);
 
         if (puzzle is null)
@@ -98,15 +99,15 @@ public sealed class DailyWordGameService(
 
         var today = GetTurkeyToday();
 
-        var puzzle = await dbContext.DailyWordPuzzles
-            .SingleOrDefaultAsync(
-                x => x.PuzzleDate == today && x.IsActive,
+        var puzzle =
+            await GetOrCreateDailyPuzzleAsync(
+                today,
                 cancellationToken);
 
         if (puzzle is null)
         {
             return Failed(
-                "Bugün için kelime oyunu bulunamadı.");
+                "Aktif kelime havuzunda kullanılabilecek kelime bulunamadı.");
         }
 
         var profile = await dbContext.UserProfiles
@@ -262,6 +263,117 @@ public sealed class DailyWordGameService(
             message,
             profile.PointBalance,
             game);
+    }
+
+    public async Task EnsureTodayPuzzleAsync(
+    CancellationToken cancellationToken = default)
+    {
+        var today = GetTurkeyToday();
+
+        var puzzle =
+            await GetOrCreateDailyPuzzleAsync(
+                today,
+                cancellationToken);
+
+        if (puzzle is null)
+        {
+            throw new InvalidOperationException(
+                "Bugünün kelime bulmacası hazırlanamadı. "
+                + "Aktif kelime havuzunu kontrol et.");
+        }
+
+        logger.LogInformation(
+            "Günlük kelime bulmacası hazırlandı. "
+            + "PuzzleId: {PuzzleId}, "
+            + "PuzzleDate: {PuzzleDate}",
+            puzzle.Id,
+            puzzle.PuzzleDate);
+    }
+
+    private async Task<DailyWordPuzzle?>
+    GetOrCreateDailyPuzzleAsync(
+        DateOnly puzzleDate,
+        CancellationToken cancellationToken)
+    {
+        var ownsTransaction =
+            dbContext.Database.CurrentTransaction is null;
+
+        await using var transaction =
+            ownsTransaction
+                ? await dbContext.Database.BeginTransactionAsync(
+                    IsolationLevel.Serializable,
+                    cancellationToken)
+                : null;
+
+        var existingPuzzle =
+            await dbContext.DailyWordPuzzles
+                .SingleOrDefaultAsync(
+                    x => x.PuzzleDate == puzzleDate,
+                    cancellationToken);
+
+        if (existingPuzzle is not null)
+        {
+            if (transaction is not null)
+            {
+                await transaction.CommitAsync(
+                    cancellationToken);
+            }
+
+            return existingPuzzle.IsActive
+                ? existingPuzzle
+                : null;
+        }
+
+        var wordPoolItem =
+            await dbContext.WordPoolItems
+                .AsNoTracking()
+                .Where(x => x.IsActive)
+                .OrderBy(
+                    x => dbContext.DailyWordPuzzles
+                        .Where(
+                            puzzle =>
+                                puzzle.WordPoolItemId == x.Id)
+                        .Select(
+                            puzzle =>
+                                (DateOnly?)puzzle.PuzzleDate)
+                        .Max())
+                .ThenBy(x => x.Id)
+                .FirstOrDefaultAsync(cancellationToken);
+
+        if (wordPoolItem is null)
+        {
+            if (transaction is not null)
+            {
+                await transaction.CommitAsync(
+                    cancellationToken);
+            }
+
+            return null;
+        }
+
+        var newPuzzle = new DailyWordPuzzle
+        {
+            PuzzleDate = puzzleDate,
+            Word = wordPoolItem.Word,
+            Hint = wordPoolItem.Hint,
+            RewardPoints = wordPoolItem.RewardPoints,
+            MaxAttempts = wordPoolItem.MaxAttempts,
+            IsActive = true,
+            WordPoolItemId = wordPoolItem.Id
+        };
+
+        dbContext.DailyWordPuzzles.Add(newPuzzle);
+
+        await dbContext.SaveChangesAsync(
+            cancellationToken);
+
+        if (transaction is not null)
+        {
+            await transaction.CommitAsync(
+                cancellationToken);
+        }
+
+        return newPuzzle;
     }
 
     private async Task<DailyWordGameDto> BuildGameDtoAsync(
