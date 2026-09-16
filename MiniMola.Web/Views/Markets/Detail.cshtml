@@ -1,0 +1,398 @@
+@model int
+
+@{
+    ViewData["Title"] = "Varlık Detayı";
+}
+
+<link rel="stylesheet"
+      href="~/css/market-detail.css"
+      asp-append-version="true" />
+
+<section id="market-detail-page"
+         class="market-detail-page"
+         data-asset-id="@Model"
+         data-api-url="@Url.Content($"~/api/markets/{Model}/history")"
+         data-analysis-url="@Url.Content($"~/api/markets/{Model}/analysis")"
+         data-estimate-url="@Url.Content($"~/api/markets/{Model}/fund-estimate")"
+         data-estimate-history-url="@Url.Content($"~/api/markets/{Model}/fund-estimate-history")"
+         data-fund-portfolio-url="@Url.Content($"~/api/markets/{Model}/fund-portfolio")"
+         data-market-detail-base-url="@Url.Content("~/Markets/Detail/")">
+
+    <a class="market-detail-back"
+       asp-controller="Markets"
+       asp-action="Index">
+        <span aria-hidden="true">←</span>
+        Takip listesine dön
+    </a>
+
+    <header class="market-detail-header">
+        <div class="market-detail-identity">
+            <div class="market-detail-symbol-row">
+                <span id="market-detail-symbol"
+                      class="market-detail-symbol">
+                    —
+                </span>
+
+                <span id="market-detail-type"
+                      class="market-detail-type">
+                    Piyasa
+                </span>
+            </div>
+
+            <h1 id="market-detail-name">
+                Varlık hazırlanıyor...
+            </h1>
+
+            <p id="market-detail-market"
+               class="market-detail-market">
+                Geçmiş fiyat verisi yükleniyor.
+            </p>
+        </div>
+
+        <div class="market-detail-quote">
+            <span id="market-detail-price"
+                  class="market-detail-price">
+                —
+            </span>
+
+            <span id="market-detail-change"
+                  class="market-detail-change is-neutral">
+                —
+            </span>
+
+            <small id="market-detail-observed">
+                Fiyat zamanı bekleniyor
+            </small>
+        </div>
+    </header>
+
+    <section id="fund-estimate-panel"
+             class="fund-estimate-panel"
+             aria-labelledby="fund-estimate-title"
+             hidden>
+        <div class="fund-estimate-heading">
+            <div>
+                <span class="fund-estimate-eyebrow">
+                    TAHMİNİ · RESMÎ FİYAT DEĞİLDİR
+                </span>
+
+                <h2 id="fund-estimate-title">
+                    Günlük fon tahmini
+                </h2>
+
+                <p id="fund-estimate-method">
+                    Fon dağılımı ve güncel piyasa hareketleri
+                    birleştiriliyor.
+                </p>
+            </div>
+
+            <div class="fund-estimate-result">
+                <span id="fund-estimate-change"
+                      class="fund-estimate-change is-neutral">
+                    Hesaplanıyor
+                </span>
+
+                <strong id="fund-estimate-price">—</strong>
+
+                <small>Tahmini fon fiyatı</small>
+            </div>
+        </div>
+
+        <div class="fund-estimate-meta-grid">
+            <article>
+                <span>Son resmî fiyat</span>
+                <strong id="fund-estimate-base-price">—</strong>
+                <small id="fund-estimate-base-date">—</small>
+            </article>
+
+            <article>
+                <span>Hesaplanan dağılım</span>
+                <strong id="fund-estimate-coverage">—</strong>
+                <small id="fund-estimate-distribution-date">—</small>
+            </article>
+
+            <article>
+                <span>Veri kapsamı değerlendirmesi</span>
+                <strong id="fund-estimate-confidence">—</strong>
+                <small id="fund-estimate-calculated-at">—</small>
+            </article>
+        </div>
+
+        <div id="fund-estimate-contributions"
+             class="fund-estimate-contributions">
+        </div>
+
+        <section id="fund-estimate-accuracy"
+                 class="fund-estimate-accuracy"
+                 aria-labelledby="fund-estimate-accuracy-title"
+                 hidden>
+            <div class="fund-estimate-accuracy-heading">
+                <div>
+                    <span class="fund-estimate-eyebrow">
+                        MODEL TAKİBİ
+                    </span>
+
+                    <h3 id="fund-estimate-accuracy-title">
+                        Tahmin performansı
+                    </h3>
+                </div>
+
+                <small>Son 30 ölçülmüş tahmin</small>
+            </div>
+
+            <div class="fund-estimate-accuracy-stats">
+                <article>
+                    <span>Ölçülen tahmin</span>
+                    <strong id="fund-estimate-evaluated-count">0</strong>
+                </article>
+
+                <article>
+                    <span>Ortalama mutlak hata</span>
+                    <strong id="fund-estimate-mean-error">—</strong>
+                </article>
+
+                <article>
+                    <span>±1 puan içinde</span>
+                    <strong id="fund-estimate-hit-rate">—</strong>
+                </article>
+            </div>
+
+            <div id="fund-estimate-history-list"
+                 class="fund-estimate-history-list">
+            </div>
+
+            <p id="fund-estimate-history-state"
+               class="fund-estimate-history-state">
+                İlk resmî sonuç bekleniyor.
+            </p>
+        </section>
+
+        <div id="fund-estimate-state"
+             class="fund-estimate-state"
+             role="status"
+             aria-live="polite">
+            Tahmin hazırlanıyor...
+        </div>
+
+        <footer>
+            Bu hesaplama yaklaşık bir modeldir. Fonun açıklanmayan
+            menkul kıymet detayları, gün içi işlemleri, giderleri ve
+            türev pozisyonları sonuçtan farklılık oluşturabilir.
+        </footer>
+    </section>
+
+    <section id="fund-portfolio-panel"
+             class="fund-portfolio-panel"
+             aria-labelledby="fund-portfolio-title"
+             hidden>
+        <div class="fund-portfolio-heading">
+            <div>
+                <span class="fund-portfolio-eyebrow">
+                    KAP PORTFÖY RAPORU
+                </span>
+
+                <h2 id="fund-portfolio-title">
+                    Son açıklanan hisseler
+                </h2>
+
+                <p>
+                    Aylık rapordaki pozisyonlar birleştirilerek
+                    gösterilir; güncel portföy olmayabilir.
+                </p>
+            </div>
+
+            <a id="fund-portfolio-source-link"
+               class="fund-portfolio-source-link"
+               href="#"
+               target="_blank"
+               rel="noopener noreferrer">
+                KAP bildirimini aç
+            </a>
+        </div>
+
+        <div class="fund-portfolio-meta">
+            <article>
+                <span>Rapor tarihi</span>
+                <strong id="fund-portfolio-report-date">—</strong>
+            </article>
+
+            <article>
+                <span>Rapordaki hisse ağırlığı</span>
+                <strong id="fund-portfolio-matched-weight">—</strong>
+            </article>
+
+            <article>
+                <span>Rapor yaşı</span>
+                <strong id="fund-portfolio-age">—</strong>
+            </article>
+        </div>
+
+        <div id="fund-portfolio-holdings"
+             class="fund-portfolio-holdings">
+        </div>
+
+        <div id="fund-portfolio-state"
+             class="fund-portfolio-state"
+             role="status"
+             aria-live="polite">
+            KAP raporu hazırlanıyor...
+        </div>
+
+        <footer>
+            Bu liste KAP’ta açıklanan dönem sonu portföyüdür.
+            Rapor tarihinden sonra yapılan işlemleri ve türev
+            pozisyonların yönsel etkisini göstermez.
+        </footer>
+    </section>
+
+    <section class="market-chart-panel"
+             aria-labelledby="market-chart-title">
+        <div class="market-chart-toolbar">
+            <div>
+                <span class="market-chart-eyebrow">
+                    FİYAT GRAFİĞİ
+                </span>
+
+                <h2 id="market-chart-title">
+                    Geçmiş hareket
+                </h2>
+            </div>
+
+            <div class="market-range-buttons"
+                 role="group"
+                 aria-label="Grafik dönemi">
+                <button type="button" data-range="1w">1H</button>
+                <button type="button"
+                        class="is-active"
+                        data-range="1m">1A</button>
+                <button type="button" data-range="3m">3A</button>
+                <button type="button" data-range="6m">6A</button>
+                <button type="button" data-range="1y">1Y</button>
+            </div>
+        </div>
+
+        <div class="market-chart-stage">
+            <div id="market-price-chart"
+                 class="market-price-chart"
+                 aria-label="Varlık fiyat grafiği">
+            </div>
+
+            <div id="market-chart-state"
+                 class="market-chart-state"
+                 role="status"
+                 aria-live="polite">
+                Grafik hazırlanıyor...
+            </div>
+        </div>
+
+        <div class="market-chart-source">
+            <span id="market-history-source">Kaynak bekleniyor</span>
+            <span id="market-history-interval">—</span>
+        </div>
+    </section>
+
+    <section class="market-detail-stats"
+             aria-label="Seçili dönem özeti">
+        <article>
+            <span>Dönem başlangıcı</span>
+            <strong id="market-stat-first">—</strong>
+        </article>
+
+        <article>
+            <span>Dönem en yüksek</span>
+            <strong id="market-stat-high">—</strong>
+        </article>
+
+        <article>
+            <span>Dönem en düşük</span>
+            <strong id="market-stat-low">—</strong>
+        </article>
+
+        <article>
+            <span>Dönem değişimi</span>
+            <strong id="market-stat-change">—</strong>
+        </article>
+    </section>
+
+    <section class="market-analysis-panel"
+             aria-labelledby="market-analysis-title">
+        <div class="market-analysis-heading">
+            <div>
+                <span class="market-chart-eyebrow">
+                    TEKNİK GÖRÜNÜM
+                </span>
+
+                <h2 id="market-analysis-title">
+                    Al / Tut / Sat göstergesi
+                </h2>
+            </div>
+
+            <div class="market-analysis-result">
+                <span id="market-analysis-signal"
+                      class="market-signal is-unavailable">
+                    Hesaplanıyor
+                </span>
+
+                <small id="market-analysis-confidence">
+                    Güven seviyesi bekleniyor
+                </small>
+            </div>
+        </div>
+
+        <div class="market-analysis-score-row">
+            <span>Sat</span>
+
+            <div class="market-analysis-meter"
+                 aria-label="Teknik görünüm puanı">
+                <span id="market-analysis-meter-fill"></span>
+            </div>
+
+            <span>Al</span>
+
+            <strong id="market-analysis-score">—</strong>
+        </div>
+
+        <p id="market-analysis-summary"
+           class="market-analysis-summary">
+            Göstergeler hesaplanıyor...
+        </p>
+
+        <div id="market-analysis-indicators"
+             class="market-analysis-indicators">
+        </div>
+
+        <div id="market-analysis-state"
+             class="market-analysis-state"
+             role="status"
+             aria-live="polite">
+            Teknik görünüm hazırlanıyor...
+        </div>
+
+        <footer>
+            Hesaplama son bir yıllık kapanışlardan SMA20/50/200,
+            RSI (14) ve MACD (12, 26, 9) kullanır. Gösterge sonucu
+            tek başına yatırım kararı değildir.
+        </footer>
+    </section>
+
+    <footer class="market-detail-note">
+        Veriler gecikmeli olabilir. Bu ekran yalnızca bilgi amaçlıdır;
+        yatırım tavsiyesi değildir.
+        <span>
+            Grafikler
+            <a href="https://www.tradingview.com/"
+               target="_blank"
+               rel="noopener noreferrer">
+                TradingView Lightweight Charts™
+            </a>
+            ile oluşturulur.
+        </span>
+    </footer>
+</section>
+
+@section Scripts {
+    <script type="module"
+            src="~/js/market-detail.bundle.js"
+            asp-append-version="true">
+    </script>
+}

@@ -1,0 +1,206 @@
+﻿@{
+    ViewData["Title"] = "Piyasa Molası";
+}
+
+<link rel="stylesheet"
+      href="~/css/market-watchlist.css"
+      asp-append-version="true" />
+
+<section id="market-watchlist-page"
+         class="market-watchlist-page"
+         data-api-url="@Url.Content("~/api/markets")"
+         data-detail-base-url="@Url.Action("Detail", "Markets")">
+
+    <form id="market-watchlist-antiforgery"
+          class="d-none">
+        @Html.AntiForgeryToken()
+    </form>
+
+    <header class="market-watchlist-hero">
+        <div>
+            <span class="market-watchlist-eyebrow">
+                PİYASA MOLASI
+            </span>
+
+            <h1>Piyasalar</h1>
+
+            <p>
+                Fon, hisse, kripto, endeks, altın ve döviz
+                varlıklarını tek bir sakin takip listesinde
+                incele.
+            </p>
+        </div>
+
+        <div class="market-watchlist-hero-icon"
+             aria-hidden="true">
+            <svg viewBox="0 0 48 48">
+                <path d="M8 35 18 25l7 6 15-18" />
+                <path d="M32 13h8v8" />
+            </svg>
+        </div>
+    </header>
+
+    <div class="market-watchlist-toolbar">
+        <label class="market-watchlist-search">
+            <span class="visually-hidden">
+                Varlık ara
+            </span>
+
+            <svg viewBox="0 0 24 24"
+                 aria-hidden="true">
+                <circle cx="11"
+                        cy="11"
+                        r="6" />
+
+                <path d="m16 16 4 4" />
+            </svg>
+
+            <input id="market-watchlist-search"
+                   type="search"
+                   placeholder="Sembol veya varlık adı ara"
+                   autocomplete="off" />
+        </label>
+
+        <button id="market-watchlist-favorites"
+                class="market-favorites-toggle"
+                type="button"
+                aria-pressed="false">
+            <span aria-hidden="true">☆</span>
+            Yalnızca favorilerim
+        </button>
+    </div>
+
+    <div class="market-watchlist-filters"
+         role="group"
+         aria-label="Varlık türü filtresi">
+
+        <button class="market-filter-button is-active"
+                type="button"
+                data-asset-type="">
+            Tümü
+        </button>
+
+        <button class="market-filter-button"
+                type="button"
+                data-asset-type="1">
+            Fonlar
+        </button>
+
+        <button class="market-filter-button"
+                type="button"
+                data-asset-type="2">
+            BES
+        </button>
+
+        <button class="market-filter-button"
+                type="button"
+                data-asset-type="3">
+            Hisseler
+        </button>
+
+        <button class="market-filter-button"
+                type="button"
+                data-asset-type="4">
+            Endeksler
+        </button>
+
+        <button class="market-filter-button"
+                type="button"
+                data-asset-type="5">
+            Kripto
+        </button>
+
+        <button class="market-filter-button"
+                type="button"
+                data-asset-type="6">
+            Altın
+        </button>
+
+        <button class="market-filter-button"
+                type="button"
+                data-asset-type="7">
+            Döviz
+        </button>
+
+        <button class="market-filter-button"
+                type="button"
+                data-asset-type="8">
+            BYF
+        </button>
+    </div>
+
+    <div id="market-watchlist-status"
+         class="market-watchlist-status"
+         role="status"
+         aria-live="polite">
+        Piyasa listesi hazırlanıyor...
+    </div>
+
+    <div id="market-watchlist-grid"
+         class="market-watchlist-grid"
+         aria-live="polite">
+    </div>
+
+    <div id="market-watchlist-empty"
+         class="market-watchlist-empty"
+         hidden>
+        <span aria-hidden="true">☆</span>
+
+        <h2>Burada henüz bir varlık yok.</h2>
+
+        <p>
+            Arama veya filtreyi değiştirerek
+            tekrar deneyebilirsin.
+        </p>
+    </div>
+
+    <nav id="market-watchlist-pagination"
+         class="market-watchlist-pagination"
+         aria-label="Piyasa listesi sayfaları"
+         hidden>
+        <label class="market-page-size" for="market-watchlist-page-size">
+            Sayfa başına
+            <select id="market-watchlist-page-size"
+                    aria-controls="market-watchlist-grid">
+                <option value="5">5</option>
+                <option value="15">15</option>
+                <option value="30" selected>30</option>
+                <option value="50">50</option>
+            </select>
+        </label>
+
+        <div class="market-pagination-controls">
+            <button id="market-watchlist-previous"
+                    class="market-page-button"
+                    type="button"
+                    aria-controls="market-watchlist-grid"
+                    disabled>
+                <span aria-hidden="true">←</span> Önceki
+            </button>
+
+            <span id="market-watchlist-page-info"
+                  class="market-page-info"></span>
+
+            <button id="market-watchlist-next"
+                    class="market-page-button"
+                    type="button"
+                    aria-controls="market-watchlist-grid"
+                    disabled>
+                Sonraki <span aria-hidden="true">→</span>
+            </button>
+        </div>
+    </nav>
+
+    <footer class="market-watchlist-footer">
+        Fiyatların kaynağı, güncellik zamanı ve
+        tahmini olup olmadığı her varlığın üzerinde
+        ayrıca gösterilecektir.
+    </footer>
+</section>
+
+@section Scripts {
+    <script type="module"
+            src="~/js/market-watchlist.bundle.js"
+            asp-append-version="true">
+    </script>
+}

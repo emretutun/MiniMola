@@ -4,14 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build:js": "esbuild ClientApp/aquarium.js ClientApp/shop.js ClientApp/word-game.js ClientApp/news.js ClientApp/music-player.js ClientApp/bubble-game.js ClientApp/memory-game.js ClientApp/decoration-shop.js --bundle --minify --sourcemap --outdir=wwwroot/js --entry-names=[name].bundle",
-    "watch:js": "esbuild ClientApp/aquarium.js ClientApp/shop.js ClientApp/word-game.js ClientApp/news.js ClientApp/music-player.js ClientApp/bubble-game.js ClientApp/memory-game.js ClientApp/decoration-shop.js --bundle --sourcemap --outdir=wwwroot/js --entry-names=[name].bundle --watch"
+    "build:js": "esbuild ClientApp/aquarium.js ClientApp/shop.js ClientApp/word-game.js ClientApp/news.js ClientApp/music-player.js ClientApp/bubble-game.js ClientApp/memory-game.js ClientApp/decoration-shop.js ClientApp/work-schedule.js ClientApp/work-countdown.js ClientApp/market-watchlist.js ClientApp/market-detail.js --bundle --minify --sourcemap --outdir=wwwroot/js --entry-names=[name].bundle",
+    "watch:js": "esbuild ClientApp/aquarium.js ClientApp/shop.js ClientApp/word-game.js ClientApp/news.js ClientApp/music-player.js ClientApp/bubble-game.js ClientApp/memory-game.js ClientApp/decoration-shop.js ClientApp/work-schedule.js ClientApp/work-countdown.js ClientApp/market-watchlist.js ClientApp/market-detail.js --bundle --sourcemap --outdir=wwwroot/js --entry-names=[name].bundle --watch"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "lightweight-charts": "^5.2.1",
     "pixi.js": "^8.19.0"
   },
   "devDependencies": {

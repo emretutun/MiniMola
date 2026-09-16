@@ -1,0 +1,101 @@
+﻿@{
+    ViewData["Title"] = "Mesai Sayacı";
+}
+
+<link rel="stylesheet"
+      href="~/css/work-countdown.css"
+      asp-append-version="true" />
+
+<section id="work-countdown-page"
+         class="work-countdown-page"
+         data-api-url="@Url.Content("~/api/work-schedule/countdown")">
+
+    <header class="countdown-header">
+        <div>
+            <span class="countdown-eyebrow">
+                MESAİ MODU
+            </span>
+
+            <h1>Mesainin bitmesine</h1>
+
+            <p id="countdown-status">
+                Çalışma programın kontrol ediliyor...
+            </p>
+        </div>
+
+        <a asp-controller="WorkSchedule"
+           asp-action="Index"
+           class="countdown-settings-link">
+            Çalışma saatlerini düzenle
+        </a>
+    </header>
+
+    <div id="countdown-message"
+         class="countdown-message"
+         role="status"
+         aria-live="polite"
+         hidden>
+    </div>
+
+    <section class="countdown-card">
+        <div class="countdown-clock"
+             aria-label="Mesai bitimine kalan süre">
+
+            <div class="countdown-unit">
+                <strong id="countdown-hours">00</strong>
+                <span>Saat</span>
+            </div>
+
+            <span class="countdown-separator">:</span>
+
+            <div class="countdown-unit">
+                <strong id="countdown-minutes">00</strong>
+                <span>Dakika</span>
+            </div>
+
+            <span class="countdown-separator">:</span>
+
+            <div class="countdown-unit">
+                <strong id="countdown-seconds">00</strong>
+                <span>Saniye</span>
+            </div>
+        </div>
+
+        <div class="countdown-progress">
+            <div class="countdown-progress-header">
+                <span>Bugünkü mesai ilerlemesi</span>
+                <strong id="countdown-progress-text">0%</strong>
+            </div>
+
+            <div class="countdown-progress-track">
+                <div id="countdown-progress-bar"
+                     class="countdown-progress-bar">
+                </div>
+            </div>
+        </div>
+
+        <div class="countdown-information">
+            <div>
+                <span>Mesai başlangıcı</span>
+                <strong id="countdown-start-time">--:--</strong>
+            </div>
+
+            <div>
+                <span>Mesai bitişi</span>
+                <strong id="countdown-end-time">--:--</strong>
+            </div>
+
+            <div>
+                <span>Şu an</span>
+                <strong id="countdown-current-time">--:--</strong>
+            </div>
+        </div>
+    </section>
+</section>
+
+@section Scripts {
+    <script type="module"
+            src="~/js/work-countdown.bundle.js"
+            asp-append-version="true">
+    </script>
+}

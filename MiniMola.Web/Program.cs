@@ -16,6 +16,12 @@ using MiniMola.Web.RateLimiting;
 using Hangfire;
 using Hangfire.SqlServer;
 using MiniMola.Application.WordGames;
+using MiniMola.Application.WorkSchedules;
+using MiniMola.Application.WorkSchedules.Validators;
+using MiniMola.Application.Markets;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using MiniMola.Infrastructure.Email;
+using MiniMola.Web.Services;
 
 
 
@@ -29,6 +35,14 @@ var connectionString =
 
 // Infrastructure servisleri: EF Core ve SQL Server
 builder.Services.AddInfrastructure(connectionString);
+
+builder.Services.Configure<SmtpOptions>(
+    builder.Configuration.GetSection(
+        SmtpOptions.SectionName));
+
+builder.Services.AddTransient<
+    IEmailSender,
+    IdentityEmailSender>();
 
 builder.Services.AddHangfire(configuration =>
     configuration
@@ -192,11 +206,19 @@ builder.Services
     .AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddMiniMolaRateLimiting();
 
+builder.Services.AddScoped<
+    IValidator<UpdateWorkScheduleRequest>,
+    UpdateWorkScheduleRequestValidator>();
+
 var app = builder.Build();
 
 var recurringJobManager =
     app.Services.GetRequiredService<
         IRecurringJobManager>();
+
+var backgroundJobClient =
+    app.Services.GetRequiredService<
+        IBackgroundJobClient>();
 
 recurringJobManager.AddOrUpdate<
     IDailyWordGameService>(
@@ -209,6 +231,48 @@ recurringJobManager.AddOrUpdate<
         {
             TimeZone = TimeZoneInfo.Local
         });
+
+recurringJobManager.AddOrUpdate<
+    IMarketPriceRefreshService>(
+        "refresh-market-prices",
+        service =>
+            service.RefreshTrackedAssetsAsync(
+                CancellationToken.None),
+        "*/5 * * * *",
+        new RecurringJobOptions
+        {
+            TimeZone = TimeZoneInfo.Utc
+        });
+
+recurringJobManager.AddOrUpdate<
+    IMarketAssetCatalogSyncService>(
+        "sync-market-asset-catalogs",
+        service =>
+            service.SyncCatalogsAsync(
+                CancellationToken.None),
+        "20 3 * * *",
+        new RecurringJobOptions
+        {
+            TimeZone = TimeZoneInfo.Utc
+        });
+
+recurringJobManager.AddOrUpdate<
+    IFundEstimateService>(
+        "evaluate-fund-estimates",
+        service =>
+            service.EvaluatePendingAsync(
+                CancellationToken.None),
+        "15 * * * *",
+        new RecurringJobOptions
+        {
+            TimeZone = TimeZoneInfo.Utc
+        });
+
+backgroundJobClient.Enqueue<
+    IMarketAssetCatalogSyncService>(
+        service =>
+            service.SyncCatalogsAsync(
+                CancellationToken.None));
 
 app.UseMiddleware<RequestLogScopeMiddleware>();
 

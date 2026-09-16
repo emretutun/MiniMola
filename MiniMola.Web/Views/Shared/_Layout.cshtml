@@ -1,291 +1,106 @@
 @{
-    var currentController =
-        ViewContext.RouteData.Values["controller"]?.ToString()
-        ?? string.Empty;
-
-    var currentAction =
-        ViewContext.RouteData.Values["action"]?.ToString()
-        ?? string.Empty;
-
-    var currentArea =
-        ViewContext.RouteData.Values["area"]?.ToString()
-        ?? string.Empty;
-
-    var isIdentityArea = string.Equals(
-        currentArea,
-        "Identity",
-        StringComparison.OrdinalIgnoreCase);
-
-    bool IsController(string controller) =>
-        string.Equals(
-            currentController,
-            controller,
-            StringComparison.OrdinalIgnoreCase);
-
-    bool IsRoute(string controller, string action) =>
-        IsController(controller)
-        && string.Equals(
-            currentAction,
-            action,
-            StringComparison.OrdinalIgnoreCase);
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+    var isIdentity = string.Equals(ViewContext.RouteData.Values["area"]?.ToString(), "Identity", StringComparison.OrdinalIgnoreCase);
+    var links = new[] {
+        ("Günlük alanın", "Home", "Index", "Genel bakış", "M3 10 12 3l9 7v10H3Z M9 20v-7h6v7"),
+        ("Günlük alanın", "Markets", "Index", "Piyasalar", "M4 19V5 M4 19h16 M7 14l4-4 4 3 5-8"),
+        ("Günlük alanın", "WorkSchedule", "Countdown", "Mesai sayacı", "M12 8v5l3 2 M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0"),
+        ("Biraz mola", "Aquarium", "Index", "Akvaryumum", "M5 12c5-8 12-8 16 0-4 8-11 8-16 0Zm0 0L1 8v8Z M16 10v1"),
+        ("Biraz mola", "Games", "Word", "Günün kelimesi", "M4 4h16v16H4Z M8 16l4-8 4 8 M10 13h4"),
+        ("Biraz mola", "Games", "Bubble", "Baloncuk patlat", "M14 15a6 6 0 1 1-12 0 6 6 0 0 1 12 0 M22 6a4 4 0 1 1-8 0 4 4 0 0 1 8 0"),
+        ("Biraz mola", "Games", "Memory", "Hafıza kartları", "M3 4h7v14H3Z M14 6h7v14h-7Z"),
+        ("Keşfet", "News", "Index", "Gündem", "M4 3h16v18H4Z M8 7h8 M8 11h8 M8 15h5"),
+        ("Keşfet", "Music", "Index", "Müzik ve podcast", "M9 18V5l11-2v13 M9 18a3 3 0 1 1-3-3 M20 16a3 3 0 1 1-3-3"),
+        ("Keşfet", "Shop", "Index", "Balık mağazası", "M4 8h16l-1 13H5Z M8 8V6a4 4 0 0 1 8 0v2"),
+        ("Keşfet", "Shop", "Decorations", "Dekorasyonlar", "M12 3 3 8l9 5 9-5Z M3 12l9 5 9-5 M3 16l9 5 9-5")
+    };
+    string? group = null;
 }
-
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f4f8f7" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f6f7f9" />
+    <script src="~/js/theme.js" asp-append-version="true"></script>
     <title>@ViewData["Title"] | MiniMola</title>
-
     <script type="importmap"></script>
-
-    <link rel="stylesheet"
-          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-
-    <link rel="stylesheet"
-          href="~/css/site.css"
-          asp-append-version="true" />
-
-    <link rel="stylesheet"
-          href="~/MiniMola.Web.styles.css"
-          asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/MiniMola.Web.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/workspace.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/theme.css" asp-append-version="true" />
 </head>
-
-<body>
-    <header class="app-header">
-        <nav class="navbar navbar-expand-lg app-navbar"
-             aria-label="Ana menü">
-            <div class="app-navbar-inner">
-                <a class="app-brand"
-                   asp-area=""
-                   asp-controller="Home"
-                   asp-action="Index"
-                   aria-label="MiniMola ana sayfa">
-                    <span class="app-brand-mark"
-                          aria-hidden="true">
-                        <svg viewBox="0 0 48 48"
-                             role="img">
-                            <path d="M14 27c5-8 15-10 22-5 4 3 5 8 2 12-4 6-14 7-21 2l-7 4 2-8-5-6 7 1Z"
-                                  fill="currentColor" />
-                            <circle cx="32" cy="27"
-                                    r="2.2"
-                                    fill="white" />
-                            <circle cx="14" cy="12"
-                                    r="4"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2.5" />
-                            <circle cx="25" cy="8"
-                                    r="2.5"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2" />
-                        </svg>
-                    </span>
-
-                    <span class="app-brand-copy">
-                        <strong>MiniMola</strong>
-                        <small>kendine kısa bir ara</small>
-                    </span>
-                </a>
-
-                <button class="navbar-toggler app-menu-toggle"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#app-navigation"
-                        aria-controls="app-navigation"
-                        aria-expanded="false"
-                        aria-label="Menüyü aç veya kapat">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-
-                <div id="app-navigation"
-                     class="collapse navbar-collapse app-navigation">
-                    <ul class="navbar-nav app-nav-list">
-                        <li class="nav-item">
-                            <a class="app-nav-link @(IsRoute("Home", "Index") ? "is-active" : null)"
-                               asp-area=""
-                               asp-controller="Home"
-                               asp-action="Index">
-                                Ana Sayfa
-                            </a>
-                        </li>
-
-                        @if (User.Identity?.IsAuthenticated == true)
-                        {
-                            <li class="nav-item">
-                                <a class="app-nav-link @(IsController("Aquarium") ? "is-active" : null)"
-                                   asp-area=""
-                                   asp-controller="Aquarium"
-                                   asp-action="Index">
-                                    Akvaryumum
-                                </a>
-                            </li>
-
-                            <li class="nav-item dropdown">
-                                <button class="app-nav-link app-dropdown-toggle @(IsController("Games") ? "is-active" : null)"
-                                        type="button"
-                                        data-bs-toggle="dropdown"
-                                        aria-expanded="false">
-                                    Oyunlar
-                                    <svg viewBox="0 0 12 8"
-                                         aria-hidden="true">
-                                        <path d="M1 1.5 6 6.5l5-5"
-                                              fill="none"
-                                              stroke="currentColor"
-                                              stroke-linecap="round"
-                                              stroke-linejoin="round"
-                                              stroke-width="1.7" />
-                                    </svg>
-                                </button>
-
-                                <div class="dropdown-menu app-dropdown-menu">
-                                    <span class="app-dropdown-label">
-                                        Günlük oyunlar
-                                    </span>
-
-                                    <a class="app-dropdown-item @(IsRoute("Games", "Word") ? "is-active" : null)"
-                                       asp-controller="Games"
-                                       asp-action="Word">
-                                        <span class="app-dropdown-icon word-icon">Aa</span>
-                                        <span>
-                                            <strong>Günün Kelimesi</strong>
-                                            <small>Beş harf, altı tahmin</small>
-                                        </span>
-                                    </a>
-
-                                    <a class="app-dropdown-item @(IsRoute("Games", "Bubble") ? "is-active" : null)"
-                                       asp-controller="Games"
-                                       asp-action="Bubble">
-                                        <span class="app-dropdown-icon bubble-icon">○</span>
-                                        <span>
-                                            <strong>Baloncuk Patlat</strong>
-                                            <small>45 saniyelik refleks molası</small>
-                                        </span>
-                                    </a>
-
-                                    <a class="app-dropdown-item @(IsRoute("Games", "Memory") ? "is-active" : null)"
-                                       asp-controller="Games"
-                                       asp-action="Memory">
-                                        <span class="app-dropdown-icon memory-icon">◇</span>
-                                        <span>
-                                            <strong>Hafıza Kartları</strong>
-                                            <small>Deniz canlılarını eşleştir</small>
-                                        </span>
-                                    </a>
-                                </div>
-                            </li>
-
-                            <li class="nav-item dropdown">
-                                <button class="app-nav-link app-dropdown-toggle @(IsController("Shop") ? "is-active" : null)"
-                                        type="button"
-                                        data-bs-toggle="dropdown"
-                                        aria-expanded="false">
-                                    Mağaza
-                                    <svg viewBox="0 0 12 8"
-                                         aria-hidden="true">
-                                        <path d="M1 1.5 6 6.5l5-5"
-                                              fill="none"
-                                              stroke="currentColor"
-                                              stroke-linecap="round"
-                                              stroke-linejoin="round"
-                                              stroke-width="1.7" />
-                                    </svg>
-                                </button>
-
-                                <div class="dropdown-menu app-dropdown-menu app-shop-menu">
-                                    <span class="app-dropdown-label">
-                                        Akvaryum mağazası
-                                    </span>
-
-                                    <a class="app-dropdown-item @(IsRoute("Shop", "Index") ? "is-active" : null)"
-                                       asp-controller="Shop"
-                                       asp-action="Index">
-                                        <span class="app-dropdown-icon fish-icon">◒</span>
-                                        <span>
-                                            <strong>Balıklar</strong>
-                                            <small>Yeni akvaryum dostları</small>
-                                        </span>
-                                    </a>
-
-                                    <a class="app-dropdown-item @(IsRoute("Shop", "Decorations") ? "is-active" : null)"
-                                       asp-controller="Shop"
-                                       asp-action="Decorations">
-                                        <span class="app-dropdown-icon decor-icon">✦</span>
-                                        <span>
-                                            <strong>Dekorasyonlar</strong>
-                                            <small>Akvaryumunu kişiselleştir</small>
-                                        </span>
-                                    </a>
-                                </div>
-                            </li>
-
-                            <li class="nav-item">
-                                <a class="app-nav-link @(IsController("News") ? "is-active" : null)"
-                                   asp-area=""
-                                   asp-controller="News"
-                                   asp-action="Index">
-                                    Gündem
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a class="app-nav-link @(IsController("Music") ? "is-active" : null)"
-                                   asp-area=""
-                                   asp-controller="Music"
-                                   asp-action="Index">
-                                    Müzik
-                                </a>
-                            </li>
-                        }
-                    </ul>
-
-                    <partial name="_LoginPartial" />
-                </div>
-            </div>
-        </nav>
-    </header>
-
-    <div class="app-background-orb app-orb-one"
-         aria-hidden="true"></div>
-    <div class="app-background-orb app-orb-two"
-         aria-hidden="true"></div>
-
-    <main class="app-main @(isIdentityArea ? "identity-main" : null)" role="main">
-        @RenderBody()
-    </main>
-
-    <footer class="app-footer">
-        <div class="app-footer-inner">
-            <div class="app-footer-brand">
-                <span class="app-footer-mark" aria-hidden="true"></span>
-                <div>
-                    <strong>MiniMola</strong>
-                    <span>Günün içinde küçük, iyi bir boşluk.</span>
-                </div>
-            </div>
-
-            <div class="app-footer-meta">
-                <span>© @DateTime.Now.Year MiniMola</span>
-                <a asp-area=""
-                   asp-controller="Home"
-                   asp-action="Privacy">
-                    Gizlilik
-                </a>
-            </div>
+<body class="mm-workspace">
+    <a class="mm-skip" href="#main-content">İçeriğe geç</a>
+    <aside class="mm-sidebar offcanvas-lg offcanvas-start" tabindex="-1" id="workspace-menu" aria-labelledby="workspace-brand">
+        <div class="mm-sidebar-top">
+            <a class="mm-brand" asp-area="" asp-controller="Home" asp-action="Index" id="workspace-brand">
+                <span class="mm-logo" aria-hidden="true"><span></span><span></span></span>
+                <span>MiniMola<small>Gününe küçük bir ara.</small></span>
+            </a>
+            <button class="btn-close d-lg-none" type="button" data-bs-dismiss="offcanvas" data-bs-target="#workspace-menu" aria-label="Menüyü kapat"></button>
         </div>
-    </footer>
-
+        <nav class="mm-sidebar-nav" aria-label="Ana menü">
+            @foreach (var link in links)
+            {
+                if (User.Identity?.IsAuthenticated != true && link.Item2 != "Home") { continue; }
+                if (group != link.Item1)
+                {
+                    group = link.Item1;
+                    <p class="mm-nav-label">@group</p>
+                }
+                var selected = !isIdentity && controller == link.Item2 &&
+                    (action == link.Item3 || (controller == "Markets") ||
+                     (controller == "WorkSchedule" && link.Item3 == "Countdown"));
+                <a class="mm-nav-item @(selected ? "is-current" : "")"
+                   aria-current="@(selected ? "page" : null)"
+                   asp-area="" asp-controller="@link.Item2" asp-action="@link.Item3">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="@link.Item5" /></svg>
+                    <span>@link.Item4</span>
+                </a>
+            }
+        </nav>
+        <div class="mm-sidebar-note">
+            <span class="mm-note-mark" aria-hidden="true">Ⅱ</span>
+            <strong>Küçük bir mola, iyi gelir.</strong>
+            <p>Kendi ritminde devam et.</p>
+        </div>
+        <a class="mm-sidebar-privacy" asp-area="" asp-controller="Home" asp-action="Privacy">Gizlilik ve kullanım</a>
+    </aside>
+    <div class="mm-workspace-body">
+        <header class="mm-topbar">
+            <div class="mm-topbar-location">
+                <button class="mm-menu-button d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#workspace-menu" aria-controls="workspace-menu" aria-label="Ana menüyü aç">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
+                </button>
+                <span class="mm-breadcrumb">Çalışma alanım <span aria-hidden="true">/</span> <strong>@ViewData["Title"]</strong></span>
+            </div>
+            <div class="mm-topbar-actions">
+                <label class="mm-theme-control" for="theme-mode">
+                    <span aria-hidden="true">◐</span>
+                    <span class="visually-hidden">Görünüm teması</span>
+                    <select id="theme-mode" aria-label="Görünüm teması">
+                        <option value="system">Sistem</option>
+                        <option value="light">Açık</option>
+                        <option value="dark">Koyu</option>
+                    </select>
+                </label>
+                <partial name="_LoginPartial" />
+            </div>
+        </header>
+        <main id="main-content" class="app-main @(isIdentity ? "identity-main" : "")" tabindex="-1">
+            @RenderBody()
+        </main>
+        <footer class="mm-footer">
+            <span>© @DateTime.Now.Year MiniMola</span>
+            <span>Günün içinde, sana ait bir alan.</span>
+        </footer>
+    </div>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js"
-            asp-append-version="true"></script>
-
+    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

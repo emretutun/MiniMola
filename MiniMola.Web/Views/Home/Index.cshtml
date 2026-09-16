@@ -1,319 +1,67 @@
 @{
-    ViewData["Title"] = "Ana Sayfa";
-    var displayName = User.Identity?.Name?.Split('@')[0] ?? "arkadaş";
+    ViewData["Title"] = "Genel bakış";
+    var signedIn = User.Identity?.IsAuthenticated == true;
+    var displayName = User.Identity?.Name?.Split('@')[0] ?? "";
+    var activities = new[] {
+        ("Games", "Word", "Aa", "Günün kelimesi", "Beş harf, altı tahmin. Zihnine kısa bir mola.", "Günlük bulmaca", "lavender"),
+        ("Games", "Bubble", "◌", "Baloncuk patlat", "45 saniyelik küçük bir refleks oyunu.", "Hızlı mola", "peach"),
+        ("Games", "Memory", "◇", "Hafıza kartları", "Kartları aç, deniz canlılarının eşlerini bul.", "Zihin egzersizi", "blue"),
+        ("Music", "Index", "♫", "Müzik ve podcast", "Spotify listelerinle molanın sesini seç.", "Kendi ritmin", "mint"),
+        ("News", "Index", "☷", "Gündem", "Öne çıkan haberlerle güne kısa bir bakış.", "Keşfet", "peach"),
+        ("Shop", "Index", "✧", "Akvaryum mağazası", "Biriktirdiğin Damlalarla alanını kişiselleştir.", "Yeni dostlar", "lavender")
+    };
 }
-
-<link rel="stylesheet"
-      href="~/css/home.css"
-      asp-append-version="true" />
-
-<section class="home-page">
-    @if (User.Identity?.IsAuthenticated == true)
-    {
-        <header class="home-hero">
-            <div class="home-hero-content">
-                <span class="home-eyebrow">
-                    <span></span>
-                    Beş dakikalık kaçış alanın
-                </span>
-
-                <h1>
-                    Merhaba @displayName,
-                    <em>biraz uzaklaşalım.</em>
-                </h1>
-
-                <p>
-                    İşlere kısa bir virgül koy. Bir oyun seç,
-                    Damla topla ya da hiçbir şey yapmadan
-                    akvaryumunda biraz oyalan.
-                </p>
-
-                <div class="home-actions">
-                    <a asp-controller="Aquarium"
-                       asp-action="Index"
-                       class="home-primary-button">
-                        <span>Akvaryumuma git</span>
-                        <svg viewBox="0 0 18 18" aria-hidden="true">
-                            <path d="M4 9h10M10 5l4 4-4 4"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                  stroke-width="1.8" />
-                        </svg>
-                    </a>
-
-                    <a asp-controller="Games"
-                       asp-action="Word"
-                       class="home-secondary-button">
-                        Günün oyununu oyna
-                    </a>
-                </div>
-
-                <div class="home-hero-notes">
-                    <span>
-                        <i></i>
-                        Her gün yeni ödüller
-                    </span>
-                    <span>
-                        <i></i>
-                        Sana ait bir akvaryum
-                    </span>
-                </div>
-            </div>
-
-            <div class="home-aquarium-card"
-                 aria-label="MiniMola akvaryum ön izlemesi">
-                <div class="home-aquarium-topline">
-                    <span>Bugünün sakin köşesi</span>
-                    <strong>CANLI</strong>
-                </div>
-
-                <div class="home-water-scene" aria-hidden="true">
-                    <div class="home-light-ray"></div>
-                    <span class="scene-bubble b1"></span>
-                    <span class="scene-bubble b2"></span>
-                    <span class="scene-bubble b3"></span>
-                    <span class="scene-bubble b4"></span>
-
-                    <div class="home-fish fish-main">
-                        <span class="home-fish-tail"></span>
-                        <span class="home-fish-body"></span>
-                        <span class="home-fish-fin"></span>
-                        <span class="home-fish-eye"></span>
-                    </div>
-
-                    <div class="home-fish fish-small">
-                        <span class="home-fish-tail"></span>
-                        <span class="home-fish-body"></span>
-                        <span class="home-fish-eye"></span>
-                    </div>
-
-                    <div class="home-seabed"></div>
-                    <span class="home-plant plant-left"></span>
-                    <span class="home-plant plant-right"></span>
-                </div>
-
-                <div class="home-aquarium-footer">
-                    <div>
-                        <span>Ruh hali</span>
-                        <strong>Sakin sular</strong>
-                    </div>
-                    <a asp-controller="Aquarium"
-                       asp-action="Index"
-                       aria-label="Akvaryumu aç">
-                        <svg viewBox="0 0 20 20" aria-hidden="true">
-                            <path d="M5 10h10M11 6l4 4-4 4"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                  stroke-width="1.8" />
-                        </svg>
-                    </a>
-                </div>
-            </div>
-        </header>
-
-        <div class="home-section-heading">
-            <div>
-                <span>MiniMola menüsü</span>
-                <h2>Şimdi ne iyi gelir?</h2>
-            </div>
-            <p>Vaktine ve moduna göre bir mola seç.</p>
+<section class="mm-dashboard">
+    <header class="mm-page-heading">
+        <div>
+            <span class="mm-kicker">KENDİNE AYIRDIĞIN ZAMAN</span>
+            <h1>@(signedIn ? $"Merhaba, {displayName}." : "Gününe iyi gelen bir mola.")</h1>
+            <p>@(signedIn ? "Bugün ne yapmak istersin? Kaldığın yerden devam et." : "Piyasalar, mini oyunlar, müzik ve sana ait küçük bir dünya.")</p>
         </div>
+        <span class="mm-date">@DateTime.Now.ToString("d MMMM yyyy", System.Globalization.CultureInfo.GetCultureInfo("tr-TR"))</span>
+    </header>
 
-        <div class="home-feature-grid">
-            <a asp-controller="Aquarium"
-               asp-action="Index"
-               class="home-feature-card aquarium-card is-wide">
-                <span class="feature-index">01</span>
-                <span class="feature-icon">
-                    <svg viewBox="0 0 48 48" aria-hidden="true">
-                        <path d="M12 27c6-9 17-11 25-5 5 4 5 10 1 14-6 5-16 5-23-1l-8 4 3-8-6-6 8 2Z"
-                              fill="currentColor" />
-                        <circle cx="33" cy="27" r="2.2" fill="white" />
-                    </svg>
-                </span>
-                <span class="feature-label">Kişisel alanın</span>
-                <h3>Akvaryumum</h3>
-                <p>Balıklarınla vakit geçir, dekorasyonlarını düzenle ve sakinleş.</p>
-                <strong>İçeri gir <span>→</span></strong>
+    <div class="mm-dashboard-featured">
+        <article class="mm-welcome">
+            <span class="mm-kicker">BİRAZ YAVAŞLA</span>
+            <h2>Küçük bir ara.<br />Daha iyi bir gün.</h2>
+            <p>Bir oyun oyna, piyasaya göz at veya akvaryumunun sakinliğine dal. Bu zaman senin.</p>
+            @if (signedIn)
+            {
+                <a class="mm-primary" asp-controller="Aquarium" asp-action="Index">Akvaryumuma git <span aria-hidden="true">↗</span></a>
+            }
+            else
+            {
+                <div class="mm-inline-actions">
+                    <a class="mm-primary" asp-area="Identity" asp-page="/Account/Register">Ücretsiz başla <span aria-hidden="true">↗</span></a>
+                    <a class="mm-text-link" asp-area="Identity" asp-page="/Account/Login">Giriş yap</a>
+                </div>
+            }
+            <div class="mm-welcome-art" aria-hidden="true"><div class="mm-art-orbit"></div><div class="mm-art-pause"><i></i><i></i></div><span class="mm-art-dot"></span></div>
+        </article>
+        <div class="mm-quick-stack">
+            <a class="mm-quick-card" asp-controller="Markets" asp-action="Index">
+                <span class="mm-feature-icon mint" aria-hidden="true">↗</span>
+                <div><span class="mm-kicker">TAKİP ET</span><h2>Piyasalar</h2><p>Favorilerin ve güncel hareketler.</p></div>
+                <span class="mm-arrow" aria-hidden="true">→</span>
             </a>
-
-            <a asp-controller="Games"
-               asp-action="Word"
-               class="home-feature-card word-card">
-                <span class="feature-index">02</span>
-                <span class="feature-icon">
-                    <svg viewBox="0 0 48 48" aria-hidden="true">
-                        <rect x="7" y="7" width="34" height="34" rx="10"
-                              fill="none" stroke="currentColor" stroke-width="3" />
-                        <path d="m15 32 7-17h4l7 17M18 25h12"
-                              fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="3" />
-                    </svg>
-                </span>
-                <span class="feature-label">Günlük bulmaca</span>
-                <h3>Günün Kelimesi</h3>
-                <p>Beş harfli kelimeyi bul, 30 Damlayı kap.</p>
-                <strong>Tahmine başla <span>→</span></strong>
-            </a>
-
-            <a asp-controller="Games"
-               asp-action="Bubble"
-               class="home-feature-card bubble-card">
-                <span class="feature-index">03</span>
-                <span class="feature-icon">
-                    <svg viewBox="0 0 48 48" aria-hidden="true">
-                        <circle cx="20" cy="29" r="11"
-                                fill="none" stroke="currentColor" stroke-width="3" />
-                        <circle cx="34" cy="15" r="7"
-                                fill="none" stroke="currentColor" stroke-width="3" />
-                        <circle cx="10" cy="12" r="3" fill="currentColor" />
-                    </svg>
-                </span>
-                <span class="feature-label">45 saniye</span>
-                <h3>Baloncuk Patlat</h3>
-                <p>Biraz hız, biraz refleks ve günlük 40 Damla.</p>
-                <strong>Oyuna gir <span>→</span></strong>
-            </a>
-
-            <a asp-controller="Games"
-               asp-action="Memory"
-               class="home-feature-card memory-card-home">
-                <span class="feature-index">04</span>
-                <span class="feature-icon">
-                    <svg viewBox="0 0 48 48" aria-hidden="true">
-                        <rect x="7" y="8" width="15" height="20" rx="4"
-                              fill="none" stroke="currentColor" stroke-width="3" />
-                        <rect x="26" y="8" width="15" height="20" rx="4"
-                              fill="none" stroke="currentColor" stroke-width="3" />
-                        <path d="M12 34h24" stroke="currentColor" stroke-linecap="round" stroke-width="3" />
-                    </svg>
-                </span>
-                <span class="feature-label">Zihin molası</span>
-                <h3>Hafıza Kartları</h3>
-                <p>Eşleri bul, zihnini tazele ve 60 Damla kazan.</p>
-                <strong>Kartları aç <span>→</span></strong>
-            </a>
-
-            <a asp-controller="Shop"
-               asp-action="Index"
-               class="home-feature-card shop-card">
-                <span class="feature-index">05</span>
-                <span class="feature-icon">
-                    <svg viewBox="0 0 48 48" aria-hidden="true">
-                        <path d="M11 19h26l-2 20H13l-2-20Z"
-                              fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="3" />
-                        <path d="M17 20c0-6 3-10 7-10s7 4 7 10"
-                              fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="3" />
-                    </svg>
-                </span>
-                <span class="feature-label">Damla mağazası</span>
-                <h3>Akvaryum Mağazası</h3>
-                <p>Yeni balıklar ve dekorasyonlarla alanını yenile.</p>
-                <strong>Mağazayı aç <span>→</span></strong>
-            </a>
-
-            <a asp-controller="News"
-               asp-action="Index"
-               class="home-feature-card headlines-card">
-                <span class="feature-index">06</span>
-                <span class="feature-icon">
-                    <svg viewBox="0 0 48 48" aria-hidden="true">
-                        <rect x="9" y="8" width="30" height="32" rx="6"
-                              fill="none" stroke="currentColor" stroke-width="3" />
-                        <path d="M16 17h16M16 24h16M16 31h10"
-                              stroke="currentColor" stroke-linecap="round" stroke-width="3" />
-                    </svg>
-                </span>
-                <span class="feature-label">Kısa gündem</span>
-                <h3>5 Dakikada Gündem</h3>
-                <p>Öne çıkan haberleri temiz ve hızlı bir akışta oku.</p>
-                <strong>Gündeme bak <span>→</span></strong>
-            </a>
-
-            <a asp-controller="Music"
-               asp-action="Index"
-               class="home-feature-card music-card is-wide">
-                <span class="feature-index">07</span>
-                <span class="feature-icon">
-                    <svg viewBox="0 0 48 48" aria-hidden="true">
-                        <path d="M14 30V14l22-4v16"
-                              fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" />
-                        <ellipse cx="10" cy="33" rx="7" ry="5" fill="currentColor" />
-                        <ellipse cx="32" cy="29" rx="7" ry="5" fill="currentColor" />
-                    </svg>
-                </span>
-                <span class="feature-label">Spotify ile</span>
-                <h3>Müzik ve Podcast</h3>
-                <p>Kendi listelerini aç, aradığın parçayı bul ve molanın sesini seç.</p>
-                <strong>Dinlemeye geç <span>→</span></strong>
+            <a class="mm-quick-card" asp-controller="WorkSchedule" asp-action="Countdown">
+                <span class="mm-feature-icon blue" aria-hidden="true">◷</span>
+                <div><span class="mm-kicker">GÜNÜNÜ PLANLA</span><h2>Mesai sayacı</h2><p>Günün kalanını bir bakışta gör.</p></div>
+                <span class="mm-arrow" aria-hidden="true">→</span>
             </a>
         </div>
-    }
-    else
-    {
-        <header class="home-hero public-hero">
-            <div class="home-hero-content">
-                <span class="home-eyebrow">
-                    <span></span>
-                    MiniMola
-                </span>
+    </div>
 
-                <h1>
-                    İşlere kısa bir ara,
-                    <em>kendine küçük bir alan.</em>
-                </h1>
-
-                <p>
-                    Günlük mini oyunlar, kişisel akvaryum,
-                    müzik ve kısa gündem. Hepsi günün içinde
-                    nefes alabileceğin birkaç dakika için.
-                </p>
-
-                <div class="home-actions">
-                    <a asp-area="Identity"
-                       asp-page="/Account/Register"
-                       class="home-primary-button">
-                        Ücretsiz başla
-                    </a>
-
-                    <a asp-area="Identity"
-                       asp-page="/Account/Login"
-                       class="home-secondary-button">
-                        Giriş yap
-                    </a>
-                </div>
-            </div>
-
-            <div class="home-aquarium-card" aria-hidden="true">
-                <div class="home-aquarium-topline">
-                    <span>Kendine ait bir dünya</span>
-                    <strong>MİNİ</strong>
-                </div>
-                <div class="home-water-scene">
-                    <div class="home-light-ray"></div>
-                    <span class="scene-bubble b1"></span>
-                    <span class="scene-bubble b2"></span>
-                    <span class="scene-bubble b3"></span>
-                    <div class="home-fish fish-main">
-                        <span class="home-fish-tail"></span>
-                        <span class="home-fish-body"></span>
-                        <span class="home-fish-fin"></span>
-                        <span class="home-fish-eye"></span>
-                    </div>
-                    <div class="home-seabed"></div>
-                    <span class="home-plant plant-left"></span>
-                    <span class="home-plant plant-right"></span>
-                </div>
-                <div class="home-aquarium-footer">
-                    <div>
-                        <span>Başlangıç hediyesi</span>
-                        <strong>250 Damla + ilk balığın</strong>
-                    </div>
-                </div>
-            </div>
-        </header>
-    }
+    <div class="mm-section-heading"><div><span class="mm-kicker">SANA AYRILAN ALAN</span><h2>Molanı seç</h2></div><p>Kısa bir oyun, güzel bir şarkı, yeni bir şey.</p></div>
+    <div class="mm-activity-grid">
+        @foreach (var item in activities)
+        {
+            <a class="mm-activity" asp-controller="@item.Item1" asp-action="@item.Item2">
+                <div class="mm-activity-top"><span class="mm-feature-icon @item.Item7" aria-hidden="true">@item.Item3</span><span class="mm-arrow" aria-hidden="true">↗</span></div>
+                <h3>@item.Item4</h3><p>@item.Item5</p><span class="mm-activity-label">@item.Item6</span>
+            </a>
+        }
+    </div>
+    <div class="mm-bottom-note"><span aria-hidden="true">✦</span><p>Her molada her şeyi yapmana gerek yok. Bugün sana iyi geleni seç.</p></div>
 </section>

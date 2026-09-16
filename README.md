@@ -12,7 +12,7 @@ Mini oyunların yanında güncel haberler ve Spotify entegrasyonu da bulunur. B�
 - Gündeme göz atabilir.
 - Kendi Spotify hesabından müzik veya podcast dinleyebilir.
 
-> Projenin mevcut arayüz sürümü: **V2**  
+> Güncel arayüz: **Yan menülü çalışma alanı ve açık/koyu tema**<br>
 > Mevcut mimari: **Katmanlı Modüler Monolith**  
 > Mevcut çalışma ortamı: **Local Development**
 
@@ -20,6 +20,10 @@ Mini oyunların yanında güncel haberler ve Spotify entegrasyonu da bulunur. B�
 
 ## İçindekiler
 
+- [Son eklenenler](#son-eklenenler)
+- [Piyasa takibi ve fon tahmini](#piyasa-takibi-ve-fon-tahmini)
+- [Mesai planı ve tema](#mesai-planı-ve-tema)
+- [Doğrulama kontrolleri](#doğrulama-kontrolleri)
 - [Projenin amacı](#projenin-amacı)
 - [Temel özellikler](#temel-özellikler)
 - [Ekranlar](#ekranlar)
@@ -53,6 +57,83 @@ Mini oyunların yanında güncel haberler ve Spotify entegrasyonu da bulunur. B�
 - [Proje durumu](#proje-durumu)
 
 ---
+
+## Son eklenenler
+
+- Çoklu varlık kataloğu, arama, tür filtreleri, sayfalama ve kişisel favoriler.
+- Kripto, BIST hisse/endeks, fon/BES, altın ve döviz takibi.
+- Lightweight Charts ile fiyat/hacim grafikleri; SMA, RSI ve MACD tabanlı teknik analiz.
+- Fon dağılımından yaklaşık tahmin ve THF için KAP hisse ağırlıklarına dayalı pilot model.
+- Tahmin geçmişi ve resmî fiyatla karşılaştırma altyapısı.
+- Haftalık mesai planı ve geri sayım.
+- Yenilenmiş ana sayfa, yan menü ve **Sistem / Açık / Koyu** tema seçimi.
+- MailKit tabanlı SMTP gönderimi; piyasa ve tema için çalıştırılabilir kontroller.
+
+## Piyasa takibi ve fon tahmini
+
+### Takip listesi ve grafikler
+
+Piyasalar ekranı bir **takip listesi** sunar; henüz alış maliyeti, işlem defteri veya kişisel portföy kâr/zarar hesabı değildir. Başlangıç varlıklarına ek olarak sağlayıcı katalogları senkronize edilir. Katalogda bulunmak, her varlık için fiyat veya geçmiş veri bulunacağını garanti etmez.
+
+CoinGecko, Yahoo Finance, TCMB, TEFAS/BEFAS ve KAP entegrasyonları kullanılır. Fiyat, günlük değişim, kaynak ve gözlem zamanı gösterilir. Gecikmiş, resmî ve tahmini değerler ayrıdır. Dış servis kesintileri ve istek sınırları olabilir; sabit 15 dakika gecikme veya kesintisiz ücretsiz erişim garantisi yoktur.
+
+Varlık detayında mum/çizgi grafiği, hacim ve teknik göstergeler bulunur. Sinyaller kurallı gösterge hesaplarıdır; yapay zekâ chatbotu veya kişiye özel yatırım tavsiyesi değildir.
+
+### KAP tabanlı THF pilotu
+
+- Pilot, **31 Ağustos 2026** tarihli THF raporuna bağlıdır. Yeni raporların otomatik keşfi henüz yoktur.
+- Rapordaki 77 hisse kalemi ayrıştırılır; günlük değişimler açıklanan ağırlıklarla çarpılır.
+- Bu raporda hisse ağırlığı **%97,79**. Katalog eşleşmesi ile güncel fiyat kapsamı farklıdır; fiyatı olmayan kalem hesaba alınmaz.
+- Eksik bölüm %100'e ölçeklenmez. Rapor sonrası işlemler, giderler ve diğer varlıkların etkisi bilinmez.
+- En az %60 güncel fiyat kapsamı, en fazla 45 günlük rapor ve bugünün resmî baz fiyatı aranır. Seans içinde fiyatlara 45 dakikalık tazelik kontrolü uygulanır; hafta sonu yeni tahmin üretilmez.
+- Hisse bazında katkılar, rapor tarihi ve hesaplanamama nedenleri gösterilir.
+- `kap-holdings-v2` geçmişi, diğer fonların `allocation-proxy-v1` geçmişinden ayrıdır. Sonraki hafta içi gün beklenen yayın tarihi kabul edilir; tam tatil takvimi yoktur. Tarih eşleştirmesi ve isabet oranı gerçek yayınlarla ayrıca doğrulanmalıdır.
+
+Diğer desteklenen fonlarda mevcut dağılım/endeks yaklaşımı sürer. Her fonun KAP PDF düzeni için genel bir okuyucu henüz yoktur.
+
+**Finansal uyarı:** Tahminler resmî fon fiyatı değildir. Veri kapsamı, doğruluk veya kazanç olasılığı değildir. Teknik sinyaller ve tahminler yatırım tavsiyesi olarak kullanılmamalıdır.
+
+### Piyasa API uçları
+
+Oturum gerektirir; favori yazma işlemleri antiforgery doğrulaması kullanır.
+
+| Yöntem | Uç | İşlev |
+| --- | --- | --- |
+| GET | `/api/markets` | Sayfalı katalog, arama ve filtreler |
+| GET | `/api/markets/{id}/history` | Fiyat geçmişi |
+| GET | `/api/markets/{id}/analysis` | Teknik analiz |
+| GET | `/api/markets/{id}/fund-estimate` | Yaklaşık fon tahmini |
+| GET | `/api/markets/{id}/fund-estimate-history` | Tahmin değerlendirmeleri |
+| GET | `/api/markets/{id}/fund-portfolio` | KAP portföy raporu |
+| POST / DELETE | `/api/markets/{id}/favorite` | Favoriye ekleme / çıkarma |
+
+Liste cevabı dizi değil; `items`, `totalCount`, `totalPages` gibi alanları bulunan sayfalı bir nesnedir.
+
+### Arka plan ve veritabanı
+
+Hangfire takip edilen fiyatları beş dakikada bir, katalogları günlük 03:20 UTC'de, tahmin sonuçlarını her saatin 15. dakikasında kontrol eder. Uygulama kapalıyken görevler çalışmaz. Sağlayıcıların kendi yenileme aralıkları da geçerlidir.
+
+Yeni modeller: `MarketAsset`, `MarketPriceSnapshot`, `UserFavoriteAsset`, `FundEstimateSnapshot`, `FundPortfolioReport`, `FundPortfolioHolding` ve `UserWorkScheduleDay`.
+
+## Mesai planı ve tema
+
+Çalışma günleri ve saatleri kullanıcıya özel kaydedilir. Sayaç bu plana göre geri sayım gösterir. API: `GET / PUT /api/work-schedule`, `GET /api/work-schedule/countdown`.
+
+Üst çubuktaki **Sistem / Açık / Koyu** seçimi tarayıcıda hatırlanır. Sistem seçeneği cihazın renk tercihini izler; açık sekmeler arasında seçim eşitlenir. Piyasa grafiğinin renkleri de güncellenir. Tercih farklı cihazlar arasında senkronize edilmez.
+
+## Doğrulama kontrolleri
+
+Proje kökünden:
+
+```powershell
+dotnet build .\MiniMola.slnx
+dotnet run --project .\tests\MarketChecks\MarketChecks.csproj
+node --test .\tests\theme.test.cjs
+```
+
+Piyasa kontrol programında ağırlıklı hesaplama, veri tazeliği, önceki kapanış seçimi ve KAP ayrıştırması için 16 kontrol bulunur. Tema için 5 test kayıtlı tercih, sistem modu, sekmeler arası eşitleme ve depolama hatalarını kapsar. Bunlar kapsamlı uçtan uca testler değildir; `dotnet test` yerine yukarıdaki komutlarla çalıştırılır.
+
+İsteğe bağlı gerçek servis kontrolü için [MarketChecks açıklamasına](tests/MarketChecks/README.md) bakın. `--live` katalog/fiyat/tahmin kayıtlarını günceller; yalnızca geliştirme veritabanında kullanılmalıdır.
 
 ## Projenin amacı
 
@@ -173,7 +254,7 @@ Bu yapı sayesinde oyunlar bağımsız eğlenceler olarak kalmaz. Oyunlardan kaz
 
 ### Arayüz
 
-- Responsive V2 tasarım
+- Responsive çalışma alanı ve açık/koyu tema
 - Masaüstü ve mobil uyumlu menü
 - Ortak renk ve tasarım sistemi
 - SVG tabanlı ikonlar
@@ -1459,7 +1540,7 @@ Secret değerleri:
 ### 1. Repoyu klonlayın
 
 ```powershell
-git clone REPOSITORY_URL
+git clone https://github.com/emretutun/MiniMola.git
 Set-Location .\MiniMola
 ```
 
@@ -1518,6 +1599,12 @@ Set-Location ..
 ```
 
 ### 9. Veritabanını oluşturun veya güncelleyin
+
+CLI aracı kurulu değilse EF Core 10 ile uyumlu sürümü yükleyin. Alternatif olarak Package Manager Console bölümündeki `Update-Database` komutunu kullanabilirsiniz.
+
+```powershell
+dotnet tool install --global dotnet-ef --version "10.*"
+```
 
 ```powershell
 dotnet ef database update `
@@ -1654,6 +1741,16 @@ MakeSpotifyUpdatedAtNullable
 SeedDecorationItems
 AddWordPoolItems
 AddFishFeedingSystem
+AddUserWorkSchedule
+AddMarketWatchlist
+AddMarketAssetProviderMapping
+SeedInitialMarketAssets
+UseTcmbXmlCurrencyProvider
+MapRemainingInitialMarketAssets
+AddMarketAssetFeaturedFlag
+AllowDuplicateMarketAssetSymbols
+AddFundEstimateHistory
+AddFundPortfolioReports
 ```
 
 Hangfire tabloları EF Core migration listesinde bulunmaz. Hangfire kendi SQL şemasını yönetir.
@@ -1700,7 +1797,13 @@ bubble-game.js
 memory-game.js
 news.js
 music-player.js
+market-watchlist.js
+market-detail.js
+work-schedule.js
+work-countdown.js
 ```
+
+Tema başlangıcı `wwwroot/js/theme.js` üzerinden stillerden önce çalışır; bu dosya bundle giriş noktası değildir. Tema stilleri `wwwroot/css/theme.css` içindedir.
 
 ### PowerShell execution policy hatası
 
@@ -1719,6 +1822,12 @@ npm.cmd run build:js
 kullanılabilir.
 
 ---
+
+### SMTP yapılandırması
+
+MailKit gönderim altyapısı Identity e-posta akışlarına bağlanmıştır. `Smtp:Username`, `Smtp:Password` ve `Smtp:FromEmail` değerlerini User Secrets veya dağıtım ortamının secret yönetimi üzerinden tanımlayın; repoya eklemeyin. `Smtp:Host`, `Port`, `UseStartTls` ve `FromName` seçenekleri sağlayıcınıza uygun olmalıdır. Gmail kullanılıyorsa normal hesap şifresi yerine uygun uygulama kimlik bilgisi gerekir.
+
+Gerçek e-posta gönderimini ortamınızda test edin. SMTP erişimi ağ tarafından engellenebilir; altyapının bulunması teslimat garantisi değildir. `RequireConfirmedAccount` şu anda kapalıdır.
 
 ## Güvenlik
 
@@ -1838,14 +1947,14 @@ kullanılabilir.
 Mevcut geliştirme sürümünde:
 
 - Uygulama yerel SQL Server Express ile çalışmaktadır.
-- Otomatik test projesi henüz bulunmamaktadır.
+- Piyasa ve tema kontrolleri bulunur; kapsamlı uçtan uca test kapsamı henüz yoktur.
 - Uygulamaya özel yönetici paneli bulunmamaktadır.
 - Hangfire Dashboard yalnızca teknik job yönetimi sağlar.
 - Balık ve dekorasyon görselleri programatik olarak çizilmektedir.
 - Akvaryum için farklı tema mağazası henüz bulunmamaktadır.
 - Spotify kullanılabilirliği Spotify hesabına ve Spotify servis durumuna bağlıdır.
 - Haber sistemi Habertürk RSS akışının erişilebilir olmasına bağlıdır.
-- E-posta doğrulaması etkin değildir.
+- SMTP gönderim altyapısı vardır; zorunlu e-posta doğrulaması etkin değildir (`RequireConfirmedAccount = false`). Gerçek gönderim doğrulanmadan zorunlu doğrulamayı açmayın.
 - Puan işlem geçmişi kullanıcı arayüzünde gösterilmemektedir.
 - Teknik loglar kalıcı merkezi log sistemine gönderilmemektedir.
 - Memory cache birden fazla uygulama sunucusu arasında paylaşılmaz.
@@ -1991,7 +2100,12 @@ Microservice yalnızca yeni bir teknoloji öğrenmek amacıyla tüm uygulamaya b
 - [x] Spotify şarkı arama
 - [x] Spotify çalma listeleri
 - [x] Spotify web oynatıcısı
-- [x] Responsive V2 arayüz
+- [x] Yenilenmiş çalışma alanı ve koyu tema
+- [x] Çoklu varlık kataloğu, favoriler ve grafikler
+- [x] Teknik analiz ve fon tahmini
+- [x] THF KAP portföy pilotu ve tahmin geçmişi
+- [x] Mesai planı ve geri sayım
+- [x] Piyasa ve tema doğrulama kontrolleri
 - [x] Environment yapılandırması
 - [x] User Secrets
 - [x] Global API hata yönetimi
@@ -2005,8 +2119,9 @@ Microservice yalnızca yeni bir teknoloji öğrenmek amacıyla tüm uygulamaya b
 
 ### Planlananlar
 
-- [ ] Unit testler
-- [ ] Integration testler
+- [ ] Test kapsamını genişletme ve uçtan uca testler
+- [ ] Yeni KAP raporlarını otomatik keşfetme ve farklı fon formatları
+- [ ] Portföy maliyeti, işlemler ve kâr/zarar takibi
 - [ ] Health checks
 - [ ] Merkezi loglama
 - [ ] Docker

@@ -1,0 +1,399 @@
+﻿.work-schedule-page {
+    width: min(100%, 1120px);
+    margin: 0 auto;
+    padding: 12px 0 48px;
+    color: #123047;
+}
+
+.work-schedule-hero {
+    position: relative;
+    display: flex;
+    min-height: 235px;
+    margin-bottom: 24px;
+    padding: 42px;
+    overflow: hidden;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    border-radius: 30px;
+    color: #ffffff;
+    background: radial-gradient( circle at 88% 15%, rgba(63, 220, 190, 0.3), transparent 30%), linear-gradient( 135deg, #0b3140, #0d5965 62%, #128477);
+    box-shadow: 0 22px 50px rgba(7, 49, 63, 0.2);
+}
+
+    .work-schedule-hero::after {
+        content: "";
+        position: absolute;
+        right: -80px;
+        bottom: -125px;
+        width: 310px;
+        height: 310px;
+        border: 42px solid rgba(255, 255, 255, 0.07);
+        border-radius: 50%;
+    }
+
+    .work-schedule-hero > div:first-child {
+        position: relative;
+        z-index: 1;
+        max-width: 670px;
+    }
+
+.work-schedule-eyebrow {
+    display: inline-block;
+    margin-bottom: 10px;
+    color: #70ead1;
+    font-size: 0.72rem;
+    font-weight: 850;
+    letter-spacing: 0.16em;
+}
+
+.work-schedule-hero h1 {
+    margin: 0;
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    font-weight: 850;
+    letter-spacing: -0.04em;
+}
+
+.work-schedule-hero p {
+    max-width: 620px;
+    margin: 15px 0 0;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+.work-schedule-hero-icon {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    width: 120px;
+    height: 120px;
+    flex: 0 0 auto;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 36px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    transform: rotate(4deg);
+}
+
+    .work-schedule-hero-icon svg {
+        width: 70px;
+        height: 70px;
+        fill: none;
+        stroke: #ffffff;
+        stroke-width: 1.7;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+.work-schedule-message {
+    margin-bottom: 18px;
+    padding: 14px 17px;
+    border-radius: 14px;
+    font-size: 0.88rem;
+    font-weight: 750;
+}
+
+    .work-schedule-message.is-success {
+        border: 1px solid rgba(19, 156, 126, 0.25);
+        color: #08755f;
+        background: #e9faf4;
+    }
+
+    .work-schedule-message.is-error {
+        border: 1px solid rgba(203, 64, 76, 0.22);
+        color: #b33142;
+        background: #fff0f2;
+    }
+
+.work-schedule-form {
+    overflow: hidden;
+    border: 1px solid #dcebea;
+    border-radius: 26px;
+    background: #ffffff;
+    box-shadow: 0 18px 42px rgba(13, 70, 84, 0.09);
+}
+
+.work-schedule-form-header {
+    display: flex;
+    padding: 27px 30px;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    border-bottom: 1px solid #e6f0ef;
+    background: linear-gradient( 135deg, #fbfefd, #f3faf9);
+}
+
+    .work-schedule-form-header span {
+        color: #169b8e;
+        font-size: 0.7rem;
+        font-weight: 850;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+    }
+
+    .work-schedule-form-header h2 {
+        margin: 5px 0 0;
+        color: #0b2c40;
+        font-size: 1.35rem;
+        font-weight: 850;
+    }
+
+    .work-schedule-form-header small {
+        max-width: 310px;
+        color: #718794;
+        line-height: 1.5;
+        text-align: right;
+    }
+
+.work-schedule-days {
+    display: grid;
+    padding: 25px 30px;
+    gap: 13px;
+}
+
+.work-schedule-day {
+    display: grid;
+    min-height: 92px;
+    padding: 17px 18px;
+    align-items: center;
+    grid-template-columns: minmax(220px, 1fr) minmax(145px, 180px) minmax(145px, 180px);
+    gap: 18px;
+    border: 1px solid #deebea;
+    border-radius: 18px;
+    background: #ffffff;
+    transition: border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
+}
+
+    .work-schedule-day:hover {
+        border-color: #a8d9d4;
+        transform: translateY(-1px);
+    }
+
+    .work-schedule-day.is-rest-day {
+        background: #f7faf9;
+    }
+
+.work-day-toggle {
+    display: flex;
+    margin: 0;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+}
+
+    .work-day-toggle input {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+.work-day-switch {
+    position: relative;
+    width: 48px;
+    height: 27px;
+    flex: 0 0 auto;
+    border-radius: 999px;
+    background: #cad9d7;
+    transition: background-color 160ms ease;
+}
+
+    .work-day-switch::after {
+        content: "";
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        width: 19px;
+        height: 19px;
+        border-radius: 50%;
+        background: #ffffff;
+        box-shadow: 0 3px 8px rgba(30, 65, 74, 0.2);
+        transition: transform 160ms ease;
+    }
+
+.work-day-toggle input:checked + .work-day-switch {
+    background: linear-gradient( 135deg, #1bc497, #12899b);
+}
+
+    .work-day-toggle input:checked + .work-day-switch::after {
+        transform: translateX(21px);
+    }
+
+.work-day-toggle input:focus-visible + .work-day-switch {
+    outline: 3px solid rgba(28, 172, 156, 0.24);
+    outline-offset: 3px;
+}
+
+.work-day-name {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 3px;
+}
+
+    .work-day-name strong {
+        color: #102f42;
+        font-size: 0.96rem;
+        font-weight: 850;
+    }
+
+    .work-day-name small {
+        color: #748a96;
+        font-size: 0.72rem;
+    }
+
+.work-time-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+    .work-time-field label {
+        color: #657d8a;
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    .work-time-field input {
+        width: 100%;
+        height: 44px;
+        padding: 0 13px;
+        border: 1px solid #d5e4e3;
+        border-radius: 12px;
+        color: #123047;
+        background: #fbfefd;
+        font: inherit;
+        font-size: 0.88rem;
+        font-weight: 750;
+        outline: none;
+        transition: border-color 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+    }
+
+        .work-time-field input:focus {
+            border-color: #20a99a;
+            box-shadow: 0 0 0 4px rgba(32, 169, 154, 0.12);
+        }
+
+.work-schedule-day.is-rest-day
+.work-time-field input {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.work-schedule-loading {
+    padding: 55px 20px;
+    color: #69818e;
+    text-align: center;
+}
+
+.work-schedule-actions {
+    display: flex;
+    padding: 22px 30px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    border-top: 1px solid #e3eeee;
+    background: #f8fbfa;
+}
+
+    .work-schedule-actions p {
+        max-width: 570px;
+        margin: 0;
+        color: #708691;
+        font-size: 0.78rem;
+        line-height: 1.55;
+    }
+
+    .work-schedule-actions button {
+        min-width: 230px;
+        height: 48px;
+        padding: 0 22px;
+        border: 0;
+        border-radius: 14px;
+        color: #ffffff;
+        background: linear-gradient( 135deg, #18b98e, #117f94);
+        font-size: 0.84rem;
+        font-weight: 850;
+        cursor: pointer;
+        box-shadow: 0 10px 20px rgba(17, 127, 148, 0.2);
+        transition: transform 160ms ease, opacity 160ms ease, box-shadow 160ms ease;
+    }
+
+        .work-schedule-actions button:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 13px 25px rgba(17, 127, 148, 0.26);
+        }
+
+        .work-schedule-actions button:disabled {
+            opacity: 0.55;
+            cursor: wait;
+            box-shadow: none;
+        }
+
+@media (max-width: 800px) {
+    .work-schedule-hero {
+        padding: 32px 26px;
+    }
+
+    .work-schedule-hero-icon {
+        display: none;
+    }
+
+    .work-schedule-form-header,
+    .work-schedule-actions {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+        .work-schedule-form-header small {
+            text-align: left;
+        }
+
+    .work-schedule-day {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .work-day-toggle {
+        grid-column: 1 / -1;
+    }
+
+    .work-schedule-actions button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 520px) {
+    .work-schedule-page {
+        padding-top: 0;
+    }
+
+    .work-schedule-hero {
+        min-height: 0;
+        padding: 27px 20px;
+        border-radius: 22px;
+    }
+
+    .work-schedule-form {
+        border-radius: 21px;
+    }
+
+    .work-schedule-form-header,
+    .work-schedule-days,
+    .work-schedule-actions {
+        padding-right: 18px;
+        padding-left: 18px;
+    }
+
+    .work-schedule-day {
+        grid-template-columns: 1fr;
+    }
+
+    .work-day-toggle {
+        grid-column: auto;
+    }
+}

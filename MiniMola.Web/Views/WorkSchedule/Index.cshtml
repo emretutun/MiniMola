@@ -1,0 +1,93 @@
+﻿@{
+    ViewData["Title"] = "Çalışma Saatlerim";
+}
+
+<link rel="stylesheet"
+      href="~/css/work-schedule.css"
+      asp-append-version="true" />
+
+<section id="work-schedule-page"
+         class="work-schedule-page"
+         data-api-url="@Url.Content("~/api/work-schedule")">
+
+    <form id="work-schedule-antiforgery"
+          class="d-none">
+        @Html.AntiForgeryToken()
+    </form>
+
+    <header class="work-schedule-hero">
+        <div>
+            <span class="work-schedule-eyebrow">
+                MESAİ MODU
+            </span>
+
+            <h1>Çalışma saatlerini belirle</h1>
+
+            <p>
+                Çalıştığın günleri ve saatleri seç.
+                MiniMola mesainin bitmesine kalan süreyi
+                senin için hesaplasın.
+            </p>
+        </div>
+
+        <div class="work-schedule-hero-icon"
+             aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12"
+                        cy="12"
+                        r="8" />
+
+                <path d="M12 7v5l3 2" />
+            </svg>
+        </div>
+    </header>
+
+    <div id="work-schedule-message"
+         class="work-schedule-message"
+         role="status"
+         aria-live="polite"
+         hidden>
+    </div>
+
+    <form id="work-schedule-form"
+          class="work-schedule-form">
+
+        <div class="work-schedule-form-header">
+            <div>
+                <span>Haftalık program</span>
+                <h2>Hangi günler çalışıyorsun?</h2>
+            </div>
+
+            <small>
+                Seçili olmayan günler izin günü kabul edilir.
+            </small>
+        </div>
+
+        <div id="work-schedule-days"
+             class="work-schedule-days">
+
+            <div class="work-schedule-loading">
+                Çalışma programın hazırlanıyor...
+            </div>
+        </div>
+
+        <footer class="work-schedule-actions">
+            <p>
+                Gece vardiyası kullanıyorsan bitiş saatini
+                başlangıç saatinden daha erken seçebilirsin.
+            </p>
+
+            <button id="work-schedule-submit"
+                    type="submit">
+                Çalışma saatlerimi kaydet
+            </button>
+        </footer>
+    </form>
+</section>
+
+@section Scripts {
+    <script type="module"
+            src="~/js/work-schedule.bundle.js"
+            asp-append-version="true">
+    </script>
+}

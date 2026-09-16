@@ -39,6 +39,29 @@ public sealed class ApplicationDbContext(
     public DbSet<SpotifyConnection> SpotifyConnections
     => Set<SpotifyConnection>();
 
+    public DbSet<UserWorkScheduleDay>
+    UserWorkScheduleDays
+    => Set<UserWorkScheduleDay>();
+
+    public DbSet<MarketAsset> MarketAssets
+    => Set<MarketAsset>();
+
+    public DbSet<UserFavoriteAsset> UserFavoriteAssets
+        => Set<UserFavoriteAsset>();
+
+    public DbSet<MarketPriceSnapshot> MarketPriceSnapshots
+        => Set<MarketPriceSnapshot>();
+
+    public DbSet<FundEstimateSnapshot> FundEstimateSnapshots
+        => Set<FundEstimateSnapshot>();
+
+    public DbSet<FundPortfolioReport> FundPortfolioReports
+        => Set<FundPortfolioReport>();
+
+    public DbSet<FundPortfolioHolding> FundPortfolioHoldings
+        => Set<FundPortfolioHolding>();
+
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

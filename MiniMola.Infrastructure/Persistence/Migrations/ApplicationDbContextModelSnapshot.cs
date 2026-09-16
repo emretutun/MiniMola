@@ -708,6 +708,446 @@ namespace MiniMola.Infrastructure.Persistence.Migrations
                         });
                 });
 
+            modelBuilder.Entity("MiniMola.Domain.Entities.FundEstimateSnapshot", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal?>("AbsoluteErrorPercent")
+                        .HasPrecision(18, 6)
+                        .HasColumnType("decimal(18,6)");
+
+                    b.Property<decimal?>("ActualChangePercent")
+                        .HasPrecision(18, 6)
+                        .HasColumnType("decimal(18,6)");
+
+                    b.Property<DateTime?>("ActualObservedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("ActualPrice")
+                        .HasPrecision(28, 12)
+                        .HasColumnType("decimal(28,12)");
+
+                    b.Property<decimal>("BasePrice")
+                        .HasPrecision(28, 12)
+                        .HasColumnType("decimal(28,12)");
+
+                    b.Property<DateTime>("BasePriceObservedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CalculatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ConfidenceCode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<decimal>("CoveragePercent")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateOnly?>("DistributionDate")
+                        .HasColumnType("date");
+
+                    b.Property<decimal>("EstimatedChangePercent")
+                        .HasPrecision(18, 6)
+                        .HasColumnType("decimal(18,6)");
+
+                    b.Property<decimal>("EstimatedPrice")
+                        .HasPrecision(28, 12)
+                        .HasColumnType("decimal(28,12)");
+
+                    b.Property<DateTime?>("EvaluatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MarketAssetId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ModelVersion")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<DateOnly>("TargetDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TargetDate", "EvaluatedAtUtc");
+
+                    b.HasIndex("MarketAssetId", "TargetDate", "ModelVersion")
+                        .IsUnique();
+
+                    b.ToTable("FundEstimateSnapshots", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_FundEstimateSnapshots_ActualPrice", "[ActualPrice] IS NULL OR [ActualPrice] > 0");
+
+                            t.HasCheckConstraint("CK_FundEstimateSnapshots_BasePrice", "[BasePrice] > 0");
+
+                            t.HasCheckConstraint("CK_FundEstimateSnapshots_CoveragePercent", "[CoveragePercent] >= 0 AND [CoveragePercent] <= 100");
+
+                            t.HasCheckConstraint("CK_FundEstimateSnapshots_EstimatedPrice", "[EstimatedPrice] > 0");
+                        });
+                });
+
+            modelBuilder.Entity("MiniMola.Domain.Entities.FundPortfolioHolding", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FundPortfolioReportId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MatchedMarketAssetId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SecurityName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("SecuritySymbol")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("WeightPercent")
+                        .HasPrecision(6, 2)
+                        .HasColumnType("decimal(6,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MatchedMarketAssetId");
+
+                    b.HasIndex("FundPortfolioReportId", "SecuritySymbol")
+                        .IsUnique();
+
+                    b.ToTable("FundPortfolioHoldings", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_FundPortfolioHoldings_WeightPercent", "[WeightPercent] >= -100 AND [WeightPercent] <= 300");
+                        });
+                });
+
+            modelBuilder.Entity("MiniMola.Domain.Entities.FundPortfolioReport", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DocumentObjectId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("DocumentUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("FundMarketAssetId")
+                        .HasColumnType("int");
+
+                    b.Property<long>("KapNotificationId")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal>("MatchedWeightPercent")
+                        .HasPrecision(6, 2)
+                        .HasColumnType("decimal(6,2)");
+
+                    b.Property<string>("NotificationUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<decimal>("ParsedWeightPercent")
+                        .HasPrecision(6, 2)
+                        .HasColumnType("decimal(6,2)");
+
+                    b.Property<string>("ParserVersion")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<DateTime>("PublishedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateOnly>("ReportDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DocumentObjectId")
+                        .IsUnique();
+
+                    b.HasIndex("FundMarketAssetId", "ReportDate")
+                        .IsUnique();
+
+                    b.ToTable("FundPortfolioReports", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_FundPortfolioReports_MatchedWeightPercent", "[MatchedWeightPercent] >= -100 AND [MatchedWeightPercent] <= 300");
+
+                            t.HasCheckConstraint("CK_FundPortfolioReports_ParsedWeightPercent", "[ParsedWeightPercent] >= -100 AND [ParsedWeightPercent] <= 300");
+                        });
+                });
+
+            modelBuilder.Entity("MiniMola.Domain.Entities.MarketAsset", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AssetType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DataProviderCode")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsFeatured")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("MarketCode")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("ProviderSymbol")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("QuoteCurrency")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("Symbol")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssetType", "IsActive");
+
+                    b.HasIndex("IsActive", "IsFeatured");
+
+                    b.HasIndex("DataProviderCode", "ProviderSymbol", "QuoteCurrency")
+                        .IsUnique()
+                        .HasFilter("[DataProviderCode] IS NOT NULL AND [ProviderSymbol] IS NOT NULL");
+
+                    b.HasIndex("MarketCode", "Symbol", "QuoteCurrency");
+
+                    b.ToTable("MarketAssets", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_MarketAssets_AssetType", "[AssetType] >= 1 AND [AssetType] <= 10");
+
+                            t.HasCheckConstraint("CK_MarketAssets_ProviderMapping", "([DataProviderCode] IS NULL AND [ProviderSymbol] IS NULL) OR ([DataProviderCode] IS NOT NULL AND [ProviderSymbol] IS NOT NULL)");
+                        });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AssetType = 5,
+                            CreatedAtUtc = new DateTime(2026, 8, 31, 0, 0, 0, 0, DateTimeKind.Utc),
+                            DataProviderCode = "COINGECKO",
+                            IsActive = true,
+                            IsFeatured = true,
+                            MarketCode = "CRYPTO",
+                            Name = "Bitcoin",
+                            ProviderSymbol = "bitcoin",
+                            QuoteCurrency = "TRY",
+                            Symbol = "BTC"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AssetType = 5,
+                            CreatedAtUtc = new DateTime(2026, 8, 31, 0, 0, 0, 0, DateTimeKind.Utc),
+                            DataProviderCode = "COINGECKO",
+                            IsActive = true,
+                            IsFeatured = true,
+                            MarketCode = "CRYPTO",
+                            Name = "Ethereum",
+                            ProviderSymbol = "ethereum",
+                            QuoteCurrency = "TRY",
+                            Symbol = "ETH"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            AssetType = 4,
+                            CreatedAtUtc = new DateTime(2026, 8, 31, 0, 0, 0, 0, DateTimeKind.Utc),
+                            DataProviderCode = "YAHOO_FINANCE",
+                            IsActive = true,
+                            IsFeatured = true,
+                            MarketCode = "BIST",
+                            Name = "BIST 100",
+                            ProviderSymbol = "XU100.IS",
+                            QuoteCurrency = "TRY",
+                            Symbol = "XU100"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            AssetType = 4,
+                            CreatedAtUtc = new DateTime(2026, 8, 31, 0, 0, 0, 0, DateTimeKind.Utc),
+                            DataProviderCode = "YAHOO_FINANCE",
+                            IsActive = true,
+                            IsFeatured = true,
+                            MarketCode = "BIST",
+                            Name = "BIST 30",
+                            ProviderSymbol = "XU030.IS",
+                            QuoteCurrency = "TRY",
+                            Symbol = "XU030"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            AssetType = 6,
+                            CreatedAtUtc = new DateTime(2026, 8, 31, 0, 0, 0, 0, DateTimeKind.Utc),
+                            DataProviderCode = "COINGECKO",
+                            IsActive = true,
+                            IsFeatured = true,
+                            MarketCode = "PRECIOUS_METAL",
+                            Name = "Gram Altın",
+                            ProviderSymbol = "pax-gold",
+                            QuoteCurrency = "TRY",
+                            Symbol = "GRAM_ALTIN"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            AssetType = 7,
+                            CreatedAtUtc = new DateTime(2026, 8, 31, 0, 0, 0, 0, DateTimeKind.Utc),
+                            DataProviderCode = "TCMB_XML",
+                            IsActive = true,
+                            IsFeatured = true,
+                            MarketCode = "TCMB",
+                            Name = "ABD Doları / Türk Lirası",
+                            ProviderSymbol = "USD",
+                            QuoteCurrency = "TRY",
+                            Symbol = "USDTRY"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            AssetType = 7,
+                            CreatedAtUtc = new DateTime(2026, 8, 31, 0, 0, 0, 0, DateTimeKind.Utc),
+                            DataProviderCode = "TCMB_XML",
+                            IsActive = true,
+                            IsFeatured = true,
+                            MarketCode = "TCMB",
+                            Name = "Euro / Türk Lirası",
+                            ProviderSymbol = "EUR",
+                            QuoteCurrency = "TRY",
+                            Symbol = "EURTRY"
+                        });
+                });
+
+            modelBuilder.Entity("MiniMola.Domain.Entities.MarketPriceSnapshot", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("DailyChangePercent")
+                        .HasPrecision(18, 6)
+                        .HasColumnType("decimal(18,6)");
+
+                    b.Property<int>("MarketAssetId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ObservedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(28, 12)
+                        .HasColumnType("decimal(28,12)");
+
+                    b.Property<int>("PriceKind")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MarketAssetId", "ObservedAtUtc", "PriceKind", "Source")
+                        .IsUnique();
+
+                    b.ToTable("MarketPriceSnapshots", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_MarketPriceSnapshots_DailyChangePercent", "[DailyChangePercent] IS NULL OR [DailyChangePercent] >= -100");
+
+                            t.HasCheckConstraint("CK_MarketPriceSnapshots_Price", "[Price] > 0");
+
+                            t.HasCheckConstraint("CK_MarketPriceSnapshots_PriceKind", "[PriceKind] >= 1 AND [PriceKind] <= 4");
+                        });
+                });
+
             modelBuilder.Entity("MiniMola.Domain.Entities.PointTransaction", b =>
                 {
                     b.Property<int>("Id")
@@ -887,6 +1327,46 @@ namespace MiniMola.Infrastructure.Persistence.Migrations
                         });
                 });
 
+            modelBuilder.Entity("MiniMola.Domain.Entities.UserFavoriteAsset", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MarketAssetId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SortOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserProfileId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MarketAssetId");
+
+                    b.HasIndex("UserProfileId", "MarketAssetId")
+                        .IsUnique();
+
+                    b.HasIndex("UserProfileId", "SortOrder");
+
+                    b.ToTable("UserFavoriteAssets", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_UserFavoriteAssets_SortOrder", "[SortOrder] >= 0");
+                        });
+                });
+
             modelBuilder.Entity("MiniMola.Domain.Entities.UserFish", b =>
                 {
                     b.Property<int>("Id")
@@ -978,6 +1458,50 @@ namespace MiniMola.Infrastructure.Persistence.Migrations
                     b.ToTable("UserProfiles", null, t =>
                         {
                             t.HasCheckConstraint("CK_UserProfiles_PointBalance_NonNegative", "[PointBalance] >= 0");
+                        });
+                });
+
+            modelBuilder.Entity("MiniMola.Domain.Entities.UserWorkScheduleDay", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("int");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time(0)");
+
+                    b.Property<bool>("IsWorkingDay")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time(0)");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserProfileId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserProfileId", "DayOfWeek")
+                        .IsUnique();
+
+                    b.ToTable("UserWorkScheduleDays", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_UserWorkScheduleDays_DayOfWeek", "[DayOfWeek] >= 0 AND [DayOfWeek] <= 6");
+
+                            t.HasCheckConstraint("CK_UserWorkScheduleDays_TimeRange", "[StartTime] <> [EndTime]");
                         });
                 });
 
@@ -1805,6 +2329,57 @@ namespace MiniMola.Infrastructure.Persistence.Migrations
                     b.Navigation("WordPoolItem");
                 });
 
+            modelBuilder.Entity("MiniMola.Domain.Entities.FundEstimateSnapshot", b =>
+                {
+                    b.HasOne("MiniMola.Domain.Entities.MarketAsset", "MarketAsset")
+                        .WithMany()
+                        .HasForeignKey("MarketAssetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MarketAsset");
+                });
+
+            modelBuilder.Entity("MiniMola.Domain.Entities.FundPortfolioHolding", b =>
+                {
+                    b.HasOne("MiniMola.Domain.Entities.FundPortfolioReport", "FundPortfolioReport")
+                        .WithMany("Holdings")
+                        .HasForeignKey("FundPortfolioReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MiniMola.Domain.Entities.MarketAsset", "MatchedMarketAsset")
+                        .WithMany()
+                        .HasForeignKey("MatchedMarketAssetId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("FundPortfolioReport");
+
+                    b.Navigation("MatchedMarketAsset");
+                });
+
+            modelBuilder.Entity("MiniMola.Domain.Entities.FundPortfolioReport", b =>
+                {
+                    b.HasOne("MiniMola.Domain.Entities.MarketAsset", "FundMarketAsset")
+                        .WithMany()
+                        .HasForeignKey("FundMarketAssetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FundMarketAsset");
+                });
+
+            modelBuilder.Entity("MiniMola.Domain.Entities.MarketPriceSnapshot", b =>
+                {
+                    b.HasOne("MiniMola.Domain.Entities.MarketAsset", "MarketAsset")
+                        .WithMany()
+                        .HasForeignKey("MarketAssetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MarketAsset");
+                });
+
             modelBuilder.Entity("MiniMola.Domain.Entities.PointTransaction", b =>
                 {
                     b.HasOne("MiniMola.Domain.Entities.UserProfile", "UserProfile")
@@ -1853,6 +2428,25 @@ namespace MiniMola.Infrastructure.Persistence.Migrations
                     b.Navigation("UserProfile");
                 });
 
+            modelBuilder.Entity("MiniMola.Domain.Entities.UserFavoriteAsset", b =>
+                {
+                    b.HasOne("MiniMola.Domain.Entities.MarketAsset", "MarketAsset")
+                        .WithMany()
+                        .HasForeignKey("MarketAssetId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MiniMola.Domain.Entities.UserProfile", "UserProfile")
+                        .WithMany()
+                        .HasForeignKey("UserProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MarketAsset");
+
+                    b.Navigation("UserProfile");
+                });
+
             modelBuilder.Entity("MiniMola.Domain.Entities.UserFish", b =>
                 {
                     b.HasOne("MiniMola.Domain.Entities.Aquarium", "Aquarium")
@@ -1888,6 +2482,17 @@ namespace MiniMola.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("MiniMola.Domain.Entities.UserWorkScheduleDay", b =>
+                {
+                    b.HasOne("MiniMola.Domain.Entities.UserProfile", "UserProfile")
+                        .WithMany()
+                        .HasForeignKey("UserProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserProfile");
+                });
+
             modelBuilder.Entity("MiniMola.Domain.Entities.WordGameGuess", b =>
                 {
                     b.HasOne("MiniMola.Domain.Entities.WordGameSession", "WordGameSession")
@@ -1916,6 +2521,11 @@ namespace MiniMola.Infrastructure.Persistence.Migrations
                     b.Navigation("DailyWordPuzzle");
 
                     b.Navigation("UserProfile");
+                });
+
+            modelBuilder.Entity("MiniMola.Domain.Entities.FundPortfolioReport", b =>
+                {
+                    b.Navigation("Holdings");
                 });
 #pragma warning restore 612, 618
         }

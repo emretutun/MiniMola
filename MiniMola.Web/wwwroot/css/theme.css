@@ -1,0 +1,78 @@
+/* Shared theme tokens; keep illustration, game-state and chart-series colors intact. */
+.mm-topbar-actions { display: flex; align-items: center; gap: 18px; flex-shrink: 0; }
+.mm-theme-control { display: flex; align-items: center; gap: 6px; color: var(--mm-ink-soft); background: var(--mm-surface-soft); border: 1px solid var(--mm-line); border-radius: 9px; padding: 6px 9px; }
+.mm-theme-control > span[aria-hidden] { font-size: 20px; }
+.mm-theme-control select { font-size: 12px; min-height: 30px; max-width: 85px; border: 0; background: transparent; color: inherit; cursor: pointer; }
+.mm-theme-control option { background: var(--mm-surface); color: var(--mm-ink); }
+html[data-bs-theme="dark"] { background: #11181f; }
+[data-bs-theme="dark"] body.mm-workspace {
+    --mm-page: #11181f;
+    --mm-surface: #1a242e;
+    --mm-surface-soft: #222f3a;
+    --mm-ink: #e5edf3;
+    --mm-ink-soft: #c2d0dc;
+    --mm-muted: #a3b3c2;
+    --mm-line: #344450;
+    --mm-teal: #70d8ba;
+    --mm-teal-dark: #9ae8d0;
+    --mm-teal-soft: #203c35;
+    --mm-blue: #8fbfff;
+    --mm-success: #77ddae;
+    --mm-danger: #ff9b91;
+    --market-detail-ink: var(--mm-ink);
+    --market-detail-muted: var(--mm-muted);
+    --market-detail-line: var(--mm-line);
+    --market-detail-teal: var(--mm-teal);
+    --market-detail-green: var(--mm-success);
+    --market-detail-red: var(--mm-danger);
+    --market-detail-surface: var(--mm-surface);
+    --mm-shadow-sm: 0 2px 6px #0002;
+    --mm-shadow: 0 8px 24px #0003;
+    --mm-shadow-lg: 0 10px 30px #0004;
+    --bs-body-color: var(--mm-ink);
+    --bs-body-bg: var(--mm-surface);
+    --bs-border-color: var(--mm-line);
+    --bs-secondary-color: var(--mm-muted);
+    color-scheme: dark;
+}
+[data-bs-theme="dark"] .mm-workspace :focus-visible { outline-color: #70d8ba; }
+[data-bs-theme="dark"] .mm-sidebar.offcanvas-lg { background: var(--mm-surface) !important; }
+[data-bs-theme="dark"] .mm-workspace :is(.mm-topbar,.mm-activity,.mm-quick-card,.mm-date,.mm-menu-button,.mm-skip,.identity-main,.market-card,.market-detail-header,.market-chart-panel,.market-analysis-panel,.fund-portfolio-panel,.countdown-card,.work-schedule-form,.news-card,.fish-card,.decoration-card,.fish-care-panel,.aquarium-upgrade-panel,.aquarium-quick-actions,.bubble-stat,.memory-stat,.user-dropdown-menu,.dropdown-menu,.simple-page-grid article,.error-page) {
+    background: var(--mm-surface); color: var(--mm-ink); border-color: var(--mm-line);
+}
+[data-bs-theme="dark"] .mm-workspace :is(.mm-brand,.mm-breadcrumb strong,.user-menu-copy strong,.market-card-symbol,.market-card-price,.market-detail-quote,.fund-estimate-heading h2,.fund-portfolio-heading h2,.market-chart-toolbar h2,.market-analysis-heading h2,.fund-estimate-result strong,.fund-estimate-meta-grid strong,.fund-estimate-contribution strong,.fund-estimate-accuracy strong,.fund-portfolio-meta strong,.fund-portfolio-holding strong,.market-detail-stats strong,.market-indicator-card strong) { color: var(--mm-ink); }
+[data-bs-theme="dark"] .mm-workspace :is(.mm-brand small,.mm-nav-label,.mm-nav-item,.mm-sidebar-privacy,.mm-breadcrumb,.mm-footer,.mm-kicker,.mm-date,.mm-activity-label,.mm-bottom-note,.user-menu-copy small,.user-dropdown-link small,.market-card-name,.market-card-meta,.market-detail-market,.market-chart-source,.market-detail-note,.market-analysis-summary,.market-analysis-panel > footer,.fund-estimate-heading p,.fund-estimate-meta-grid span,.fund-estimate-meta-grid small,.fund-estimate-contribution small,.fund-estimate-panel > footer,.fund-estimate-history-state,.fund-portfolio-heading p,.fund-portfolio-panel > footer,.fund-portfolio-meta span,.fund-portfolio-holding small) { color: var(--mm-muted); }
+[data-bs-theme="dark"] .mm-workspace :is(.mm-sidebar-note,.mm-feature-icon,.mm-logo,.user-avatar,.market-detail-type,.countdown-unit,.market-indicator-card,.market-detail-stats article,.fund-estimate-meta-grid article,.fund-estimate-contribution,.fund-estimate-accuracy,.fund-estimate-accuracy-stats article,.fund-estimate-history-list article,.fund-portfolio-meta article,.fund-portfolio-holding,.market-watchlist-pagination,.market-watchlist-search,.market-favorites-toggle,.market-range-buttons button,.market-chart-stage,.market-chart-state,.mini-game-nav,.mini-game-nav a) { background: var(--mm-surface-soft); color: var(--mm-ink-soft); border-color: var(--mm-line); }
+[data-bs-theme="dark"] .mm-workspace :is(.mm-nav-item:hover,.mm-nav-item.is-current,.market-filter-button.is-active,.market-range-buttons button.is-active,.user-dropdown-link:hover,.mini-game-nav a.is-active) { background: var(--mm-teal-soft); color: var(--mm-teal); }
+[data-bs-theme="dark"] .mm-workspace :is(.mm-note-mark,.mm-text-link,.market-detail-symbol,.fund-portfolio-source-link,.market-chart-eyebrow,.fund-portfolio-eyebrow,.countdown-unit strong,.auth-login-link,.user-dropdown-link) { color: var(--mm-teal); }
+[data-bs-theme="dark"] .mm-workspace .mm-welcome { background: #20382f; border-color: #365747; }
+[data-bs-theme="dark"] .mm-workspace .mm-welcome p { color: #bed3c5; }
+[data-bs-theme="dark"] .mm-workspace .mm-art-orbit { border-color: #4b735b; }
+[data-bs-theme="dark"] .mm-workspace .mm-activity-label { border-color: var(--mm-line); }
+[data-bs-theme="dark"] .mm-workspace .fund-estimate-panel { background: #302c20; border-color: #655939; }
+[data-bs-theme="dark"] .mm-workspace :is(.fund-estimate-eyebrow,.fund-estimate-result small,.fund-estimate-state) { color: #e7cb8e; }
+[data-bs-theme="dark"] .mm-workspace :is(.form-control,.form-select,.market-watchlist-search input,.word-guess-input) { background-color: var(--mm-surface-soft); color: var(--mm-ink); border-color: var(--mm-line); }
+[data-bs-theme="dark"] .mm-workspace input::placeholder { color: var(--mm-muted); opacity: 1; }
+[data-bs-theme="dark"] .mm-workspace .form-floating > .form-control::placeholder { color: transparent; }
+[data-bs-theme="dark"] .mm-workspace :is(.market-card-change,.market-detail-change,.fund-estimate-change).is-positive { color: #77ddae; background: #203c35; }
+[data-bs-theme="dark"] .mm-workspace :is(.market-card-change,.market-detail-change,.fund-estimate-change).is-negative { color: #ffaaa0; background: #492c30; }
+[data-bs-theme="dark"] .mm-workspace :is(.market-card-change,.market-detail-change,.fund-estimate-change).is-neutral { color: var(--mm-muted); background: var(--mm-surface-soft); }
+[data-bs-theme="dark"] .mm-workspace :is(.market-watchlist-state.is-error,.fund-estimate-state.is-error,.market-chart-state.is-error,.fund-portfolio-state.is-error) { color: #ffaaa0; background: #492c30; border-color: #76444a; }
+@media (max-width: 640px) {
+    .mm-topbar-actions { gap: 8px; }
+    .mm-theme-control { padding: 3px 5px; gap: 3px; }
+    .mm-theme-control select { max-width: 65px; }
+    .mm-topbar { gap: 8px; }
+    .mm-topbar-location { overflow: hidden; }
+    .mm-breadcrumb strong { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+}
+
+[data-bs-theme="dark"] .mm-workspace :is(.work-schedule-page,.music-page,.word-game,.memory-game-page,.bubble-game-page,.market-watchlist-page,.market-detail-page) { color: var(--mm-ink); }
+[data-bs-theme="dark"] .mm-workspace :is(.spotify-account-strip,.spotify-library-card,.spotify-connect-card,.music-embed-card,.music-category-card,.work-schedule-day,.work-schedule-day.is-off,.work-schedule-form-header,.work-schedule-form-footer,.word-game-toolbar > div,.word-game-board,.memory-game-shell,.word-guess-controls input,.spotify-search-form input) { background: var(--mm-surface); color: var(--mm-ink); border-color: var(--mm-line); }
+[data-bs-theme="dark"] .mm-workspace :is(.spotify-profile-copy strong,.spotify-library-heading h2,.work-schedule-form-header h2,.work-schedule-day h3,.word-game-toolbar strong,.word-guess-form label,.memory-stat strong,.bubble-stat strong) { color: var(--mm-ink); }
+[data-bs-theme="dark"] .mm-workspace :is(.spotify-profile-copy small,.spotify-tab,.spotify-search-field > svg,.work-schedule-form-header p,.work-schedule-day small,.word-game-toolbar > div > span,.word-game-legend,.memory-stat > span,.bubble-stat span) { color: var(--mm-muted); }
+[data-bs-theme="dark"] .mm-workspace .word-tile:not(.correct):not(.present):not(.absent) { background: var(--mm-surface-soft); color: var(--mm-ink); border-color: var(--mm-line); }
+[data-bs-theme="dark"] .mm-workspace .keyboard-key:not(.correct):not(.present):not(.absent) { background: var(--mm-surface-soft); color: var(--mm-ink); }
+[data-bs-theme="dark"] .mm-workspace :is(.work-time-field input,.work-schedule-actions,.work-schedule-day.is-rest-day,.spotify-track-item,.spotify-playlist-card) { background: var(--mm-surface-soft); color: var(--mm-ink); border-color: var(--mm-line); }
+[data-bs-theme="dark"] .mm-workspace .work-day-name strong { color: var(--mm-ink); }
+[data-bs-theme="dark"] .mm-workspace :is(.work-day-name small,.work-time-field label,.work-schedule-actions p) { color: var(--mm-muted); }

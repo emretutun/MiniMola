@@ -1,0 +1,1075 @@
+:root {
+    --market-detail-ink: #083b49;
+    --market-detail-muted: #73868c;
+    --market-detail-line: rgba(8, 59, 73, 0.11);
+    --market-detail-teal: #0aa39a;
+    --market-detail-green: #168c66;
+    --market-detail-red: #cc5b50;
+    --market-detail-surface: rgba(255, 255, 255, 0.94);
+}
+
+.market-detail-page {
+    width: min(1180px, calc(100% - 32px));
+    margin: 24px auto 56px;
+    color: var(--market-detail-ink);
+}
+
+.market-detail-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 18px 4px;
+    color: #547078;
+    font-size: 0.8rem;
+    font-weight: 750;
+    text-decoration: none;
+}
+
+    .market-detail-back:hover {
+        color: var(--market-detail-teal);
+    }
+
+.market-detail-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 32px;
+    padding: 30px 34px;
+    background: linear-gradient(135deg, #073d4b, #096a69);
+    border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(8, 59, 73, 0.16);
+}
+
+.market-detail-symbol-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.market-detail-symbol {
+    color: #75eee3;
+    font-size: 0.82rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+}
+
+.market-detail-type {
+    padding: 5px 9px;
+    color: #d9f7f4;
+    font-size: 0.67rem;
+    font-weight: 800;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+}
+
+.market-detail-identity h1 {
+    margin: 10px 0 5px;
+    color: white;
+    font-size: clamp(1.55rem, 4vw, 2.45rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+}
+
+.market-detail-market {
+    margin: 0;
+    color: rgba(232, 252, 249, 0.72);
+    font-size: 0.78rem;
+}
+
+.market-detail-quote {
+    display: flex;
+    min-width: 210px;
+    align-items: flex-end;
+    flex-direction: column;
+    color: white;
+}
+
+.market-detail-price {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 900;
+    letter-spacing: -0.05em;
+}
+
+.market-detail-change {
+    margin-top: 5px;
+    padding: 5px 9px;
+    font-size: 0.75rem;
+    font-weight: 850;
+    border-radius: 999px;
+}
+
+    .market-detail-change.is-positive {
+        color: #baf5da;
+        background: rgba(19, 153, 99, 0.25);
+    }
+
+    .market-detail-change.is-negative {
+        color: #ffd2ca;
+        background: rgba(204, 91, 80, 0.25);
+    }
+
+    .market-detail-change.is-neutral {
+        color: rgba(255, 255, 255, 0.75);
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+.market-detail-quote small {
+    margin-top: 9px;
+    color: rgba(232, 252, 249, 0.62);
+    font-size: 0.65rem;
+}
+
+.fund-estimate-panel {
+    margin-top: 18px;
+    padding: 26px;
+    background: linear-gradient(145deg, #fffaf0, #fffdf8);
+    border: 1px solid rgba(210, 151, 42, 0.25);
+    border-radius: 22px;
+    box-shadow: 0 14px 38px rgba(129, 92, 25, 0.08);
+}
+
+    .fund-estimate-panel[hidden] {
+        display: none;
+    }
+
+.fund-estimate-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.fund-estimate-eyebrow {
+    color: #bd7917;
+    font-size: 0.63rem;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+}
+
+.fund-estimate-heading h2 {
+    margin: 5px 0 0;
+    font-size: 1.25rem;
+    font-weight: 900;
+}
+
+.fund-estimate-heading p {
+    max-width: 650px;
+    margin: 8px 0 0;
+    color: var(--market-detail-muted);
+    font-size: 0.72rem;
+    line-height: 1.55;
+}
+
+.fund-estimate-result {
+    display: flex;
+    min-width: 210px;
+    align-items: flex-end;
+    flex-direction: column;
+}
+
+.fund-estimate-result strong {
+    margin-top: 8px;
+    font-size: 1.55rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.fund-estimate-result small {
+    margin-top: 3px;
+    color: var(--market-detail-muted);
+    font-size: 0.62rem;
+}
+
+.fund-estimate-change {
+    padding: 6px 10px;
+    font-size: 0.72rem;
+    font-weight: 900;
+    border-radius: 999px;
+}
+
+    .fund-estimate-change.is-positive {
+        color: #08704f;
+        background: #dff5eb;
+    }
+
+    .fund-estimate-change.is-negative {
+        color: #a33e35;
+        background: #ffebe8;
+    }
+
+    .fund-estimate-change.is-neutral {
+        color: #8a630d;
+        background: #fff0c7;
+    }
+
+.fund-estimate-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 20px;
+}
+
+    .fund-estimate-meta-grid article {
+        padding: 15px 17px;
+        background: rgba(255, 255, 255, 0.72);
+        border: 1px solid rgba(210, 151, 42, 0.16);
+        border-radius: 13px;
+    }
+
+    .fund-estimate-meta-grid span,
+    .fund-estimate-meta-grid small {
+        display: block;
+        color: var(--market-detail-muted);
+        font-size: 0.62rem;
+    }
+
+    .fund-estimate-meta-grid strong {
+        display: block;
+        margin: 7px 0 4px;
+        font-size: 1rem;
+        font-variant-numeric: tabular-nums;
+    }
+
+        .fund-estimate-meta-grid strong.is-high {
+            color: var(--market-detail-green);
+        }
+
+        .fund-estimate-meta-grid strong.is-medium,
+        .fund-estimate-meta-grid strong.is-low {
+            color: #a86b13;
+        }
+
+        .fund-estimate-meta-grid strong.is-insufficient {
+            color: var(--market-detail-red);
+        }
+
+.fund-estimate-contributions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.fund-estimate-contribution {
+    padding: 13px 15px;
+    background: rgba(255, 255, 255, 0.76);
+    border: 1px solid rgba(10, 163, 154, 0.2);
+    border-radius: 12px;
+}
+
+    .fund-estimate-contribution.is-uncovered {
+        border-color: rgba(115, 134, 140, 0.16);
+        opacity: 0.78;
+    }
+
+    .fund-estimate-contribution div {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .fund-estimate-contribution strong {
+        font-size: 0.72rem;
+    }
+
+    .fund-estimate-contribution span {
+        flex: 0 0 auto;
+        color: #91631e;
+        font-size: 0.68rem;
+        font-weight: 850;
+    }
+
+    .fund-estimate-contribution small {
+        display: block;
+        margin-top: 7px;
+        color: var(--market-detail-muted);
+        font-size: 0.63rem;
+        line-height: 1.45;
+    }
+
+.fund-estimate-state {
+    margin-top: 12px;
+    padding: 12px 14px;
+    color: var(--market-detail-muted);
+    font-size: 0.7rem;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 10px;
+}
+
+    .fund-estimate-state[hidden] {
+        display: none;
+    }
+
+.fund-estimate-accuracy {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(210, 151, 42, 0.2);
+}
+
+    .fund-estimate-accuracy[hidden] {
+        display: none;
+    }
+
+.fund-estimate-accuracy-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+    .fund-estimate-accuracy-heading h3 {
+        margin: 4px 0 0;
+        font-size: 1rem;
+        font-weight: 880;
+    }
+
+    .fund-estimate-accuracy-heading small {
+        color: var(--market-detail-muted);
+        font-size: 0.62rem;
+    }
+
+.fund-estimate-accuracy-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 12px;
+}
+
+    .fund-estimate-accuracy-stats article {
+        padding: 13px 15px;
+        background: rgba(255, 255, 255, 0.72);
+        border: 1px solid rgba(210, 151, 42, 0.16);
+        border-radius: 11px;
+    }
+
+    .fund-estimate-accuracy-stats span {
+        display: block;
+        color: var(--market-detail-muted);
+        font-size: 0.61rem;
+    }
+
+    .fund-estimate-accuracy-stats strong {
+        display: block;
+        margin-top: 6px;
+        font-size: 0.88rem;
+        font-variant-numeric: tabular-nums;
+    }
+
+.fund-estimate-history-list {
+    display: grid;
+    gap: 7px;
+    margin-top: 10px;
+}
+
+    .fund-estimate-history-list article {
+        display: grid;
+        grid-template-columns: 100px 1fr 1fr auto;
+        gap: 12px;
+        align-items: center;
+        padding: 10px 13px;
+        color: #526e75;
+        font-size: 0.66rem;
+        background: rgba(255, 255, 255, 0.62);
+        border-radius: 9px;
+    }
+
+    .fund-estimate-history-list time,
+    .fund-estimate-history-list strong {
+        color: var(--market-detail-ink);
+        font-weight: 800;
+    }
+
+.fund-estimate-history-state {
+    margin: 10px 0 0;
+    padding: 11px 13px;
+    color: var(--market-detail-muted);
+    font-size: 0.66rem;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.62);
+    border-radius: 9px;
+}
+
+    .fund-estimate-history-state[hidden] {
+        display: none;
+    }
+
+    .fund-estimate-history-state.is-error {
+        color: var(--market-detail-red);
+        background: #fff0ed;
+    }
+
+    .fund-estimate-state.is-error {
+        color: var(--market-detail-red);
+        background: #fff0ed;
+    }
+
+.fund-estimate-panel > footer {
+    margin-top: 14px;
+    color: var(--market-detail-muted);
+    font-size: 0.62rem;
+    line-height: 1.55;
+}
+
+.fund-portfolio-panel {
+    margin-top: 18px;
+    padding: 26px;
+    background: linear-gradient(145deg, #f4fbfa, #ffffff);
+    border: 1px solid rgba(10, 163, 154, 0.2);
+    border-radius: 22px;
+    box-shadow: 0 14px 38px rgba(8, 59, 73, 0.08);
+}
+
+    .fund-portfolio-panel[hidden] {
+        display: none;
+    }
+
+.fund-portfolio-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.fund-portfolio-eyebrow {
+    color: var(--market-detail-teal);
+    font-size: 0.63rem;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+}
+
+.fund-portfolio-heading h2 {
+    margin: 5px 0 0;
+    font-size: 1.25rem;
+    font-weight: 900;
+}
+
+.fund-portfolio-heading p {
+    max-width: 650px;
+    margin: 8px 0 0;
+    color: var(--market-detail-muted);
+    font-size: 0.72rem;
+    line-height: 1.55;
+}
+
+.fund-portfolio-source-link {
+    flex: 0 0 auto;
+    padding: 9px 12px;
+    color: #08776f;
+    font-size: 0.68rem;
+    font-weight: 850;
+    text-decoration: none;
+    background: #e2f6f3;
+    border-radius: 10px;
+}
+
+    .fund-portfolio-source-link:hover {
+        color: #055d57;
+        background: #d4f0ec;
+    }
+
+    .fund-portfolio-source-link[hidden] {
+        display: none;
+    }
+
+.fund-portfolio-meta {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 20px;
+}
+
+    .fund-portfolio-meta article {
+        padding: 14px 16px;
+        background: rgba(255, 255, 255, 0.82);
+        border: 1px solid rgba(10, 163, 154, 0.14);
+        border-radius: 12px;
+    }
+
+    .fund-portfolio-meta span {
+        display: block;
+        color: var(--market-detail-muted);
+        font-size: 0.62rem;
+    }
+
+    .fund-portfolio-meta strong {
+        display: block;
+        margin-top: 7px;
+        font-size: 0.92rem;
+        font-variant-numeric: tabular-nums;
+    }
+
+.fund-portfolio-holdings {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    max-height: 430px;
+    margin-top: 14px;
+    padding-right: 4px;
+    overflow-y: auto;
+}
+
+.fund-portfolio-holding {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    min-width: 0;
+    overflow: hidden;
+    padding: 12px 14px 15px;
+    background: rgba(255, 255, 255, 0.86);
+    border: 1px solid rgba(8, 59, 73, 0.09);
+    border-radius: 11px;
+}
+
+.fund-portfolio-holding-identity {
+    min-width: 0;
+}
+
+    .fund-portfolio-holding-identity a,
+    .fund-portfolio-holding-identity strong {
+        display: block;
+        overflow: hidden;
+        color: var(--market-detail-ink);
+        font-size: 0.72rem;
+        font-weight: 900;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .fund-portfolio-holding-identity a {
+        text-decoration: none;
+    }
+
+        .fund-portfolio-holding-identity a:hover {
+            color: var(--market-detail-teal);
+        }
+
+    .fund-portfolio-holding-identity small {
+        display: block;
+        overflow: hidden;
+        margin-top: 3px;
+        color: var(--market-detail-muted);
+        font-size: 0.61rem;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+.fund-portfolio-holding > span {
+    color: #08776f;
+    font-size: 0.72rem;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+}
+
+.fund-portfolio-holding > i {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(
+        90deg,
+        var(--market-detail-teal) var(--holding-weight),
+        rgba(10, 163, 154, 0.09) var(--holding-weight));
+}
+
+.fund-portfolio-state {
+    margin-top: 12px;
+    padding: 11px 13px;
+    color: var(--market-detail-muted);
+    font-size: 0.66rem;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.72);
+    border-radius: 9px;
+}
+
+    .fund-portfolio-state[hidden] {
+        display: none;
+    }
+
+    .fund-portfolio-state.is-error {
+        color: var(--market-detail-red);
+        background: #fff0ed;
+    }
+
+.fund-portfolio-panel > footer {
+    margin-top: 14px;
+    color: var(--market-detail-muted);
+    font-size: 0.62rem;
+    line-height: 1.55;
+}
+
+.market-chart-panel {
+    margin-top: 18px;
+    padding: 26px;
+    background: var(--market-detail-surface);
+    border: 1px solid var(--market-detail-line);
+    border-radius: 22px;
+    box-shadow: 0 14px 38px rgba(8, 59, 73, 0.08);
+}
+
+.market-chart-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 18px;
+}
+
+.market-chart-eyebrow {
+    color: var(--market-detail-teal);
+    font-size: 0.65rem;
+    font-weight: 900;
+    letter-spacing: 0.11em;
+}
+
+.market-chart-toolbar h2 {
+    margin: 4px 0 0;
+    font-size: 1.15rem;
+    font-weight: 880;
+}
+
+.market-range-buttons {
+    display: flex;
+    gap: 6px;
+    padding: 4px;
+    background: #f2f7f7;
+    border-radius: 12px;
+}
+
+    .market-range-buttons button {
+        min-width: 42px;
+        min-height: 34px;
+        padding: 0 9px;
+        color: #667d83;
+        font-size: 0.7rem;
+        font-weight: 800;
+        background: transparent;
+        border: 0;
+        border-radius: 9px;
+    }
+
+        .market-range-buttons button:hover:not(:disabled) {
+            color: var(--market-detail-teal);
+        }
+
+        .market-range-buttons button.is-active {
+            color: white;
+            background: var(--market-detail-teal);
+            box-shadow: 0 5px 13px rgba(10, 163, 154, 0.2);
+        }
+
+        .market-range-buttons button:disabled {
+            cursor: wait;
+            opacity: 0.55;
+        }
+
+.market-chart-stage {
+    position: relative;
+    min-height: 430px;
+    overflow: hidden;
+    background: #fbfdfd;
+    border: 1px solid var(--market-detail-line);
+    border-radius: 16px;
+}
+
+.market-price-chart {
+    width: 100%;
+    height: 430px;
+}
+
+.market-chart-state {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    color: var(--market-detail-muted);
+    font-size: 0.82rem;
+    text-align: center;
+    background: rgba(251, 253, 253, 0.86);
+}
+
+    .market-chart-state[hidden] {
+        display: none;
+    }
+
+    .market-chart-state.is-error {
+        color: var(--market-detail-red);
+    }
+
+.market-chart-source {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 12px;
+    color: var(--market-detail-muted);
+    font-size: 0.66rem;
+}
+
+.market-detail-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+}
+
+    .market-detail-stats article {
+        padding: 17px 19px;
+        background: var(--market-detail-surface);
+        border: 1px solid var(--market-detail-line);
+        border-radius: 16px;
+    }
+
+    .market-detail-stats span {
+        display: block;
+        color: var(--market-detail-muted);
+        font-size: 0.66rem;
+        font-weight: 700;
+    }
+
+    .market-detail-stats strong {
+        display: block;
+        margin-top: 7px;
+        font-size: 0.98rem;
+        font-variant-numeric: tabular-nums;
+    }
+
+        .market-detail-stats strong.is-positive {
+            color: var(--market-detail-green);
+        }
+
+        .market-detail-stats strong.is-negative {
+            color: var(--market-detail-red);
+        }
+
+.market-detail-note {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    margin-top: 16px;
+    padding: 0 4px;
+    color: var(--market-detail-muted);
+    font-size: 0.67rem;
+    line-height: 1.6;
+}
+
+.market-analysis-panel {
+    margin-top: 14px;
+    padding: 26px;
+    background: var(--market-detail-surface);
+    border: 1px solid var(--market-detail-line);
+    border-radius: 22px;
+    box-shadow: 0 14px 38px rgba(8, 59, 73, 0.08);
+}
+
+.market-analysis-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+    .market-analysis-heading h2 {
+        margin: 4px 0 0;
+        font-size: 1.15rem;
+        font-weight: 880;
+    }
+
+.market-analysis-result {
+    display: flex;
+    align-items: flex-end;
+    flex-direction: column;
+    gap: 6px;
+}
+
+    .market-analysis-result small {
+        color: var(--market-detail-muted);
+        font-size: 0.64rem;
+    }
+
+.market-signal {
+    display: inline-flex;
+    min-width: 88px;
+    min-height: 34px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 13px;
+    font-size: 0.74rem;
+    font-weight: 900;
+    border-radius: 999px;
+}
+
+    .market-signal.is-strong-buy,
+    .market-signal.is-buy {
+        color: #08704f;
+        background: #dff5eb;
+    }
+
+    .market-signal.is-hold {
+        color: #8a630d;
+        background: #fff2cc;
+    }
+
+    .market-signal.is-sell,
+    .market-signal.is-strong-sell {
+        color: #a33e35;
+        background: #ffebe8;
+    }
+
+    .market-signal.is-unavailable {
+        color: var(--market-detail-muted);
+        background: #edf3f3;
+    }
+
+.market-analysis-score-row {
+    display: grid;
+    grid-template-columns: auto minmax(120px, 1fr) auto auto;
+    align-items: center;
+    gap: 10px;
+    margin-top: 24px;
+    color: var(--market-detail-muted);
+    font-size: 0.66rem;
+    font-weight: 800;
+}
+
+    .market-analysis-score-row strong {
+        min-width: 48px;
+        color: var(--market-detail-ink);
+        font-size: 0.85rem;
+        text-align: right;
+    }
+
+.market-analysis-meter {
+    height: 9px;
+    overflow: hidden;
+    background: linear-gradient(90deg, #e98b82, #f2cf78, #62c9a7);
+    border-radius: 999px;
+}
+
+    .market-analysis-meter span {
+        display: block;
+        width: 0;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.22);
+        border-right: 4px solid #083b49;
+        transition: width 280ms ease;
+    }
+
+.market-analysis-summary {
+    margin: 18px 0 0;
+    padding: 14px 16px;
+    color: #3f5e66;
+    font-size: 0.8rem;
+    line-height: 1.65;
+    background: #f5f9f9;
+    border-radius: 12px;
+}
+
+.market-analysis-indicators {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.market-indicator-card {
+    min-width: 0;
+    padding: 15px;
+    border: 1px solid var(--market-detail-line);
+    border-radius: 13px;
+}
+
+    .market-indicator-card header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    .market-indicator-card h3 {
+        margin: 0;
+        font-size: 0.76rem;
+        font-weight: 850;
+    }
+
+    .market-indicator-card strong {
+        display: block;
+        margin-top: 12px;
+        font-size: 1rem;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .market-indicator-card p {
+        margin: 9px 0 0;
+        color: var(--market-detail-muted);
+        font-size: 0.67rem;
+        line-height: 1.55;
+    }
+
+.market-indicator-status {
+    flex: 0 0 auto;
+    padding: 4px 6px;
+    color: var(--market-detail-muted);
+    font-size: 0.58rem;
+    font-weight: 850;
+    background: #edf3f3;
+    border-radius: 7px;
+}
+
+    .market-indicator-status.is-positive {
+        color: var(--market-detail-green);
+        background: #e5f5ef;
+    }
+
+    .market-indicator-status.is-negative {
+        color: var(--market-detail-red);
+        background: #fff0ed;
+    }
+
+.market-analysis-state {
+    margin-top: 12px;
+    padding: 14px;
+    color: var(--market-detail-muted);
+    font-size: 0.74rem;
+    text-align: center;
+    background: #f5f9f9;
+    border-radius: 12px;
+}
+
+    .market-analysis-state[hidden] {
+        display: none;
+    }
+
+    .market-analysis-state.is-error {
+        color: var(--market-detail-red);
+        background: #fff0ed;
+    }
+
+.market-analysis-panel > footer {
+    margin-top: 15px;
+    color: var(--market-detail-muted);
+    font-size: 0.64rem;
+    line-height: 1.55;
+}
+
+@media (max-width: 760px) {
+    .market-detail-page {
+        width: min(100% - 20px, 1180px);
+        margin-top: 14px;
+    }
+
+    .market-detail-header {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 24px;
+    }
+
+    .market-detail-quote {
+        min-width: 0;
+        align-items: flex-start;
+    }
+
+    .fund-estimate-heading {
+        flex-direction: column;
+    }
+
+    .fund-portfolio-heading {
+        flex-direction: column;
+    }
+
+    .fund-portfolio-meta {
+        grid-template-columns: 1fr;
+    }
+
+    .fund-estimate-result {
+        min-width: 0;
+        align-items: flex-start;
+    }
+
+    .fund-estimate-meta-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .fund-estimate-history-list article {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .market-chart-panel {
+        padding: 16px;
+    }
+
+    .market-chart-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .market-range-buttons {
+        width: 100%;
+    }
+
+        .market-range-buttons button {
+            flex: 1 1 0;
+            min-width: 0;
+        }
+
+    .market-chart-stage,
+    .market-price-chart {
+        min-height: 350px;
+        height: 350px;
+    }
+
+    .market-detail-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .market-detail-note {
+        flex-direction: column;
+    }
+
+    .market-analysis-heading {
+        flex-direction: column;
+    }
+
+    .market-analysis-result {
+        align-items: flex-start;
+    }
+
+    .market-analysis-indicators {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .market-detail-stats,
+    .market-analysis-indicators,
+    .fund-estimate-contributions,
+    .fund-estimate-accuracy-stats,
+    .fund-portfolio-holdings {
+        grid-template-columns: 1fr;
+    }
+
+    .fund-estimate-history-list article {
+        grid-template-columns: 1fr;
+        gap: 5px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .market-range-buttons button {
+        transition: none;
+    }
+}
+
+.fund-estimate-contributions > details {
+    grid-column: 1 / -1;
+}
+.fund-estimate-contributions > details > summary {
+    cursor: pointer;
+    padding: 12px 0;
+    font-weight: 600;
+}
+.fund-estimate-contributions > details > article {
+    margin-top: 8px;
+}
