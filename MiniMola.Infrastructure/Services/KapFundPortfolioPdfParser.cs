@@ -5,9 +5,55 @@ using UglyToad.PdfPig.DocumentLayoutAnalysis.TextExtractor;
 
 namespace MiniMola.Infrastructure.Services;
 
-public sealed class KapFundPortfolioPdfParser
+public sealed partial class KapFundPortfolioPdfParser
 {
-    public const string Version = "tera-pdf-v1";
+    public const string Version = "kap-equity-ftd-v3";
+
+    public IReadOnlyList<ParsedFundHolding> ParseValidated(byte[] pdfBytes, string fundCode, DateOnly reportDate)
+    {
+        using var document = PdfDocument.Open(pdfBytes);
+        var first = ContentOrderTextExtractor.GetText(document.GetPage(1));
+        if (first.Contains("YAPI KREDİ PORTFÖY YÖNETİMİ A.Ş.") && first.Contains("Rayiç Değeri"))
+            return ParseYapiKrediText(document.GetPages().Take(30).Select(p => ContentOrderTextExtractor.GetText(p)).ToArray(), fundCode, reportDate);
+        var month = reportDate.ToString("MMMM-yyyy", CultureInfo.GetCultureInfo("tr-TR"));
+        if (!Regex.IsMatch(first, $@"(?m)^\s*{Regex.Escape(fundCode)}\s*-", RegexOptions.IgnoreCase)
+            || !first.Contains(month, StringComparison.OrdinalIgnoreCase)
+            || !first.Contains("(FTD") || !first.Contains("III-FON PORTFÖY DEĞERİ TABLOSU"))
+            throw new InvalidDataException("PDF kimliği, dönemi veya FTD tablo formatı doğrulanamadı.");
+
+        var weights = new Dictionary<string, decimal>(StringComparer.OrdinalIgnoreCase);
+        var started = false;
+        // Transaction appendices can contain hundreds of pages; only scan the opening portfolio table.
+        foreach (var page in document.GetPages().Take(30))
+        {
+            var text = ContentOrderTextExtractor.GetText(page);
+            if (!started)
+            {
+                var start = text.IndexOf("Hisse Türk", StringComparison.Ordinal);
+                if (start < 0) continue;
+                text = text[(start + "Hisse Türk".Length)..];
+                started = true;
+            }
+            var lines = text.Split('\n');
+            var end = Array.FindIndex(lines, x => x.Contains("GRUP TOPLAMI"));
+            var symbols = page.GetWords().Where(word => Math.Abs(word.BoundingBox.Left - 20d) <= 0.5d
+                && SymbolPattern.IsMatch(word.Text)).Select(word => word.Text).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            ParsePage(string.Join('\n', end < 0 ? lines : lines.Take(end)), symbols, weights);
+            if (end < 0) continue;
+            var totalMatch = FinalWeightPattern.Match(lines[end].Trim());
+            if (!totalMatch.Success) throw new InvalidDataException("Yerli hisse grup toplamı okunamadı.");
+            var expected = decimal.Parse(totalMatch.Groups["weight"].Value, CultureInfo.GetCultureInfo("tr-TR"));
+            // Each source row is rounded to two decimals; do not accept large missing sections.
+            if (Math.Abs(weights.Values.Sum() - expected) > 0.5m)
+                throw new InvalidDataException("Okunan hisseler KAP grup toplamıyla uyuşmuyor.");
+            var result = weights.Where(x => x.Value != 0)
+                .Select(x => new ParsedFundHolding(x.Key, decimal.Round(x.Value, 2)))
+                .OrderByDescending(x => x.WeightPercent).ToList();
+            if (!KapPortfolioDiscovery.HasValidHoldings(result)) throw new InvalidDataException("Yerli hisse ağırlıkları doğrulanamadı.");
+            return result;
+        }
+        throw new InvalidDataException("Desteklenen yerli hisse tablosu tamamlanamadı.");
+    }
 
     private static readonly Regex SymbolPattern =
         new(

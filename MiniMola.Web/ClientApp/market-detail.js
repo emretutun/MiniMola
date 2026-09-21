@@ -587,15 +587,9 @@ function renderFundEstimateHistory(result) {
 
     list.replaceChildren();
 
-    const evaluatedItems =
-        result.items.filter(item =>
-            item.actualChangePercent !== null &&
-            item.absoluteErrorPercent !== null);
-
-    if (evaluatedItems.length === 0) {
+    if (result.items.length === 0) {
         setFundEstimateHistoryState(
-            "İlk tahmin kaydedildi. Sonraki resmî fon " +
-            "fiyatı geldiğinde başarı ölçümü burada görünecek.",
+            "Henüz yeni türde kayıt yok. Eski, türü bilinmeyen tahminler kapanış başarısına dahil edilmez.",
             false);
         return;
     }
@@ -603,30 +597,43 @@ function renderFundEstimateHistory(result) {
     const fragment =
         document.createDocumentFragment();
 
-    for (const item of evaluatedItems.slice(0, 5)) {
+    for (const item of result.items) {
         const row = document.createElement("article");
         const date = document.createElement("time");
+        const kind = document.createElement("span");
         const estimate = document.createElement("span");
         const actual = document.createElement("span");
         const error = document.createElement("strong");
 
         date.textContent = formatDate(item.targetDate);
+        date.dateTime = item.targetDate;
+        kind.textContent = item.kind === "closing" ? "Seans sonu · sabit" : "Gün içi";
+        if (item.kind !== "closing" && !result.items.some(other =>
+            other.targetDate === item.targetDate && other.kind === "closing")) {
+            const missing = document.createElement("small");
+            missing.textContent = "Seans sonu kaydı yok";
+            kind.appendChild(missing);
+        }
+        row.classList.toggle("is-closing", item.kind === "closing");
         estimate.textContent =
             `Tahmin ${formatSignedPercent(
-                item.estimatedChangePercent)}`;
-        actual.textContent =
-            `Gerçekleşen ${formatSignedPercent(
-                item.actualChangePercent)}`;
-        error.textContent =
-            `${formatPercent(
-                item.absoluteErrorPercent)} puan hata`;
+                item.estimatedChangePercent)} · ${formatPriceWithCurrency(item.estimatedPrice)}`;
+        const detail = document.createElement("small");
+        detail.textContent = `Kayıt: ${formatDateTime(item.calculatedAtUtc)} · Kapsam %${formatPercent(item.coveragePercent)}`;
+        estimate.appendChild(detail);
+        actual.textContent = item.actualChangePercent === null
+            ? (item.status === "missing-official" ? "Hedef tarihin resmî fiyatı bulunamadı" : "Resmî fiyat bekleniyor")
+            : `Gerçekleşen ${formatSignedPercent(item.actualChangePercent)} · ${formatPriceWithCurrency(item.actualPrice)}`;
+        error.textContent = item.absoluteErrorPercent === null ? "—"
+            : `${formatPercent(item.absoluteErrorPercent)} puan hata`;
 
-        row.append(date, estimate, actual, error);
+        row.append(date, kind, estimate, actual, error);
         fragment.appendChild(row);
     }
 
     list.appendChild(fragment);
-    setFundEstimateHistoryState("", false);
+    setFundEstimateHistoryState(result.evaluatedCount === 0
+        ? "Henüz ölçülmüş seans sonu kaydı yok; başarı oranı hesaplanmadı." : "", false);
 }
 
 function setFundEstimateHistoryState(message, isError) {
@@ -801,7 +808,7 @@ function renderFundPortfolio(result) {
     setFundPortfolioState(
         `${result.holdings.length} hisse okundu` +
         linkedText +
-        publishedText,
+        publishedText + (result.message ? ` · ${result.message}` : ""),
         false);
 }
 

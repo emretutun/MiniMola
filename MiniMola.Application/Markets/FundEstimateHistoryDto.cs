@@ -17,4 +17,8 @@ public sealed record FundEstimateHistoryItemDto(
     decimal? ActualChangePercent,
     decimal? ActualPrice,
     DateTime? ActualObservedAtUtc,
-    decimal? AbsoluteErrorPercent);
+    decimal? AbsoluteErrorPercent)
+{
+    public string Kind { get; init; } = "intraday";
+    public string Status { get; init; } = "pending";
+}

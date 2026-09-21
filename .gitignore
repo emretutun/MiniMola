@@ -371,3 +371,6 @@ appsettings.Local.json
 *.pem
 *.key
 *.bak
+
+# Downloaded report samples and local PDF inspection output
+/tmp/pdfs/

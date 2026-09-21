@@ -72,7 +72,8 @@ public sealed class FundEstimateSnapshotConfiguration
                 {
                     item.MarketAssetId,
                     item.TargetDate,
-                    item.ModelVersion
+                    item.ModelVersion,
+                    item.Kind
                 })
             .IsUnique();
 

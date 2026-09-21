@@ -76,3 +76,43 @@ html[data-bs-theme="dark"] { background: #11181f; }
 [data-bs-theme="dark"] .mm-workspace :is(.work-time-field input,.work-schedule-actions,.work-schedule-day.is-rest-day,.spotify-track-item,.spotify-playlist-card) { background: var(--mm-surface-soft); color: var(--mm-ink); border-color: var(--mm-line); }
 [data-bs-theme="dark"] .mm-workspace .work-day-name strong { color: var(--mm-ink); }
 [data-bs-theme="dark"] .mm-workspace :is(.work-day-name small,.work-time-field label,.work-schedule-actions p) { color: var(--mm-muted); }
+
+/* Component-local colors must not leave dark text or translucent white notices in dark mode. */
+[data-bs-theme="dark"] .mm-workspace :is(.fund-estimate-panel,.fund-estimate-accuracy-heading h3,.fund-estimate-history-list time,.fund-estimate-history-list strong) {
+    color: var(--mm-ink);
+}
+[data-bs-theme="dark"] .mm-workspace :is(.fund-estimate-history-list article > span,.fund-estimate-contributions > details > summary) {
+    color: var(--mm-ink-soft);
+}
+[data-bs-theme="dark"] .mm-workspace :is(.fund-estimate-history-list small,.fund-estimate-accuracy-heading small,.fund-estimate-accuracy-stats span,.market-detail-back) {
+    color: var(--mm-muted);
+}
+[data-bs-theme="dark"] .mm-workspace :is(.fund-estimate-state,.fund-estimate-history-state,.fund-portfolio-state,.market-analysis-state,.market-watchlist-empty) {
+    background: var(--mm-surface-soft);
+    color: var(--mm-ink-soft);
+    border-color: var(--mm-line);
+}
+[data-bs-theme="dark"] .mm-workspace :is(.fund-estimate-state,.fund-estimate-history-state,.fund-portfolio-state,.market-analysis-state).is-error {
+    background: #492c30;
+    color: #ffaaa0;
+    border-color: #76444a;
+}
+[data-bs-theme="dark"] .mm-workspace :is(.fund-estimate-contribution span,.fund-estimate-meta-grid strong.is-medium,.fund-estimate-meta-grid strong.is-low) {
+    color: #e7cb8e;
+}
+[data-bs-theme="dark"] .mm-workspace .fund-estimate-contribution.is-uncovered { opacity: 1; }
+[data-bs-theme="dark"] .mm-workspace :is(.fund-portfolio-holding > span,.fund-portfolio-source-link:hover,.fund-estimate-meta-grid strong.is-high) { color: var(--mm-teal); }
+[data-bs-theme="dark"] .mm-workspace .fund-estimate-meta-grid strong.is-insufficient { color: var(--mm-danger); }
+[data-bs-theme="dark"] .mm-workspace :is(.market-signal.is-buy,.market-signal.is-strong-buy) { background: #203c35; color: #77ddae; }
+[data-bs-theme="dark"] .mm-workspace .market-signal.is-hold { background: #41371f; color: #e7cb8e; }
+[data-bs-theme="dark"] .mm-workspace :is(.market-signal.is-sell,.market-signal.is-strong-sell) { background: #492c30; color: #ffaaa0; }
+[data-bs-theme="dark"] .mm-workspace .market-signal.is-unavailable { background: var(--mm-surface-soft); color: var(--mm-muted); }
+[data-bs-theme="dark"] .mm-workspace .work-countdown-page { color: var(--mm-ink); }
+[data-bs-theme="dark"] .mm-workspace :is(.countdown-information > div,.countdown-progress-track) { background: var(--mm-surface-soft); border-color: var(--mm-line); }
+[data-bs-theme="dark"] .mm-workspace .work-countdown-page.is-rest-day .countdown-card { background: var(--mm-surface); }
+[data-bs-theme="dark"] .mm-workspace .work-countdown-page.is-completed .countdown-unit { background: var(--mm-teal-soft); }
+[data-bs-theme="dark"] .mm-workspace :is(.countdown-information strong,.work-countdown-page.is-completed .countdown-unit strong) { color: var(--mm-ink); }
+[data-bs-theme="dark"] .mm-workspace :is(.countdown-unit span,.countdown-information span,.countdown-progress-header) { color: var(--mm-muted); }
+[data-bs-theme="dark"] .mm-workspace :is(.countdown-progress-header strong,.countdown-settings-link) { color: var(--mm-teal); }
+[data-bs-theme="dark"] .mm-workspace #fish-happiness-value { color: var(--mm-ink); }
+[data-bs-theme="dark"] .mm-workspace .fish-care-status { color: var(--mm-teal); background: var(--mm-teal-soft); }

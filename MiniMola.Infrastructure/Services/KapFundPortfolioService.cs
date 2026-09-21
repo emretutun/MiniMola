@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Memory;
+using System.Net.Http.Json;
 using MiniMola.Application.Markets;
 using MiniMola.Domain.Entities;
 using MiniMola.Domain.Enums;
@@ -20,30 +21,24 @@ public sealed class KapFundPortfolioService(
     private static readonly SemaphoreSlim ImportLock =
         new(1, 1);
 
-    private static readonly IReadOnlyDictionary<
-        string,
-        KapPortfolioReportDefinition> PilotReports =
-            new Dictionary<
-                string,
-                KapPortfolioReportDefinition>(
-                    StringComparer.OrdinalIgnoreCase)
-            {
-                ["THF"] = new(
-                    new DateOnly(2026, 8, 31),
-                    new DateTime(
-                        2026,
-                        9,
-                        2,
-                        8,
-                        2,
-                        16,
-                        DateTimeKind.Utc),
-                    1_657_113,
-                    "4028328c9f52dc4001a06121e9864d61",
-                    "THF_2026.08.pdf")
-            };
+    public async Task RefreshReportsAsync(CancellationToken cancellationToken = default)
+    {
+        var ids = await dbContext.MarketAssets.AsNoTracking()
+            .Where(x => x.IsActive && x.DataProviderCode == "TEFAS_YAT"
+                && (dbContext.UserFavoriteAssets.Any(f => f.MarketAssetId == x.Id)
+                    || dbContext.FundPortfolioReports.Any(r => r.FundMarketAssetId == x.Id)))
+            .Select(x => x.Id).ToListAsync(cancellationToken);
+        foreach (var id in ids) await GetLatestAsync(id, cancellationToken);
+    }
 
-    public async Task<FundPortfolioDto?> GetLatestAsync(
+    public async Task<FundPortfolioDto?> GetLatestAsync(int marketAssetId, CancellationToken cancellationToken = default)
+    {
+        var result = await GetLatestCoreAsync(marketAssetId, cancellationToken);
+        if (result is not null) memoryCache.Set($"kap-health:{marketAssetId}", result, TimeSpan.FromDays(1));
+        return result;
+    }
+
+    private async Task<FundPortfolioDto?> GetLatestCoreAsync(
         int marketAssetId,
         CancellationToken cancellationToken = default)
     {
@@ -67,49 +62,106 @@ public sealed class KapFundPortfolioService(
             return null;
         }
 
-        if (string.IsNullOrWhiteSpace(asset.ProviderSymbol)
-            || !PilotReports.TryGetValue(
-                asset.ProviderSymbol,
-                out var definition))
+        if (string.IsNullOrWhiteSpace(asset.ProviderSymbol) || asset.DataProviderCode != "TEFAS_YAT")
         {
             return CreateUnsupportedResult(asset.Id);
         }
 
-        var existing =
-            await LoadReportAsync(
-                asset.Id,
-                definition.DocumentObjectId,
-                cancellationToken);
-
-        if (existing is not null)
-        {
-            await RelinkAsync(existing.Id, cancellationToken);
-            return CreateResult((await LoadReportAsync(asset.Id, definition.DocumentObjectId, cancellationToken))!);
-        }
-
+        var cacheKey = $"kap-report-check:{asset.Id}";
+        var existing = await LoadReportAsync(asset.Id, cancellationToken);
+        if (existing is not null) await RelinkAsync(existing.Id, cancellationToken);
         await ImportLock.WaitAsync(cancellationToken);
-
         try
         {
-            existing =
-                await LoadReportAsync(
-                    asset.Id,
-                    definition.DocumentObjectId,
-                    cancellationToken);
+            existing = await LoadReportAsync(asset.Id, cancellationToken);
+            if (memoryCache.TryGetValue<string>(cacheKey, out var cachedMessage))
+                return existing is null ? CreateUnavailableResult(asset.Id, cachedMessage!)
+                    : CreateResult(existing) with { Message = cachedMessage };
 
-            if (existing is not null)
+            try
             {
-                return CreateResult(existing);
-            }
+                var catalog = await GetEquityCatalogAsync(cancellationToken);
+                if (!catalog.TryGetValue(asset.ProviderSymbol, out var fund))
+                    return CreateUnsupportedResult(asset.Id);
+                var now = DateTime.UtcNow;
+                var today = DateOnly.FromDateTime(now.AddHours(3));
+                using var response = await httpClient.PostAsJsonAsync("tr/api/disclosure/funds/byCriteria", new
+                {
+                    fromDate = today.AddMonths(-3).ToString("yyyy-MM-dd"),
+                    toDate = today.ToString("yyyy-MM-dd"),
+                    fundTypeList = new[] { "SYF" },
+                    mkkMemberOidList = Array.Empty<string>(),
+                    fundOidList = new[] { fund.Oid },
+                    passiveFundOidList = Array.Empty<string>(),
+                    disclosureClass = "", isLate = "", subjectList = Array.Empty<string>(),
+                    discIndex = Array.Empty<int>(), fromSrc = false, srcCategory = ""
+                }, cancellationToken);
+                response.EnsureSuccessStatusCode();
+                var notificationId = KapPortfolioDiscovery.FindLatest(
+                    await response.Content.ReadAsStringAsync(cancellationToken), now, fund.Code)
+                    ?? throw new InvalidDataException("Son üç ayda portföy raporu bulunamadı.");
+                var detailJson = await httpClient.GetStringAsync(
+                    $"tr/api/notification/attachment-detail/{notificationId}", cancellationToken);
+                var definition = KapPortfolioDiscovery.ReadDetail(detailJson, notificationId, now, fund.Code, fund.Oid);
+                if (existing is not null && definition.DocumentObjectId != existing.DocumentObjectId
+                    && definition.ReportDate <= existing.ReportDate)
+                    throw new InvalidDataException("Aynı dönem düzeltmesi veya eski rapor için manuel inceleme gerekiyor.");
 
-            return await DownloadParseAndStoreAsync(
-                asset,
-                definition,
-                cancellationToken);
+                var result = existing is not null && definition.DocumentObjectId == existing.DocumentObjectId
+                    ? CreateResult(existing)
+                    : await DownloadParseAndStoreAsync(asset, definition, cancellationToken);
+                if (!result.IsAvailable)
+                {
+                    var failureMessage = result.Message + " " + (existing is null
+                        ? "İçerik bazlı tahmin üretilmedi."
+                        : "Son geçerli rapor kullanılıyor.") + " Kontrol 30 dakika sonra yeniden denenecek.";
+                    memoryCache.Set(cacheKey, failureMessage, TimeSpan.FromMinutes(30));
+                    return existing is null ? result with { Message = failureMessage }
+                        : CreateResult(existing) with { Message = failureMessage };
+                }
+                var message = $"KAP otomatik kontrolü: {now.AddHours(3):dd.MM.yyyy HH:mm} (TSİ).";
+                memoryCache.Set(cacheKey, message, TimeSpan.FromHours(6));
+                return result with { Message = message };
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { throw; }
+            catch (Exception exception)
+            {
+                logger.LogWarning(exception, "{FundCode} otomatik KAP kontrolü başarısız; son geçerli rapor korunuyor.", asset.ProviderSymbol);
+                var message = existing is null
+                    ? "KAP raporu/formatı doğrulanamadı; içerik bazlı tahmin üretilmedi. Kontrol 30 dakika sonra yeniden denenecek."
+                    : "Yeni KAP raporu kontrolü tamamlanamadı; son geçerli rapor kullanılıyor. 30 dakika sonra yeniden denenecek.";
+                if (exception is InvalidDataException)
+                    message = exception.Message + " " + (existing is null ? "İçerik bazlı tahmin üretilmedi. " : "Son geçerli rapor kullanılıyor. ")
+                        + "Rapor/okuyucu kontrolü gerekiyor; yalnız beklemek bu sorunu çözmeyebilir.";
+                memoryCache.Set(cacheKey, message, TimeSpan.FromMinutes(30));
+                return existing is null ? CreateUnavailableResult(asset.Id, message)
+                    : CreateResult(existing) with { Message = message };
+            }
         }
         finally
         {
             ImportLock.Release();
+        }
+    }
+
+    private async Task<IReadOnlyDictionary<string, KapEquityFund>> GetEquityCatalogAsync(CancellationToken cancellationToken)
+    {
+        const string key = "kap-domestic-equity-fund-catalog-v1";
+        if (memoryCache.TryGetValue<IReadOnlyDictionary<string, KapEquityFund>>(key, out var cached)) return cached!;
+        // Throttle upstream failures across different fund requests as well.
+        if (memoryCache.TryGetValue(key + ":failed", out _)) throw new HttpRequestException("KAP kataloğu beklemede.");
+        try
+        {
+            var html = await httpClient.GetStringAsync("tr/YatirimFonlari/YF", cancellationToken);
+            var result = KapPortfolioDiscovery.ReadEquityCatalog(html);
+            memoryCache.Set(key, result, TimeSpan.FromHours(24));
+            return result;
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { throw; }
+        catch
+        {
+            memoryCache.Set(key + ":failed", true, TimeSpan.FromMinutes(5));
+            throw;
         }
     }
 
@@ -128,7 +180,7 @@ public sealed class KapFundPortfolioService(
                         asset.IsActive
                         && asset.AssetType
                             == MarketAssetType.Equity
-                        && asset.MarketCode == "BIST")
+                        && asset.MarketCode == "BIST" && asset.QuoteCurrency == "TRY")
                     .ToListAsync(cancellationToken);
 
             var stockAssetLookup =
@@ -136,6 +188,7 @@ public sealed class KapFundPortfolioService(
                     .GroupBy(
                         asset => asset.Symbol,
                         StringComparer.OrdinalIgnoreCase)
+                    .Where(group => group.Count() == 1)
                     .ToDictionary(
                         group => group.Key,
                         group => group.First(),
@@ -170,14 +223,21 @@ public sealed class KapFundPortfolioService(
                     "KAP portföy raporu beklenenden büyük.");
             }
 
-            var pdfBytes =
-                await response.Content.ReadAsByteArrayAsync(
-                    cancellationToken);
+            await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+            using var buffer = new MemoryStream();
+            var chunk = new byte[81920];
+            int read;
+            while ((read = await stream.ReadAsync(chunk, cancellationToken)) > 0)
+            {
+                if (buffer.Length + read > 10_000_000) throw new InvalidDataException("KAP PDF boyut sınırı aşıldı.");
+                buffer.Write(chunk, 0, read);
+            }
+            var pdfBytes = buffer.ToArray();
 
             var holdings =
-                pdfParser.Parse(pdfBytes);
+                pdfParser.ParseValidated(pdfBytes, fundAsset.ProviderSymbol!, definition.ReportDate);
 
-            if (holdings.Count == 0)
+            if (!KapPortfolioDiscovery.HasValidHoldings(holdings))
             {
                 logger.LogWarning(
                     "KAP {FundCode} portföy PDF dosyasında " +
@@ -186,8 +246,7 @@ public sealed class KapFundPortfolioService(
 
                 return CreateUnavailableResult(
                     fundAsset.Id,
-                    "KAP raporu okundu fakat hisse satırları " +
-                    "ayrıştırılamadı.");
+                    "KAP raporunun hisse satırları veya toplam ağırlığı doğrulanamadı.");
             }
 
             var nowUtc = DateTime.UtcNow;
@@ -244,7 +303,14 @@ public sealed class KapFundPortfolioService(
                 MidpointRounding.AwayFromZero);
 
             dbContext.FundPortfolioReports.Add(report);
-            await dbContext.SaveChangesAsync(cancellationToken);
+            try { await dbContext.SaveChangesAsync(cancellationToken); }
+            catch
+            {
+                // Do not leave failed inserts tracked for another service's SaveChanges.
+                foreach (var holding in report.Holdings) dbContext.Entry(holding).State = EntityState.Detached;
+                dbContext.Entry(report).State = EntityState.Detached;
+                throw;
+            }
 
             logger.LogInformation(
                 "KAP {FundCode} portföy raporu işlendi. " +
@@ -260,6 +326,7 @@ public sealed class KapFundPortfolioService(
         {
             throw;
         }
+        catch (InvalidDataException) { throw; }
         catch (HttpRequestException exception)
         {
             logger.LogWarning(
@@ -317,19 +384,15 @@ public sealed class KapFundPortfolioService(
 
     private Task<FundPortfolioReport?> LoadReportAsync(
         int fundMarketAssetId,
-        string documentObjectId,
         CancellationToken cancellationToken)
     {
         return dbContext.FundPortfolioReports
             .AsNoTracking()
             .Include(report => report.Holdings)
-            .SingleOrDefaultAsync(
-                report =>
-                    report.FundMarketAssetId
-                        == fundMarketAssetId
-                    && report.DocumentObjectId
-                        == documentObjectId,
-                cancellationToken);
+            .Where(report => report.FundMarketAssetId == fundMarketAssetId)
+            .OrderByDescending(report => report.ReportDate)
+            .ThenByDescending(report => report.PublishedAtUtc)
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
     private static FundPortfolioDto CreateResult(
@@ -379,8 +442,8 @@ public sealed class KapFundPortfolioService(
             0,
             null,
             null,
-            "Ayrıntılı KAP portföy okuma pilotu " +
-            "şimdilik THF için etkin.",
+            "İçerik bazlı KAP okuma, katalogda yerli hisse fonu olarak doğrulanan yatırım fonları için etkin. " +
+            "Yabancı, serbest ve arbitraj fonları bu kapsamda değil.",
             []);
     }
 
@@ -404,21 +467,4 @@ public sealed class KapFundPortfolioService(
             []);
     }
 
-    private sealed record KapPortfolioReportDefinition(
-        DateOnly ReportDate,
-        DateTime PublishedAtUtc,
-        long KapNotificationId,
-        string DocumentObjectId,
-        string FileName)
-    {
-        public string DocumentPath =>
-            $"tr/api/file/download/{DocumentObjectId}";
-
-        public string DocumentUrl =>
-            $"https://www.kap.org.tr/{DocumentPath}";
-
-        public string NotificationUrl =>
-            $"https://www.kap.org.tr/tr/Bildirim/" +
-            KapNotificationId;
-    }
 }

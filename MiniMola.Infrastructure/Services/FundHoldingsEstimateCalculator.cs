@@ -58,7 +58,8 @@ public static class FundHoldingsEstimateCalculator
             "Eksik bölüm %100'e tamamlanmaz. Rapor sonrası işlemler, giderler ve diğer varlıklar bilinmiyor; " +
             "bu sonuç resmî fiyat veya al/sat tavsiyesi değildir.",
             reason ?? $"Rapor {portfolio.ReportAgeDays} günlük. Modellenmeyen bölüm %{Math.Max(0, 100m - coverage):0.##}. " +
-                "Veri kapsamı, tahmin doğruluğu anlamına gelmez. Fiyatlar gecikmeli olabilir.",
+                "Veri kapsamı, tahmin doğruluğu anlamına gelmez. Türev pozisyonların etkisi hesaplanmaz; " +
+                "yüksek hisse kapsamı tüm risklerin modellendiğini göstermez. Fiyatlar gecikmeli olabilir. " + portfolio.Message,
             contributions.OrderByDescending(x => Math.Abs(x.ContributionPercent ?? 0m))
                 .ThenByDescending(x => x.WeightPercent).ToList())
             { ModelVersion = "kap-holdings-v2" };

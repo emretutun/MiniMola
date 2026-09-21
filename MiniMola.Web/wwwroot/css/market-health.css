@@ -1,0 +1,15 @@
+.market-health { color:var(--mm-ink); max-width:1400px; margin:auto; padding:24px; }
+.market-health h1 { margin:16px 0; font-size:2rem; }
+.market-health p,.market-health small { color:var(--mm-ink-soft); }
+.market-health a:not(.btn) { color:var(--mm-ink); text-decoration:underline; }
+.health-note,.health-sources article { background:var(--mm-surface); border:1px solid var(--mm-line); border-radius:16px; padding:18px; }
+.health-sources { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin:20px 0; }
+.health-sources h2 { font-size:1rem; }
+.health-table-wrap { overflow-x:auto; border:1px solid var(--mm-line); border-radius:16px; background:var(--mm-surface); }
+.market-health table { border-collapse:collapse; width:100%; min-width:780px; }
+.market-health th,.market-health td { padding:16px; border-bottom:1px solid var(--mm-line); vertical-align:top; text-align:left; }
+.market-health td { max-width:400px; }
+.market-health small { display:block; margin-top:6px; line-height:1.5; overflow-wrap:anywhere; }
+.market-health .btn { color:var(--mm-ink); border-color:var(--mm-line); }
+.market-health .btn:hover { background:var(--mm-surface-soft); }
+@media(max-width:600px) { .market-health { padding:12px; } }

@@ -268,6 +268,20 @@ recurringJobManager.AddOrUpdate<
             TimeZone = TimeZoneInfo.Utc
         });
 
+// The service caches successful checks for six hours and retries failures after 30 minutes.
+recurringJobManager.AddOrUpdate<IFundPortfolioService>(
+    "discover-fund-portfolio-reports",
+    service => service.RefreshReportsAsync(CancellationToken.None),
+    "*/30 * * * *",
+    new RecurringJobOptions { TimeZone = TimeZoneInfo.Utc });
+
+// UTC 15:00-16:59; the service narrows execution to 18:45-19:30 Turkey time.
+recurringJobManager.AddOrUpdate<IFundEstimateService>(
+    "capture-fund-closing-estimates",
+    service => service.CaptureClosingEstimatesAsync(CancellationToken.None),
+    "*/10 15-16 * * 1-5",
+    new RecurringJobOptions { TimeZone = TimeZoneInfo.Utc });
+
 backgroundJobClient.Enqueue<
     IMarketAssetCatalogSyncService>(
         service =>

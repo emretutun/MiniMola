@@ -400,17 +400,20 @@ public sealed partial class FundEstimateService(
                 .AsNoTracking()
                 .Where(item =>
                     item.MarketAssetId == marketAssetId
-                    && item.ModelVersion == historyModel)
+                    && item.ModelVersion == historyModel
+                    && item.Kind != FundEstimateKind.Legacy)
                 .OrderByDescending(item => item.TargetDate)
                 .ThenByDescending(item => item.CalculatedAtUtc)
-                .Take(30)
+                .Take(60)
                 .ToListAsync(cancellationToken);
 
         var evaluatedItems =
-            items
-                .Where(item =>
-                    item.AbsoluteErrorPercent.HasValue)
-                .ToList();
+            await dbContext.FundEstimateSnapshots.AsNoTracking()
+                .Where(item => item.MarketAssetId == marketAssetId && item.ModelVersion == historyModel
+                    && item.Kind == FundEstimateKind.Closing && item.AbsoluteErrorPercent.HasValue)
+                .OrderByDescending(item => item.TargetDate)
+                .Take(30)
+                .ToListAsync(cancellationToken);
 
         decimal? meanAbsoluteErrorPercent =
             evaluatedItems.Count == 0
@@ -438,7 +441,7 @@ public sealed partial class FundEstimateService(
             meanAbsoluteErrorPercent,
             withinOnePercentRate,
             items
-                .Take(10)
+                .Take(20)
                 .Select(item =>
                     new FundEstimateHistoryItemDto(
                         item.TargetDate,
@@ -450,7 +453,12 @@ public sealed partial class FundEstimateService(
                         item.ActualChangePercent,
                         item.ActualPrice,
                         item.ActualObservedAtUtc,
-                        item.AbsoluteErrorPercent))
+                        item.AbsoluteErrorPercent)
+                    {
+                        Kind = item.Kind == FundEstimateKind.Closing ? "closing" : "intraday",
+                        Status = item.EvaluatedAtUtc != null ? "evaluated"
+                            : item.TargetDate < GetTurkeyDate() ? "missing-official" : "pending"
+                    })
                 .ToList());
     }
 
@@ -463,9 +471,10 @@ public sealed partial class FundEstimateService(
             await dbContext.FundEstimateSnapshots
                 .Where(item =>
                     (item.ModelVersion == ModelVersion || item.ModelVersion == HoldingsModelVersion)
+                    && item.Kind != FundEstimateKind.Legacy
                     && item.EvaluatedAtUtc == null
                     && item.TargetDate <= today)
-                .OrderBy(item => item.TargetDate)
+                .OrderByDescending(item => item.TargetDate)
                 .Take(1_000)
                 .ToListAsync(cancellationToken);
 
@@ -482,6 +491,8 @@ public sealed partial class FundEstimateService(
 
         var firstDate =
             pendingEstimates.Min(item => item.TargetDate);
+
+        await marketPriceRefreshService.RefreshStalePricesAsync(assetIds, cancellationToken);
 
         var lastDate =
             pendingEstimates
@@ -520,9 +531,6 @@ public sealed partial class FundEstimateService(
 
         foreach (var estimate in pendingEstimates)
         {
-            var lastAcceptableDate =
-                estimate.TargetDate.AddDays(7);
-
             var actualSnapshot =
                 officialPrices.FirstOrDefault(snapshot =>
                     snapshot.MarketAssetId
@@ -531,12 +539,9 @@ public sealed partial class FundEstimateService(
                         > estimate.BasePriceObservedAtUtc
                     && DateOnly.FromDateTime(
                         snapshot.ObservedAtUtc)
-                        >= estimate.TargetDate
-                    && DateOnly.FromDateTime(
-                        snapshot.ObservedAtUtc)
-                        <= lastAcceptableDate
-                    && (estimate.ModelVersion != HoldingsModelVersion
-                        || DateOnly.FromDateTime(snapshot.ObservedAtUtc) == estimate.TargetDate));
+                        == estimate.TargetDate
+                    && snapshot.CreatedAtUtc > estimate.CalculatedAtUtc
+                    && snapshot.CreatedAtUtc <= evaluatedAtUtc);
 
             if (actualSnapshot is null
                 || estimate.BasePrice <= 0)
@@ -544,30 +549,7 @@ public sealed partial class FundEstimateService(
                 continue;
             }
 
-            var actualChangePercent =
-                decimal.Round(
-                    (actualSnapshot.Price
-                        - estimate.BasePrice)
-                    / estimate.BasePrice
-                    * 100m,
-                    6,
-                    MidpointRounding.AwayFromZero);
-
-            estimate.ActualPrice = actualSnapshot.Price;
-            estimate.ActualChangePercent =
-                actualChangePercent;
-            estimate.ActualObservedAtUtc =
-                actualSnapshot.ObservedAtUtc;
-            estimate.AbsoluteErrorPercent =
-                decimal.Round(
-                    Math.Abs(
-                        estimate.EstimatedChangePercent
-                        - actualChangePercent),
-                    6,
-                    MidpointRounding.AwayFromZero);
-            estimate.EvaluatedAtUtc = evaluatedAtUtc;
-            estimate.UpdatedAtUtc = evaluatedAtUtc;
-            hasChanges = true;
+            hasChanges |= FundEstimateTrackingPolicy.TryEvaluate(estimate, actualSnapshot, evaluatedAtUtc);
         }
 
         if (hasChanges)
@@ -590,6 +572,8 @@ public sealed partial class FundEstimateService(
         FundEstimateDto result,
         CancellationToken cancellationToken)
     {
+        var kind = FundEstimateTrackingPolicy.GetKind(result);
+        if (kind is null) return;
         if (!result.IsAvailable
             || !result.BasePrice.HasValue
             || !result.BasePriceObservedAtUtc.HasValue
@@ -619,10 +603,11 @@ public sealed partial class FundEstimateService(
                     item =>
                         item.MarketAssetId == asset.Id
                         && item.TargetDate == targetDate
-                        && item.ModelVersion == result.ModelVersion,
+                        && item.ModelVersion == result.ModelVersion
+                        && item.Kind == kind.Value,
                     cancellationToken);
 
-        if (existing?.EvaluatedAtUtc is not null)
+        if (existing is not null && !FundEstimateTrackingPolicy.CanReplace(existing, result))
         {
             return;
         }
@@ -633,6 +618,7 @@ public sealed partial class FundEstimateService(
             {
                 MarketAssetId = asset.Id,
                 TargetDate = targetDate,
+                Kind = kind.Value,
                 ModelVersion = result.ModelVersion,
                 CreatedAtUtc = result.CalculatedAtUtc
             };

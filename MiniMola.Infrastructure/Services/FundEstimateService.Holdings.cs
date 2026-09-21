@@ -32,8 +32,27 @@ public sealed partial class FundEstimateService
             .GroupBy(x => x.MarketAssetId)
             .Select(g => g.OrderByDescending(x => x.ObservedAtUtc).ThenByDescending(x => x.Id).First())
             .ToListAsync(cancellationToken);
-        var result = FundHoldingsEstimateCalculator.Calculate(asset, portfolio, snapshots, DateTime.UtcNow);
+        var nowUtc = DateTime.UtcNow;
+        if (FundEstimateTrackingPolicy.IsClosingWindow(nowUtc))
+            snapshots = snapshots.Where(x => x.MarketAssetId == asset.Id
+                || FundEstimateTrackingPolicy.IsClosingQuote(x.ObservedAtUtc, nowUtc)).ToList();
+        var result = FundHoldingsEstimateCalculator.Calculate(asset, portfolio, snapshots, nowUtc);
         await SaveEstimateAsync(asset, result, cancellationToken);
         return result;
+    }
+
+    public async Task CaptureClosingEstimatesAsync(CancellationToken cancellationToken = default)
+    {
+        if (!FundEstimateTrackingPolicy.IsClosingWindow(DateTime.UtcNow)) return;
+        // Only the holdings model has a defined BIST closing-data policy.
+        var cutoff = DateOnly.FromDateTime(DateTime.UtcNow.AddHours(3)).AddDays(-45);
+        var ids = await dbContext.FundPortfolioReports.AsNoTracking()
+            .Where(x => x.ReportDate >= cutoff).Select(x => x.FundMarketAssetId)
+            .Distinct().ToListAsync(cancellationToken);
+        foreach (var id in ids)
+        {
+            if (!FundEstimateTrackingPolicy.IsClosingWindow(DateTime.UtcNow)) break;
+            await GetEstimateAsync(id, cancellationToken);
+        }
     }
 }

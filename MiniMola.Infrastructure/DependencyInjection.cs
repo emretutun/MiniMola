@@ -189,6 +189,7 @@ public static class DependencyInjection
                     KapFundMarketAssetCatalogProvider>());
 
         services.AddSingleton<KapFundPortfolioPdfParser>();
+        services.AddScoped<IMarketDataHealthService, MarketDataHealthService>();
 
         services.AddHttpClient<
             IFundPortfolioService,
@@ -202,7 +203,7 @@ public static class DependencyInjection
                         TimeSpan.FromSeconds(45);
 
                     client.DefaultRequestHeaders.Accept.ParseAdd(
-                        "application/pdf");
+                        "application/json, application/pdf");
 
                     client.DefaultRequestHeaders.UserAgent.ParseAdd(
                         "MiniMola/1.0");

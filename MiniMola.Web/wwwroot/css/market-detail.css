@@ -1073,3 +1073,15 @@
 .fund-estimate-contributions > details > article {
     margin-top: 8px;
 }
+
+.fund-estimate-history-list article {
+    grid-template-columns: 90px 110px minmax(0, 1fr) minmax(0, 1fr) 95px;
+    align-items: start;
+    overflow-wrap: anywhere;
+}
+.fund-estimate-history-list article small { display: block; margin-top: 6px; font-weight: 400; }
+.fund-estimate-history-list article.is-closing { border-left: 3px solid var(--mm-teal); }
+.fund-estimate-tracking-note { font-size: 12px; color: var(--mm-muted); margin: 16px 0 0; line-height: 1.7; }
+@media (max-width: 850px) {
+    .fund-estimate-history-list article { grid-template-columns: 1fr; gap: 8px; }
+}

@@ -1,0 +1,75 @@
+@model IReadOnlyList<MiniMola.Application.Markets.MarketDataHealthDto>
+@{
+    ViewData["Title"] = "Veri Sağlığı";
+    string TimeText(DateTime? value) => value.HasValue
+        ? value.Value.AddHours(3).ToString("dd.MM.yyyy HH:mm") + " TSİ" : "Kayıt yok";
+}
+<link rel="stylesheet" href="~/css/market-health.css" asp-append-version="true" />
+<section class="market-health" aria-labelledby="health-title">
+    <header>
+        <a asp-action="Index">← Piyasalara dön</a>
+        <h1 id="health-title">Veri Sağlığı</h1>
+        <p>Favorilerin ve öne çıkan varlıklar · Sembol sırasıyla en fazla 200 kayıt</p>
+        <a asp-action="Health" class="btn btn-outline-secondary">Durumu yenile</a>
+    </header>
+    @if (TempData["MarketHealthMessage"] is string message)
+    {
+        <p class="health-note" role="status">@message</p>
+    }
+    <p class="health-note">Bu ekran kayıtları okur; açıldığında dış kaynakları çağırmaz.
+        “Kayıt zamanı” son fiyat kaydının veritabanına yazıldığı zamandır; son başarılı bağlantı zamanı değildir.
+        Kriptoda 20 dakika, diğer varlıklarda 4 günden eski fiyatlar kontrol için işaretlenir.
+        Bunlar yaklaşık eşiklerdir; seans, tatil ve gecikme takvimi değerlendirmesi değildir.</p>
+    <div class="health-sources">
+        @foreach (var group in Model.GroupBy(x => x.Provider))
+        {
+            <article>
+                <h2>@group.Key</h2>
+                <p>@group.Count() varlık · @group.Count(x => x.ObservedAtUtc == null) fiyatı eksik</p>
+                <small>En son fiyat kaydı: @TimeText(group.Max(x => x.StoredAtUtc))</small>
+            </article>
+        }
+    </div>
+    <p>“Yeniden dene” fiyatı ve uygun fonlarda KAP raporunu kontrol eder. Varlık başına 2 dakika bekleme ve
+        35 saniyelik işlem sınırı vardır; fiyat sağlayıcısının kendi önbellek ve istek sınırları kaldırılmaz.</p>
+    <p>Rapor açıklamaları son uygulama oturumunda yapılan kontrollerden gelir (en fazla 24 saat saklanır).
+        Uygulama yeniden başlayınca açıklamalar sıfırlanır; kayıtlı fiyat ve raporlar korunur.</p>
+    @if (Model.Count == 0)
+    {
+        <p>İzlenecek varlık bulunamadı. Piyasalar ekranından favorilerine varlık ekleyebilirsin.</p>
+    }
+    <div class="health-table-wrap" tabindex="0" aria-label="Varlık veri durumları; dar ekranda yatay kaydırılabilir">
+        <table>
+            <thead><tr><th>Varlık</th><th>Fiyat durumu</th><th>KAP raporu</th><th>Kontrol</th></tr></thead>
+            <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td><a asp-action="Detail" asp-route-id="@item.AssetId">@item.Symbol</a><small>@item.Name</small><small>@item.Provider</small></td>
+                    <td><strong>@item.PriceStatus</strong><small>Gözlem: @TimeText(item.ObservedAtUtc)</small><small>Kayıt: @TimeText(item.StoredAtUtc)</small></td>
+                    <td><strong>@item.ReportStatus</strong>
+                        @if (item.ReportDate.HasValue)
+                        {
+                            <small>Rapor: @item.ReportDate.Value.ToString("dd.MM.yyyy")</small>
+                            <small>Eşleşen hisse ağırlığı: %@item.MatchedWeightPercent?.ToString("0.##") · güncel fiyat kapsamı değildir</small>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(item.LastReportMessage))
+                        { <small>@item.LastReportMessage</small> }
+                        @if (item.LastEstimateAtUtc.HasValue)
+                        {
+                            <small>Son kayıtlı tahminin fiyat kapsamı: %@item.LastEstimateCoverage?.ToString("0.##")</small>
+                            <small>Tahmin zamanı: @TimeText(item.LastEstimateAtUtc) · şu anki kapsam değildir</small>
+                        }
+                    </td>
+                    <td>
+                        <form asp-action="RetryHealth" method="post">
+                            <input type="hidden" name="id" value="@item.AssetId" />
+                            <button type="submit" class="btn btn-outline-secondary" aria-label="@item.Symbol için yeniden dene">Yeniden dene</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>

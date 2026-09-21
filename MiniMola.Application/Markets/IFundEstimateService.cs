@@ -12,4 +12,6 @@ public interface IFundEstimateService
 
     Task EvaluatePendingAsync(
         CancellationToken cancellationToken = default);
+
+    Task CaptureClosingEstimatesAsync(CancellationToken cancellationToken = default);
 }
