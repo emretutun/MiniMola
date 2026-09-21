@@ -63,13 +63,33 @@ Mini oyunların yanında güncel haberler ve Spotify entegrasyonu da bulunur. B�
 - Çoklu varlık kataloğu, arama, tür filtreleri, sayfalama ve kişisel favoriler.
 - Kripto, BIST hisse/endeks, fon/BES, altın ve döviz takibi.
 - Lightweight Charts ile fiyat/hacim grafikleri; SMA, RSI ve MACD tabanlı teknik analiz.
-- Fon dağılımından yaklaşık tahmin ve THF için KAP hisse ağırlıklarına dayalı pilot model.
-- Tahmin geçmişi ve resmî fiyatla karşılaştırma altyapısı.
+- Fon dağılımından yaklaşık tahmin ve doğrulanmış yerli hisse fonları için KAP hisse ağırlıklarına dayalı model.
+- Ayrı gün içi/seans sonu tahmin kayıtları ve resmî fiyatla karşılaştırma.
+- Veri Sağlığı ekranı: kayıtlı fiyat/rapor durumu, kaynak bilgisi ve sınırlı yeniden deneme.
 - Haftalık mesai planı ve geri sayım.
 - Yenilenmiş ana sayfa, yan menü ve **Sistem / Açık / Koyu** tema seçimi.
 - MailKit tabanlı SMTP gönderimi; piyasa ve tema için çalıştırılabilir kontroller.
 
 ## Piyasa takibi ve fon tahmini
+
+### Veri Sağlığı
+
+Piyasalar ekranındaki **Veri Sağlığı** bağlantısı `/Markets/Health` sayfasını açar.
+Kullanıcının favorileri ve öne çıkan varlıklar (sembol sırasıyla en fazla 200) için
+fiyat gözlem/kayıt zamanı, eksik günlük değişim, yaklaşık eskilik uyarısı, KAP rapor
+tarihi/eşleşen ağırlık ve son kayıtlı KAP tahmininin fiyat kapsamı gösterilir.
+Fiyatın kayıt zamanı sağlayıcının son başarılı bağlantı zamanı değildir; bu ilk sürüm
+sağlayıcı kesintilerini izleyen kalıcı bir telemetri sistemi değildir.
+
+Ekranı açmak dış servis çağrısı yapmaz. Antiforgery korumalı **Yeniden dene** işlemi
+yalnız kullanıcının erişebildiği listedeki varlığı kontrol eder. Varlık başına iki
+dakikalık ortak bekleme ve 35 saniyelik iptal bütçesi vardır; fiyat sağlayıcılarının
+kendi bekleme süreleri korunur. KAP rapor kontrol önbelleği kullanıcı isteğiyle aşılır,
+fakat desteklenmeyen formatlar otomatik olarak desteklenmiş olmaz.
+
+Son KAP kontrol açıklaması bellekte 24 saat tutulur ve yeniden başlatmada sıfırlanır.
+Raporlar/fiyatlar veritabanında kalır. Kriptoda 20 dakika, diğer varlıklarda 4 günlük
+eskilik eşiği yalnız kontrol uyarısıdır; seans/tatil takvimi veya canlı veri garantisi değildir.
 
 ### Takip listesi ve grafikler
 
@@ -79,11 +99,17 @@ CoinGecko, Yahoo Finance, TCMB, TEFAS/BEFAS ve KAP entegrasyonları kullanılır
 
 Varlık detayında mum/çizgi grafiği, hacim ve teknik göstergeler bulunur. Sinyaller kurallı gösterge hesaplarıdır; yapay zekâ chatbotu veya kişiye özel yatırım tavsiyesi değildir.
 
-### KAP tabanlı THF pilotu
+### KAP tabanlı yerli hisse fonları
 
-- Pilot, **31 Ağustos 2026** tarihli THF raporuna bağlıdır. Yeni raporların otomatik keşfi henüz yoktur.
-- Rapordaki 77 hisse kalemi ayrıştırılır; günlük değişimler açıklanan ağırlıklarla çarpılır.
-- Bu raporda hisse ağırlığı **%97,79**. Katalog eşleşmesi ile güncel fiyat kapsamı farklıdır; fiyatı olmayan kalem hesaba alınmaz.
+- Yapı Kredi rapor düzeni de desteklenir: **YEF** Ağustos 2026 raporunda 32 yuvarlanmış pozitif ağırlıklı hisse, toplam %92,00 net fon ağırlığı doğrulandı. Bu düzenin yüzde sütunu portföy değerine göredir; okuyucu hisse rayiç tutarlarını net fon değerine bölerek hesaplar ve tutar toplamını raporla karşılaştırır. Fon kodu ve dönem PDF içinde ayrıca doğrulanır. Format/doğrulama hataları artık bağlantı hatalarından ayrı açıklanır.
+
+- Fon kimlikleri KAP YF kataloğundan alınır; aktif `HS` sınıfı adaylar seçilir, yabancı/serbest/arbitraj fonları hariç tutulur. Katalog 24 saat önbelleklenir. Bir fonun detay sayfası açıldığında son üç aylık bildirimlerinden aylık raporu aranır. Arka plan işi yalnız favorileri ve daha önce raporu okunmuş fonları kontrol eder.
+- Başarılı rapor kontrolü 6 saat önbelleklenir; hatalar 30 dakika sonra yeniden denenir. Hangfire işi uygulama açıkken çalışır. Kontrol önbelleği yeniden başlatmada sıfırlanır.
+- Fon kimliği, bildirim konusu, dönem ve PDF eki doğrulanır. Ortak FTD tablo okuyucusu yalnız `Hisse Türk` bölümünü alır; grup toplamıyla en fazla 0,5 yüzde puan fark kabul edilir. En az 5 farklı net pozitif hisse ve %80–100,5 toplam ağırlık aranır. Sonraki işlem ekleri hisse portföyüne karıştırılmaz.
+- Ağustos 2026 raporlarında uçtan uca doğrulanan örnekler: **THF (77 hisse), AK3 (24), TI2 (51), HVS (30), NNF (27)**. Kod listesiyle sınırlı değildir; aynı doğrulanabilir formatı kullanan diğer uygun fonlar da işlenir. **Tüm yerli hisse fonları destekleniyor anlamına gelmez:** MAC gibi farklı ek adı/tablo düzenleri henüz kabul edilmez.
+- Hata/format değişikliğinde son geçerli rapor korunur; yoksa içerik bazlı tahmin üretilmez. Aynı dönem düzeltmeleri manuel inceleme gerektirir. Türev pozisyonların etkisi hesaplanmaz; yüksek hisse kapsamı toplam risk kapsamı veya tahmin doğruluğu değildir.
+- Örnek olarak THF'nin Ağustos 2026 raporundaki 77 hisse kalemi ayrıştırılır; günlük değişimler açıklanan ağırlıklarla çarpılır. Kalem sayısı her fon ve raporda değişir.
+- Bu THF örneğinde hisse ağırlığı **%97,79**. Katalog eşleşmesi ile güncel fiyat kapsamı farklıdır; fiyatı olmayan kalem hesaba alınmaz.
 - Eksik bölüm %100'e ölçeklenmez. Rapor sonrası işlemler, giderler ve diğer varlıkların etkisi bilinmez.
 - En az %60 güncel fiyat kapsamı, en fazla 45 günlük rapor ve bugünün resmî baz fiyatı aranır. Seans içinde fiyatlara 45 dakikalık tazelik kontrolü uygulanır; hafta sonu yeni tahmin üretilmez.
 - Hisse bazında katkılar, rapor tarihi ve hesaplanamama nedenleri gösterilir.
@@ -115,6 +141,16 @@ Hangfire takip edilen fiyatları beş dakikada bir, katalogları günlük 03:20 
 
 Yeni modeller: `MarketAsset`, `MarketPriceSnapshot`, `UserFavoriteAsset`, `FundEstimateSnapshot`, `FundPortfolioReport`, `FundPortfolioHolding` ve `UserWorkScheduleDay`.
 
+### Tahmin–gerçekleşen takibi
+
+Gün içi kayıt 18:10 öncesinde güncellenebilir; seans sonu kaydı ayrı tutulur ve ilk geçerli kayıttan sonra değişmez. Doğrulanmış yerli hisse/KAP modeli için Hangfire, Türkiye saatiyle 18:45–19:30 kayıt penceresinde on dakikalık zamanlamayla dener. Yalnız aynı günün 18:08 ve sonrasına ait fiyatlar kabul edilir; en az %60 kapsam gerekir. Bu, gecikmeli kaynaklar için muhafazakâr bir uygulama politikasıdır; bütün hisselerde kapanış verisi garantisi değildir. Saatler için [Borsa İstanbul piyasa işleyişi](https://borsaistanbul.com/piyasalar/pay-piyasasi/piyasa-isleyisi) referans alınmıştır. Yarım günler/tatiller otomatik çıkarılmaz.
+
+- Uygulama kapalıysa veya kapanış verisi yetersizse geçmişe dönük kayıt üretilmez.
+- Resmî fiyat yalnız beklenen yayın tarihiyle tam eşleşirse değerlendirilir; başka günün fiyatıyla doldurulmaz.
+- Ekranda gün içi ve seans sonu ayrı satırlarda, fiyatları, kayıt zamanı ve kapsamıyla görünür. Bekleyen sonuçlar da listelenir.
+- Ortalama mutlak hata ve ±1 puan oranı yalnız son 30 değerlendirilmiş seans sonu kaydından hesaplanır. %2 tahmin ve %1 gerçekleşme, 1 yüzde puanı hatadır.
+- Eski kayıtlar `Legacy` olarak korunur, yeni kapanış istatistiklerine katılmaz. Yeni rapor keşfi doğrulanmış yerli hisse fonlarını kapsar.
+
 ## Mesai planı ve tema
 
 Çalışma günleri ve saatleri kullanıcıya özel kaydedilir. Sayaç bu plana göre geri sayım gösterir. API: `GET / PUT /api/work-schedule`, `GET /api/work-schedule/countdown`.
@@ -129,9 +165,16 @@ Proje kökünden:
 dotnet build .\MiniMola.slnx
 dotnet run --project .\tests\MarketChecks\MarketChecks.csproj
 node --test .\tests\theme.test.cjs
+node --test .\tests\fund-history.test.cjs
+node --test .\tests\fund-portfolio.test.cjs
+node --test .\tests\theme-contrast.test.cjs
 ```
 
-Piyasa kontrol programında ağırlıklı hesaplama, veri tazeliği, önceki kapanış seçimi ve KAP ayrıştırması için 16 kontrol bulunur. Tema için 5 test kayıtlı tercih, sistem modu, sekmeler arası eşitleme ve depolama hatalarını kapsar. Bunlar kapsamlı uçtan uca testler değildir; `dotnet test` yerine yukarıdaki komutlarla çalıştırılır.
+Piyasa kontrol programında hesaplama, veri tazeliği, KAP keşfi/ayrıştırması ve gün içi/seans sonu yaşam döngüsü kontrolleri bulunur. Tema testleri kayıtlı tercih, sistem modu, sekmeler arası eşitleme ve depolama hatalarını kapsar. Bunlar kapsamlı uçtan uca testler değildir; `dotnet test` yerine yukarıdaki komutlarla çalıştırılır.
+
+Fon geçmişi ekranının bekleyen, ölçülmüş, boş ve resmî fiyatı eksik durumları ayrıca 4 JavaScript testiyle doğrulanır.
+
+Fon portföyü durum mesajları ve koyu temadaki yazı/zemin kontrastı da JavaScript kontrollerine dahildir. Veri Sağlığı için isteğe bağlı `--health-live` kontrolü yalnız geliştirme veritabanını okur; dış kaynak çağrısı veya veritabanı yazımı yapmaz.
 
 İsteğe bağlı gerçek servis kontrolü için [MarketChecks açıklamasına](tests/MarketChecks/README.md) bakın. `--live` katalog/fiyat/tahmin kayıtlarını günceller; yalnızca geliştirme veritabanında kullanılmalıdır.
 
@@ -1603,7 +1646,7 @@ Set-Location ..
 CLI aracı kurulu değilse EF Core 10 ile uyumlu sürümü yükleyin. Alternatif olarak Package Manager Console bölümündeki `Update-Database` komutunu kullanabilirsiniz.
 
 ```powershell
-dotnet tool install --global dotnet-ef --version "10.*"
+dotnet tool restore
 ```
 
 ```powershell
@@ -1751,6 +1794,7 @@ AddMarketAssetFeaturedFlag
 AllowDuplicateMarketAssetSymbols
 AddFundEstimateHistory
 AddFundPortfolioReports
+SeparateFundEstimateSnapshots
 ```
 
 Hangfire tabloları EF Core migration listesinde bulunmaz. Hangfire kendi SQL şemasını yönetir.
@@ -1947,6 +1991,9 @@ kullanılabilir.
 Mevcut geliştirme sürümünde:
 
 - Uygulama yerel SQL Server Express ile çalışmaktadır.
+- TEFAS fon fiyatlarında gözlem saati gerçek yayın saati değildir; günlük fiyat tarihine eklenen 15:00 TSİ saati, daha erken yapılan kontrollerde Veri Sağlığı ekranında yanıltıcı bir gelecek zaman uyarısı oluşturabilir.
+- KAP raporu olmayan kapsam dışı fonlarda (örneğin DOH/TMV), ilk kontrol yapılana kadar “Henüz rapor kaydı yok” görülebilir. Rapor açıklamaları bellekte tutulur; uygulama yeniden başlayınca sıfırlanır.
+- Veri Sağlığı, kayıtlı veriyi gösterir; kalıcı sağlayıcı erişim/başarı telemetrisi veya tam seans/tatil takvimi değildir.
 - Piyasa ve tema kontrolleri bulunur; kapsamlı uçtan uca test kapsamı henüz yoktur.
 - Uygulamaya özel yönetici paneli bulunmamaktadır.
 - Hangfire Dashboard yalnızca teknik job yönetimi sağlar.
@@ -2103,7 +2150,8 @@ Microservice yalnızca yeni bir teknoloji öğrenmek amacıyla tüm uygulamaya b
 - [x] Yenilenmiş çalışma alanı ve koyu tema
 - [x] Çoklu varlık kataloğu, favoriler ve grafikler
 - [x] Teknik analiz ve fon tahmini
-- [x] THF KAP portföy pilotu ve tahmin geçmişi
+- [x] Doğrulanabilen yerli hisse fonlarında KAP portföyü, YEF okuyucusu ve ayrı gün içi/seans sonu tahmin geçmişi
+- [x] Veri Sağlığı ekranı ve kontrollü yeniden deneme
 - [x] Mesai planı ve geri sayım
 - [x] Piyasa ve tema doğrulama kontrolleri
 - [x] Environment yapılandırması
@@ -2120,9 +2168,10 @@ Microservice yalnızca yeni bir teknoloji öğrenmek amacıyla tüm uygulamaya b
 ### Planlananlar
 
 - [ ] Test kapsamını genişletme ve uçtan uca testler
-- [ ] Yeni KAP raporlarını otomatik keşfetme ve farklı fon formatları
+- [x] Yerli hisse fonlarında yeni aylık KAP raporu keşfi ve ortak FTD tablo okuyucusu
+- [ ] KAP düzeltme raporları ve farklı fon formatları
 - [ ] Portföy maliyeti, işlemler ve kâr/zarar takibi
-- [ ] Health checks
+- [ ] Altyapı için liveness/readiness health check uçları
 - [ ] Merkezi loglama
 - [ ] Docker
 - [ ] CI/CD
